@@ -487,7 +487,7 @@ void GraphicsDrawer::_setBlendMode() const
 
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
 		BlendParam srcFactor = blend::ONE;
-		BlendParam dstFactor = blend::SRC1_COLOR;
+		BlendParam dstFactor = Context::SeparateBlending ? blend::SRC1_COLOR : blend::ONE_MINUS_SRC_ALPHA;
 		BlendParam srcFactorAlpha = blend::ONE;
 		BlendParam dstFactorAlpha = blend::SRC1_ALPHA;
 		if (gDP.otherMode.forceBlender != 0) {
@@ -498,8 +498,7 @@ void GraphicsDrawer::_setBlendMode() const
 				if (gDP.otherMode.c2_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
 					dstFactor = blend::DST_ALPHA;
 				}
-			}
-			else {
+			} else {
 				if (gDP.otherMode.c1_m2a != 1 && gDP.otherMode.c1_m2b == 1) {
 					srcFactor = blend::DST_ALPHA;
 				}
@@ -507,13 +506,16 @@ void GraphicsDrawer::_setBlendMode() const
 					dstFactor = blend::DST_ALPHA;
 				}
 			}
-		}
-		else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
+		} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 &&
+			gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
 			srcFactor = blend::ZERO;
 			dstFactor = blend::ONE;
 		}
 		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlendingSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+		if (Context::SeparateBlending)
+			gfxContext.setBlendingSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+		else
+			gfxContext.setBlending(srcFactor, dstFactor);
 	} else {
 		gfxContext.enable(enable::BLEND, false);
 	}

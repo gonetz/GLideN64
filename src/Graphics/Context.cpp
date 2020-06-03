@@ -17,6 +17,7 @@ bool Context::FramebufferFetch = false;
 bool Context::TextureBarrier = false;
 bool Context::EglImage = false;
 bool Context::EglImageFramebuffer = false;
+bool Context::SeparateBlending = false;
 
 Context::Context() {}
 
@@ -41,7 +42,8 @@ void Context::init()
 	FramebufferFetch = m_impl->isSupported(SpecialFeatures::FramebufferFetch);
 	TextureBarrier = m_impl->isSupported(SpecialFeatures::TextureBarrier);
 	EglImage = m_impl->isSupported(SpecialFeatures::EglImage);
-	EglImageFramebuffer =  m_impl->isSupported(SpecialFeatures::EglImageFramebuffer);
+	EglImageFramebuffer = m_impl->isSupported(SpecialFeatures::EglImageFramebuffer);
+	SeparateBlending = m_impl->isSupported(SpecialFeatures::SeparateBlending);
 }
 
 void Context::destroy()
