@@ -675,11 +675,11 @@ public:
 		m_part +=
 			"lowp float cvg = clampedColor.a;						\n"
 			"lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);			\n"
-			"lowp vec4 fDestAlpha = vec4(1.0, 1.0, 0.0, 1.0);		\n"
+			"lowp vec4 dstFactorAlpha = vec4(1.0, 1.0, 0.0, 1.0);	\n"
 			"if (uForceBlendAlpha == 0)								\n"
-			"  fDestAlpha[0] = 0.0;									\n"
+			"  dstFactorAlpha[0] = 0.0;								\n"
 			"fragColor.a = srcAlpha[uCvgDest];						\n"
-			"fragColor1.a = fDestAlpha[uCvgDest];					\n"
+			"fragColor1.a = dstFactorAlpha[uCvgDest];				\n"
 			;
 	}
 };
