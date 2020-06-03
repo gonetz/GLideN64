@@ -667,6 +667,44 @@ public:
 	}
 };
 
+class ShaderBlenderAlpha : public ShaderPart
+{
+public:
+	ShaderBlenderAlpha()
+	{
+		m_part +=
+			"lowp float cvg = clampedColor.a;						\n"
+			"switch (uCvgDest)										\n"
+			"{														\n"
+			"  case 0: 												\n"
+			"  if(uForceBlendAlpha == 0)							\n"
+			"  {													\n"
+			"    fragColor.a = cvg;									\n"
+			"    fragColor1.a = 0.0;								\n"
+			"  }													\n"
+			"  else													\n"
+			"  {													\n"
+			"    fragColor.a = cvg;									\n"
+			"    fragColor1.a = 1.0;								\n"
+			"  }													\n"
+			"  break;												\n"
+			"  case 1:												\n"
+			"  fragColor.a = cvg;									\n"
+			"  fragColor1.a = 1.0;									\n"
+			"  break;												\n"
+			"  case 2:												\n"
+			"  fragColor.a = 1.0;									\n"
+			"  fragColor1.a = 0.0;									\n"
+			"  break;												\n"
+			"  case 3:												\n"
+			"  fragColor.a = 0.0;									\n"
+			"  fragColor1.a = 1.0;									\n"
+			"  break;												\n"
+			"}														\n"
+			;
+	}
+};
+
 class ShaderLegacyBlender : public ShaderPart
 {
 public:
@@ -916,7 +954,9 @@ public:
 			"highp vec2 texCoord1;					\n"
 			"highp vec2 tcData0[5];					\n"
 			"highp vec2 tcData1[5];					\n"
-		;
+			"uniform lowp int uCvgDest;				\n"
+			"uniform lowp int uForceBlendAlpha;		\n"
+			;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
 			m_part +=
@@ -1012,6 +1052,9 @@ public:
 			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			"uniform lowp int uScreenSpaceTriangle;	\n"
+			"uniform lowp int uCvgDest; \n"
+			"uniform lowp int uForceBlendAlpha; \n"
+
 		;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -2630,13 +2673,14 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		m_callDither->write(ssShader);
 
 	if (config.generalEmulation.enableLegacyBlending == 0) {
-		if (g_cycleType <= G_CYC_2CYCLE)
+		if (g_cycleType <= G_CYC_2CYCLE) {
 			m_blender1->write(ssShader);
-		if (g_cycleType == G_CYC_2CYCLE)
-			m_blender2->write(ssShader);
-
-		if (g_cycleType >= G_CYC_COPY)
+			if (g_cycleType == G_CYC_2CYCLE)
+				m_blender2->write(ssShader);
+			m_blenderAlpha->write(ssShader);
+		} else
 			ssShader << "  fragColor = clampedColor;" << std::endl;
+
 	}
 	else {
 		ssShader << "  fragColor = clampedColor;" << std::endl;
@@ -2853,6 +2897,7 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart 
 CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
 : m_blender1(new ShaderBlender1(_glinfo))
 , m_blender2(new ShaderBlender2(_glinfo))
+, m_blenderAlpha (new ShaderBlenderAlpha)
 , m_legacyBlender(new ShaderLegacyBlender)
 , m_clamp(new ShaderClamp)
 , m_signExtendColorC(new ShaderSignExtendColorC)

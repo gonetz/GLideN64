@@ -487,7 +487,9 @@ void GraphicsDrawer::_setBlendMode() const
 
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
 		BlendParam srcFactor = blend::ONE;
-		BlendParam dstFactor = blend::SRC1_ALPHA;
+		BlendParam dstFactor = blend::SRC1_COLOR;
+		BlendParam srcFactorAlpha = blend::ONE;
+		BlendParam dstFactorAlpha = blend::SRC1_ALPHA;
 		if (gDP.otherMode.forceBlender != 0) {
 			if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
 				if (gDP.otherMode.c2_m2a != 1 && gDP.otherMode.c2_m2b == 1) {
@@ -511,7 +513,7 @@ void GraphicsDrawer::_setBlendMode() const
 			dstFactor = blend::ONE;
 		}
 		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(srcFactor, dstFactor);
+		gfxContext.setBlendingSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
 	} else {
 		gfxContext.enable(enable::BLEND, false);
 	}

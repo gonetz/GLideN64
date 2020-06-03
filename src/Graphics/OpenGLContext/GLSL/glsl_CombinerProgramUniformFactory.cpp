@@ -378,6 +378,24 @@ private:
 	iUniform uForceBlendCycle2;
 };
 
+class UBlendCvg : public UniformGroup
+{
+public:
+	UBlendCvg(GLuint _program) {
+		LocateUniform(uCvgDest);
+		LocateUniform(uForceBlendAlpha);
+	}
+
+	void update(bool _force) override 
+	{
+		uCvgDest.set(gDP.otherMode.cvgDest, _force);
+		uForceBlendAlpha.set(gDP.otherMode.forceBlender, _force);
+	}
+private:
+	iUniform uCvgDest;
+	iUniform uForceBlendAlpha;
+};
+
 class UDitherMode : public UniformGroup
 {
 public:
@@ -1101,6 +1119,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 			break;
 		}
 	}
+
+	_uniforms.emplace_back(new UBlendCvg(_program));
 
 	_uniforms.emplace_back(new UDitherMode(_program, _inputs.usesNoise()));
 
