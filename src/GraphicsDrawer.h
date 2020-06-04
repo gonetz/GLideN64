@@ -174,6 +174,7 @@ private:
 	void _setSpecialTexrect() const;
 
 	void _setBlendMode() const;
+	void _oldSetBlendMode() const;
 	void _updateCullFace() const;
 	void _updateViewport() const;
 	void _updateScreenCoordsViewport(const FrameBuffer * _pBuffer = nullptr) const;

@@ -515,7 +515,7 @@ public:
 			if (_glinfo.noPerspective)
 				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl;
 			if (_glinfo.blend_func_extended)
-				ss << "#extension GL_ARB_blend_func_extended : enable" << std::endl;
+				ss << "#extension GL_EXT_blend_func_extended : enable" << std::endl;
 			if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast) {
 				if (_glinfo.imageTextures && _glinfo.fragment_interlockNV) {
 					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
@@ -530,8 +530,6 @@ public:
 		} else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
-			if (_glinfo.blend_func_extended)
-				ss << "#extension ARB_blend_func_extended : enable" << std::endl;
 			if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 				if (_glinfo.imageTextures) {
 					if (_glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
@@ -595,7 +593,7 @@ public:
 				;
 		} else {
 			m_part +=
-				"  fragColor = vec4(srcColor1.rgb, 1.0 - dstFactor1);	\n"
+				"  fragColor = vec4(srcColor1.rgb, clampedColor.a);	\n"
 				;
 		}
 #else
@@ -647,7 +645,7 @@ public:
 				;
 		} else {
 			m_part +=
-				"  fragColor =  vec4(srcColor2.rgb, 1.0 - dstFactor2);	\n"
+				"  fragColor =  vec4(srcColor2.rgb, clampedColor.a);	\n"
 				;
 		}
 			
@@ -670,8 +668,9 @@ public:
 class ShaderBlenderAlpha : public ShaderPart
 {
 public:
-	ShaderBlenderAlpha()
+	ShaderBlenderAlpha(const opengl::GLInfo & _glinfo)
 	{
+		if (_glinfo.blend_func_extended) 
 		m_part +=
 			"lowp float cvg = clampedColor.a;						\n"
 			"lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);			\n"
@@ -2876,7 +2875,7 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart 
 CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
 : m_blender1(new ShaderBlender1(_glinfo))
 , m_blender2(new ShaderBlender2(_glinfo))
-, m_blenderAlpha (new ShaderBlenderAlpha)
+, m_blenderAlpha (new ShaderBlenderAlpha(_glinfo))
 , m_legacyBlender(new ShaderLegacyBlender)
 , m_clamp(new ShaderClamp)
 , m_signExtendColorC(new ShaderSignExtendColorC)

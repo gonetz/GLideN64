@@ -369,6 +369,33 @@ public:
 		const int forceBlend2 = gDP.otherMode.forceBlender;
 		uForceBlendCycle2.set(forceBlend2, _force);
 
+		if (!graphics::Context::SeparateBlending) {
+			// Modes, which shader blender can't emulate
+			const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
+			switch (mode) {
+			case 0x0040:
+				// Mia Hamm Soccer
+				// clr_in * a_in + clr_mem * (1-a)
+				// clr_in * a_in + clr_in * (1-a)
+			case 0x0050:
+				// A Bug's Life
+				// clr_in * a_in + clr_mem * (1-a)
+				// clr_in * a_in + clr_mem * (1-a)
+				uForceBlendCycle1.set(0, _force);
+				uForceBlendCycle2.set(0, _force);
+				break;
+			case 0x0150:
+				// Tony Hawk
+				// clr_in * a_in + clr_mem * (1-a)
+				// clr_in * a_fog + clr_mem * (1-a_fog)
+				if ((config.generalEmulation.hacks & hack_TonyHawk) != 0) {
+					uForceBlendCycle1.set(0, _force);
+					uForceBlendCycle2.set(0, _force);
+				}
+				break;
+			}
+		}
+
 	}
 
 private:
