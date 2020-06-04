@@ -514,7 +514,7 @@ public:
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			if (_glinfo.noPerspective)
 				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl;
-			if (_glinfo.blend_func_extended)
+			if (_glinfo.dual_source_blending)
 				ss << "#extension GL_EXT_blend_func_extended : enable" << std::endl;
 			if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast) {
 				if (_glinfo.imageTextures && _glinfo.fragment_interlockNV) {
@@ -586,7 +586,7 @@ public:
 			"    dstFactor1 = muxaf;									\n"
 			"  }														\n"
 			;	
-		if (_glinfo.blend_func_extended) {
+		if (_glinfo.dual_source_blending) {
 			m_part +=
 				"  fragColor = srcColor1;								\n"
 				"  fragColor1 = vec4(dstFactor1);						\n"
@@ -638,7 +638,7 @@ public:
 			"    dstFactor2 = muxaf;									\n"
 			"  }														\n"
 			;
-		if (_glinfo.blend_func_extended) {
+		if (_glinfo.dual_source_blending) {
 			m_part +=
 				"  fragColor = srcColor2;								\n"
 				"  fragColor1 = vec4(dstFactor2);						\n"
@@ -670,7 +670,7 @@ class ShaderBlenderAlpha : public ShaderPart
 public:
 	ShaderBlenderAlpha(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.blend_func_extended) 
+		if (_glinfo.dual_source_blending)
 		m_part +=
 			"lowp float cvg = clampedColor.a;						\n"
 			"lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);			\n"
@@ -990,7 +990,7 @@ public:
 		m_part +=
 			"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"
 			;
-		if (_glinfo.blend_func_extended) {
+		if (_glinfo.dual_source_blending) {
 			m_part +=
 				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;   \n"
 				;
@@ -1078,7 +1078,7 @@ public:
 		m_part +=
 			"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"
 			;
-		if (_glinfo.blend_func_extended) {
+		if (_glinfo.dual_source_blending) {
 			m_part +=
 				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;   \n"
 				;

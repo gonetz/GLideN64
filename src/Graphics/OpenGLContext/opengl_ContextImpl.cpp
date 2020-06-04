@@ -520,8 +520,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.eglImage;
 	case graphics::SpecialFeatures::EglImageFramebuffer:
 		return m_glInfo.eglImageFramebuffer;
-	case graphics::SpecialFeatures::SeparateBlending:
-		return m_glInfo.blend_func_extended;
+	case graphics::SpecialFeatures::DualSourceBlending:
+		return m_glInfo.dual_source_blending;
 	}
 	return false;
 }

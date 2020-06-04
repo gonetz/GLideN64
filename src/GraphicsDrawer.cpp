@@ -643,7 +643,7 @@ void GraphicsDrawer::_setBlendMode() const
 		return;
 	}
 
-	if (!Context::SeparateBlending) {
+	if (!Context::DualSourceBlending) {
 		_oldSetBlendMode();
 		return;
 	}
