@@ -369,7 +369,7 @@ public:
 		const int forceBlend2 = gDP.otherMode.forceBlender;
 		uForceBlendCycle2.set(forceBlend2, _force);
 
-		if (!graphics::Context::DualSourceBlending) {
+		if (!graphics::Context::DualSourceBlending || dwnd().getDrawer().isTexrectDrawerMode()) {
 			// Modes, which shader blender can't emulate
 			const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
 			switch (mode) {
@@ -410,17 +410,20 @@ class UBlendCvg : public UniformGroup
 public:
 	UBlendCvg(GLuint _program) {
 		LocateUniform(uCvgDest);
-		LocateUniform(uForceBlendAlpha);
+		LocateUniform(uBlendAlphaMode);
 	}
 
-	void update(bool _force) override 
+	void update(bool _force) override
 	{
 		uCvgDest.set(gDP.otherMode.cvgDest, _force);
-		uForceBlendAlpha.set(gDP.otherMode.forceBlender, _force);
+		if (dwnd().getDrawer().isTexrectDrawerMode())
+			uBlendAlphaMode.set(2, _force); // No alpha blend in texrect drawing mode
+		else
+			uBlendAlphaMode.set(gDP.otherMode.forceBlender, _force);
 	}
 private:
 	iUniform uCvgDest;
-	iUniform uForceBlendAlpha;
+	iUniform uBlendAlphaMode;
 };
 
 class UDitherMode : public UniformGroup
@@ -1000,7 +1003,7 @@ public:
 			CachedTexture * pTexture = cache.current[tile];
 			if (pTile == nullptr || pTexture == nullptr)
 				continue;
-			
+
 			aTexSize[t][0] = pTexture->width * pTexture->hdRatioS;
 			aTexSize[t][1] = pTexture->height * pTexture->hdRatioT;
 
@@ -1045,7 +1048,7 @@ public:
 		uTexMirrorEn1.set(aTexMirrorEn[1][0], aTexMirrorEn[1][1], _force);
 		uTexSize0.set(aTexSize[0][0], aTexSize[0][1], _force);
 		uTexSize1.set(aTexSize[1][0], aTexSize[1][1], _force);
-				
+
 	}
 
 private:

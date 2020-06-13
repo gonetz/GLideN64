@@ -585,7 +585,7 @@ public:
 			"    srcColor1 = muxp;										\n"
 			"    dstFactor1 = muxaf;									\n"
 			"  }														\n"
-			;	
+			;
 		if (_glinfo.dual_source_blending) {
 			m_part +=
 				"  fragColor = srcColor1;								\n"
@@ -648,7 +648,7 @@ public:
 				"  fragColor =  vec4(srcColor2.rgb, clampedColor.a);	\n"
 				;
 		}
-			
+
 #else
 		// Keep old code for reference
 		m_part =
@@ -672,13 +672,15 @@ public:
 	{
 		if (_glinfo.dual_source_blending)
 		m_part +=
-			"lowp float cvg = clampedColor.a;						\n"
-			"lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);			\n"
-			"lowp vec4 dstFactorAlpha = vec4(1.0, 1.0, 0.0, 1.0);	\n"
-			"if (uForceBlendAlpha == 0)								\n"
-			"  dstFactorAlpha[0] = 0.0;								\n"
-			"fragColor.a = srcAlpha[uCvgDest];						\n"
-			"fragColor1.a = dstFactorAlpha[uCvgDest];				\n"
+			"if (uBlendAlphaMode != 2) {							\n"
+			"  lowp float cvg = clampedColor.a;						\n"
+			"  lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);		\n"
+			"  lowp vec4 dstFactorAlpha = vec4(1.0, 1.0, 0.0, 1.0);	\n"
+			"  if (uBlendAlphaMode == 0)							\n"
+			"    dstFactorAlpha[0] = 0.0;							\n"
+			"  fragColor.a = srcAlpha[uCvgDest];					\n"
+			"  fragColor1.a = dstFactorAlpha[uCvgDest];				\n"
+			"} else fragColor.a = clampedColor.a;					\n"
 			;
 	}
 };
@@ -933,7 +935,7 @@ public:
 			"highp vec2 tcData0[5];					\n"
 			"highp vec2 tcData1[5];					\n"
 			"uniform lowp int uCvgDest;				\n"
-			"uniform lowp int uForceBlendAlpha;		\n"
+			"uniform lowp int uBlendAlphaMode;		\n"
 			;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -1034,7 +1036,7 @@ public:
 			"uniform mediump vec2 uScreenScale;		\n"
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"uniform lowp int uCvgDest; \n"
-			"uniform lowp int uForceBlendAlpha; \n"
+			"uniform lowp int uBlendAlphaMode; \n"
 
 		;
 
@@ -1094,7 +1096,7 @@ public:
 				"layout(location = 1) inout highp vec4 depthZ;	\n"
 				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
 				;
-		} 
+		}
 	}
 };
 
@@ -1320,7 +1322,7 @@ public:
 						"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);														\\\n"
 						"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);														\\\n"
 						"  name = c0 + tcData[4].t * (c1-c0);																	\\\n"
-						"  if(uEnableAlphaTest == 1)  name.rgb /= name.a;														\\\n" 
+						"  if(uEnableAlphaTest == 1)  name.rgb /= name.a;														\\\n"
 						"}																										\n"
 						;
 				break;
