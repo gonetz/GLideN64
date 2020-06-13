@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "RSP.h"
 #include "GBI.h"
 
