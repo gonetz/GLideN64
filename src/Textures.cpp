@@ -672,7 +672,7 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, u1
 
 	_pTexture->scaleS = 1.0f / (_pTexture->maskS ? f32(pow2(widthOrg)) : f32(widthOrg));
 	_pTexture->scaleT = 1.0f / (_pTexture->maskT ? f32(pow2(heightOrg)) : f32(heightOrg));
-	
+
 	_pTexture->hdRatioS = f32(_info.width / _pTexture->width);
 	_pTexture->hdRatioT = f32(_info.height / _pTexture->height);
 
@@ -1449,24 +1449,29 @@ void TextureCache::_clear()
 
 void TextureCache::update(u32 _t)
 {
-	if (config.textureFilter.txHiresEnable != 0 && config.textureFilter.txDump != 0) {
-		/* Force reload hi-res textures. Useful for texture artists */
-		if (isKeyPressed(G64_VK_R, 0x0001)) {
-			if (txfilter_reloadhirestex()) {
-				_clear();
+	if (config.textureFilter.txHiresEnable != 0) {
+		if (config.textureFilter.txReloadHiresTex != 0) {
+			/* Force reload hi-res textures. Useful for texture artists */
+			if (isKeyPressed(G64_VK_R, 0x0001)) {
+				if (txfilter_reloadhirestex()) {
+					_clear();
+				}
 			}
 		}
-		/* Turn on texture dump */
-		else if (isKeyPressed(G64_VK_D, 0x0001)) {
-			m_toggleDumpTex = !m_toggleDumpTex;
-			if (m_toggleDumpTex) {
-				displayLoadProgress(L"Texture dump - ON\n");
-				_clear();
-				std::this_thread::sleep_for(std::chrono::seconds(1));
-			}
-			else {
-				displayLoadProgress(L"Texture dump - OFF\n");
-				std::this_thread::sleep_for(std::chrono::seconds(1));
+
+		if (config.textureFilter.txDump != 0) {
+			/* Turn on texture dump */
+			if (isKeyPressed(G64_VK_D, 0x0001)) {
+				m_toggleDumpTex = !m_toggleDumpTex;
+				if (m_toggleDumpTex) {
+					displayLoadProgress(L"Texture dump - ON\n");
+					_clear();
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+				}
+				else {
+					displayLoadProgress(L"Texture dump - OFF\n");
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+				}
 			}
 		}
 	}
