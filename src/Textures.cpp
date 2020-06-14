@@ -1257,11 +1257,15 @@ u64 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 		_bytes >>= 1;
 	const u32 tMemMask = (gDP.otherMode.textureLUT == G_TT_NONE && !rgba32) ? 0x1FF : 0xFF;
 	const u64 *src = (u64*)&TMEM[gSP.textureTile[_t]->tmem & tMemMask];
+	const u32 maxBytes = (tMemMask + 1) << 3;
+	const u32 tileTmemInBytes = gSP.textureTile[_t]->tmem << 3;
+	if (!rgba32 && (tileTmemInBytes + _bytes > maxBytes))
+		_bytes = maxBytes - tileTmemInBytes;
 	u64 crc = UINT64_MAX;
 	crc = CRC_Calculate(crc, src, _bytes);
 
 	if (rgba32) {
-		src = (u64*)&TMEM[gSP.textureTile[_t]->tmem + 256];
+		src = (u64*)&TMEM[(gSP.textureTile[_t]->tmem + 256) & 0x1FF];
 		crc = CRC_Calculate(crc, src, _bytes);
 	}
 
