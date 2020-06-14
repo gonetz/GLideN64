@@ -239,6 +239,7 @@ LANG_STR GetNextLangString(FILE * file)
 		return LANG_STR(0, "");
 
 	char token = 0;
+	char prevtoken = 0;
 	while (token != '#' && !feof(file))
 		fread(&token, 1, 1, file);
 
@@ -263,16 +264,25 @@ LANG_STR GetNextLangString(FILE * file)
 
 	fread(&token, 1, 1, file);
 	std::string text;
-	while (token != '"' && !feof(file)) {
+	while (!feof(file)) {
+		if (token == '"' && prevtoken != '\\') break; //escape quote
+		prevtoken = token;
 		text += token;
 		fread(&token, 1, 1, file);
 	}
 
-	std::string::size_type pos = text.find("\\n");
+	std::string::size_type pos;
+	pos = text.find("\\n"); //unescape line breaks
 	while (pos != std::string::npos) {
 		text.replace(pos, 2, "\n");
 		pos = text.find("\\n", pos + 1);
 	}
+	pos = text.find("\\\""); //unescape quotes
+	while (pos != std::string::npos) {
+		text.replace(pos, 2, "\"");
+		pos = text.find("\\\"", pos + 1);
+	}
+
 	return LANG_STR(StringID, text);
 }
 
