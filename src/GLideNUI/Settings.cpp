@@ -161,17 +161,16 @@ void loadSettings(const QString & _strIniFolder)
 			settings.beginGroup(strUserProfile);
 			writeSettings(_strIniFolder);
 			settings.endGroup();
-		} else {
-			QString profile = settings.value("profile", strUserProfile).toString();
-			if (settings.childGroups().indexOf(profile) >= 0) {
-				settings.beginGroup(profile);
-				_loadSettings(settings);
-				settings.endGroup();
-			} else
-				rewriteSettings = true;
-			if (config.version != CONFIG_VERSION_CURRENT)
-				rewriteSettings = true;
 		}
+		QString profile = settings.value("profile", strUserProfile).toString();
+		if (settings.childGroups().indexOf(profile) >= 0) {
+			settings.beginGroup(profile);
+			_loadSettings(settings);
+			settings.endGroup();
+		} else
+			rewriteSettings = true;
+		if (config.version != CONFIG_VERSION_CURRENT)
+			rewriteSettings = true;
 	}
 	if (rewriteSettings) {
 		// Keep settings up-to-date
