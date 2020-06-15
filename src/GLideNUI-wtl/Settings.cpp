@@ -163,18 +163,17 @@ void loadSettings(const char * _strIniFolder)
 			settings.beginGroup(strUserProfile);
 			writeSettings(_strIniFolder);
 			settings.endGroup();
-		} else {
-			std::string profile = settings.value("profile", strUserProfile).toString();
-			GlSettings::sections childGroups = settings.childGroups();
-			if (childGroups.find(profile.c_str()) != childGroups.end()) {
-				settings.beginGroup(profile.c_str());
-				_loadSettings(settings);
-				settings.endGroup();
-			} else
-				rewriteSettings = true;
-			if (config.version != CONFIG_VERSION_CURRENT)
-				rewriteSettings = true;
 		}
+		std::string profile = settings.value("profile", strUserProfile).toString();
+		GlSettings::sections childGroups = settings.childGroups();
+		if (childGroups.find(profile.c_str()) != childGroups.end()) {
+			settings.beginGroup(profile.c_str());
+			_loadSettings(settings);
+			settings.endGroup();
+		} else
+			rewriteSettings = true;
+		if (config.version != CONFIG_VERSION_CURRENT)
+			rewriteSettings = true;
 	}
 	if (rewriteSettings) {
 		// Keep settings up-to-date
