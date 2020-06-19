@@ -1,4 +1,3 @@
-#include "GLideN64_Windows.h"
 #include "../N64.h"
 #include "../Config.h"
 #include "../RSP.h"
