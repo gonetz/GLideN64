@@ -250,7 +250,7 @@ struct Config
 extern Config config;
 
 void Config_LoadConfig();
-#ifndef MUPENPLUSAPI
+#if defined(M64P_GLIDENUI) || !defined(MUPENPLUSAPI)
 void Config_DoConfig(/*HWND hParent*/);
 #endif
 
