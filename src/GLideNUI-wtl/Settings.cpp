@@ -8,7 +8,7 @@
 
 #include "Settings.h"
 #include "GlSettings.h"
-#include "util.h"
+#include "util/util.h"
 #include <algorithm>
 #include <memory>
 
