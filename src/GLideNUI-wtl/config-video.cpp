@@ -1,6 +1,6 @@
 #include "config-video.h"
 #include "FullscreenResolutions.h"
-#include "util.h"
+#include "util/util.h"
 #include "Language.h"
 #include "ConfigDlg.h"
 #include "../Config.h"
