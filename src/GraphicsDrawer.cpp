@@ -302,7 +302,7 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 		viewportScaleX = viewportScaleY = pCurrentBuffer->m_scale;
 		X = roundup(f32(pCurrentBuffer->m_originX), viewportScaleX);
 		Y = roundup(f32(pCurrentBuffer->m_originY), viewportScaleY);
-		if (RSP.LLE) {
+		if (RSP.LLE || gSP.viewport.width == 0) {
 			gSP.viewport.width = f32(bufferWidth);
 			gSP.viewport.height = f32(bufferHeight);
 		}
