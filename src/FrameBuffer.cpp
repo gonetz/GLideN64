@@ -1352,12 +1352,14 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	blitParams.dstY1 = m_vOffset + wnd.getHeight() + wnd.getHeightOffset();
 	blitParams.dstWidth = wnd.getScreenWidth();
 	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
-	blitParams.filter = config.generalEmulation.enableHybridFilter > 0 ?
-		textureParameters::FILTER_LINEAR :
-		textureParameters::FILTER_NEAREST;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = m_pTexture;
-	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
+	const bool downscale = config.frameBufferEmulation.nativeResFactor != 1 &&
+		blitParams.srcWidth >= blitParams.dstWidth &&
+		blitParams.srcHeight >= blitParams.dstHeight;
+	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter == 0 ?
+		textureParameters::FILTER_NEAREST :
+		textureParameters::FILTER_LINEAR;
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = m_pDepthTexture;
 		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
@@ -1527,15 +1529,17 @@ void FrameBufferList::renderBuffer()
 	blitParams.dstY1 = dstCoord[3];
 	blitParams.dstWidth = m_overscan.getBufferWidth();
 	blitParams.dstHeight = m_overscan.getBufferHeight();
-	blitParams.filter = config.generalEmulation.enableHybridFilter > 0 ?
-		textureParameters::FILTER_LINEAR :
-		textureParameters::FILTER_NEAREST;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
-	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
+	const bool downscale = config.frameBufferEmulation.nativeResFactor != 1 &&
+							blitParams.srcWidth >= blitParams.dstWidth &&
+							blitParams.srcHeight >= blitParams.dstHeight;
+	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter == 0 ?
+		textureParameters::FILTER_NEAREST :
+		textureParameters::FILTER_LINEAR;
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = pBuffer->m_pDepthTexture;
-		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram():
+		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
 			CombinerInfo::get().getTexrectColorAndDepthUpscaleCopyProgram();
 	}
 	if (blitParams.combiner == nullptr) {
