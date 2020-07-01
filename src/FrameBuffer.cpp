@@ -1469,7 +1469,7 @@ void FrameBufferList::renderBuffer()
 
 	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
 	const f32 srcScaleX = pFilteredBuffer->m_scale;
-	const f32 dstScaleX = dwnd().getWidth() / (640 * viScaleX);
+	const f32 dstScaleX = m_overscan.getDrawingWidth() / (640 * viScaleX);
 	const s32 hx0 = rdpRes.vi_h_start + rdpRes.vi_minhpass;
 	const s32 h0 = (rdpRes.vi_ispal ? 128 : 108);
 	const s32 hEnd = _SHIFTR(*REG.VI_H_START, 0, 10);
