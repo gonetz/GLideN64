@@ -23,7 +23,7 @@ endif()
 
 target_sources(osal PRIVATE ${osal_Private_Sources})
 target_include_directories(osal PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/..)
-target_link_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+link_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set_target_properties(osal
                       PROPERTIES
                       CXX_STANDARD 11
