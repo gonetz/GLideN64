@@ -416,7 +416,7 @@ endif()
 #########################################################
 target_sources(GLideN64 PRIVATE  ${GlideN64_Private_Source} ${GLideN64_SOURCES})
 target_compile_definitions(GLideN64 PRIVATE ${GlideN64_Private_Compile_Definitions})
-target_link_directories(GLideN64 PRIVATE ${GlideN64_Private_Link_Directories})
+link_directories(GLideN64 PRIVATE ${GlideN64_Private_Link_Directories})
 target_link_options(GLideN64 PRIVATE ${GlideN64_Private_Link_Options})
 target_link_libraries(GLideN64 PRIVATE ${GlideN64_Private_Link_Libraries})
 target_include_directories(GLideN64 PRIVATE ${GlideN64_Private_Include_Directories})
