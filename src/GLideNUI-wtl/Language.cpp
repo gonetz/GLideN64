@@ -320,9 +320,11 @@ void LoadCurrentStrings(const char * path, const std::string & lang)
 		{
 			return;
 		}
-	} // default: attempt to use gliden64_en.Lang
-	std::string langFile = translationsFolder + "gliden64_en.Lang";
-	LoadLanguageFile(langFile);
+	}
+	if (g_defaultStrings.size() == 0)
+		LoadDefaultStrings();
+
+	g_currentStrings.clear();
 }
 
 
@@ -375,7 +377,7 @@ LanguageList GetLanguageList(const char * path)
 			file.Filename = FindData.cFileName;
 			file.LanguageName = GetLangString(langFile.c_str(), LANGUAGE_NAME);
 
-			if (file.LanguageName.length() == 0)
+			if (file.LanguageName.length() == 0 || file.LanguageName == stdstr().FromUTF16(L"English"))
 				continue;
 
 			languages.push_back(file);
