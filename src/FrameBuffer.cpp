@@ -1358,8 +1358,8 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 		blitParams.srcWidth >= blitParams.dstWidth &&
 		blitParams.srcHeight >= blitParams.dstHeight;
 	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter == 0 ?
-		textureParameters::FILTER_NEAREST :
-		textureParameters::FILTER_LINEAR;
+		textureParameters::FILTER_LINEAR :
+		textureParameters::FILTER_NEAREST;
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = m_pDepthTexture;
 		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
@@ -1535,8 +1535,8 @@ void FrameBufferList::renderBuffer()
 							blitParams.srcWidth >= blitParams.dstWidth &&
 							blitParams.srcHeight >= blitParams.dstHeight;
 	blitParams.filter = downscale || config.generalEmulation.enableHybridFilter == 0 ?
-		textureParameters::FILTER_NEAREST :
-		textureParameters::FILTER_LINEAR;
+		textureParameters::FILTER_LINEAR :
+		textureParameters::FILTER_NEAREST;
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = pBuffer->m_pDepthTexture;
 		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
