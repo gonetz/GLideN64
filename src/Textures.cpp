@@ -1083,8 +1083,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	if (_loadHiresTexture(_tile, _pTexture, ricecrc))
 		return;
 
-	u32 *pDest;
-
 	u16 line;
 	GetTexelFunc GetTexel;
 	InternalColorFormatParam glInternalFormat;
@@ -1107,8 +1105,28 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		glType = loadParams.glType16;
 	}
 
-	pDest = (u32*)malloc(_pTexture->textureBytes);
-	assert(pDest != nullptr);
+	// RAII holder for texture data
+	class TexData
+	{
+	public:
+		TexData(u32 bytes)
+		{
+			pData = (u32*)malloc(bytes);
+			assert(pData != NULL);
+		}
+		~TexData()
+		{
+			free(pData);
+			pData = NULL;
+		}
+		u32 * get() const
+		{
+			return pData;
+		}
+	private:
+		u32 *pData = NULL;
+	} texData(_pTexture->textureBytes);
+
 
 	s32 mipLevel = 0;
 	_pTexture->max_level = 0;
@@ -1131,18 +1149,17 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	line = tmptex.line;
 
 	while (true) {
-		_getTextureDestData(tmptex, pDest, glInternalFormat, GetTexel, &line);
+		_getTextureDestData(tmptex, texData.get(), glInternalFormat, GetTexel, &line);
 
 		if ((config.generalEmulation.hacks&hack_LoadDepthTextures) != 0 && gDP.colorImage.address == gDP.depthImageAddress) {
-			_loadDepthTexture(_pTexture, (u16*)pDest);
-			free(pDest);
+			_loadDepthTexture(_pTexture, (u16*)texData.get());
 			return;
 		}
 
 		if (m_toggleDumpTex &&
 				config.textureFilter.txHiresEnable != 0 &&
 				config.textureFilter.txDump != 0) {
-			txfilter_dmptx((u8*)pDest, tmptex.width, tmptex.height,
+			txfilter_dmptx((u8*)texData.get(), tmptex.width, tmptex.height,
 					tmptex.width, (u16)u32(glInternalFormat),
 					(unsigned short)(_pTexture->format << 8 | _pTexture->size),
 					ricecrc);
@@ -1169,7 +1186,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 
 		if (needEnhance) {
 			GHQTexInfo ghqTexInfo;
-			if (txfilter_filter((u8*)pDest, tmptex.width, tmptex.height,
+			if (txfilter_filter((u8*)texData.get(), tmptex.width, tmptex.height,
 							(u16)u32(glInternalFormat), (uint64)_pTexture->crc,
 							&ghqTexInfo) != 0 && ghqTexInfo.data != nullptr) {
 				if (ghqTexInfo.width % 2 != 0 &&
@@ -1209,7 +1226,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			params.internalFormat = gfxContext.convertInternalTextureFormat(u32(glInternalFormat));
 			params.format = colorFormat::RGBA;
 			params.dataType = glType;
-			params.data = pDest;
+			params.data = texData.get();
 			gfxContext.init2DTexture(params);
 		}
 		if (mipLevel == _pTexture->max_level)
@@ -1235,7 +1252,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	}
 	if (m_curUnpackAlignment > 1)
 		gfxContext.setTextureUnpackAlignment(m_curUnpackAlignment);
-	free(pDest);
 }
 
 struct TextureParams
