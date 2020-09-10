@@ -1,10 +1,14 @@
-dist:     xenial
+dist:     bionic
 sudo:     false
 
 addons:
   apt:
     packages:
     - libgl1-mesa-dev
+    - cmake
+    sources:
+    - sourceline: 'deb https://apt.kitware.com/ubuntu/ bionic main'
+      key_url: 'https://apt.kitware.com/keys/kitware-archive-latest.asc'
 
 language: cpp
 
@@ -34,10 +38,15 @@ matrix:
           env: TARGET_CPU=x86 BUILD_CONFIGURATION=Release
 
 script:
+    #Travis CI thinks it's cute not to use the real package they spun thier own install in /usr/local/cmake
+    #Which blocks the real version
+    #See https://travis-ci.community/t/install-cmake-using-apt-again/4062
+    - real_cmake=cmake
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then real_cmake=/usr/bin/cmake; fi 
     - src/getRevision.sh
     - cd projects/cmake
-    - cmake -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU -DVEC4_OPT=On -DMUPENPLUSAPI=On ../../src/
-    - cmake --build .
+    - $real_cmake -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU -DVEC4_OPT=On -DMUPENPLUSAPI=On ../../src/
+    - $real_cmake --build .
     - cd ../../
 
 before_deploy:
