@@ -5,6 +5,7 @@ addons:
   apt:
     packages:
     - libgl1-mesa-dev
+    - qt5-default
 
 language: cpp
 
@@ -17,8 +18,8 @@ compiler:
     - clang
 
 env:
-    - TARGET_CPU=amd64 BUILD_CONFIGURATION=Debug
-    - TARGET_CPU=amd64 BUILD_CONFIGURATION=Release
+    - TARGET_CPU=amd64 BUILD_CONFIGURATION=Debug GLIDENUI=On
+    - TARGET_CPU=amd64 BUILD_CONFIGURATION=Release GLIDENUI=On
     # - TARGET_CPU=x86 BUILD_CONFIGURATION=Debug
     # - TARGET_CPU=x86 BUILD_CONFIGURATION=Release
 
@@ -36,7 +37,8 @@ matrix:
 script:
     - src/getRevision.sh
     - cd projects/cmake
-    - cmake -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU -DVEC4_OPT=On -DMUPENPLUSAPI=On ../../src/
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export GLIDENUI=Off; fi
+    - cmake -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU -DVEC4_OPT=On -DMUPENPLUSAPI=On -DMUPENPLUSAPI_GLIDENUI=$GLIDENUI ../../src/
     - cmake --build .
     - cd ../../
 
