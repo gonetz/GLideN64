@@ -29,27 +29,28 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool &
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
 		loadCustomRomSettings(strIniFileName, _romName);
 
-#ifndef M64P_GLIDENUI
-	int argc = 0;
-	char * argv = 0;
-	QApplication a(argc, &argv);
+	std::unique_ptr<QApplication> pQApp;
+	QCoreApplication* pApp = QCoreApplication::instance();
+
+	if (pApp == nullptr) {
+		int argc = 0;
+		char * argv = 0;
+		pQApp.reset(new QApplication(argc, &argv));
+		pApp = pQApp.get();
+	}
 
 	QTranslator translator;
 	if (translator.load(getTranslationFile(), strIniFileName))
-		a.installTranslator(&translator);
-#endif // M64P_GLIDENUI
+		pApp->installTranslator(&translator);
 
 	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
 
 	w.setIniPath(strIniFileName);
 	w.setRomName(_romName);
 	w.setTitle();
-#ifndef M64P_GLIDENUI
 	w.show();
-	const int res = a.exec();
-#else
-	const int res = w.exec();
-#endif // M64P_GLIDENUI
+
+	int res = pQApp ? pQApp->exec() : w.exec();
 	_accepted = w.isAccepted();
 	return res;
 }
