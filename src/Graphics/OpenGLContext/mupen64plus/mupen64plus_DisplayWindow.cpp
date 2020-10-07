@@ -32,6 +32,7 @@ private:
 
 	bool _start() override;
 	void _stop() override;
+	void _restart() override;
 	void _swapBuffers() override;
 	void _saveScreenshot() override;
 	void _saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture) override;
@@ -130,6 +131,19 @@ void DisplayWindowMupen64plus::_stop()
 	FunctionWrapper::CoreVideo_Quit();
 }
 
+void DisplayWindowMupen64plus::_restart()
+{
+#ifdef M64P_GLIDENUI
+	if (_supportsWithRateFunctions && m_bFullscreen) {
+		m_resizeWidth = config.video.fullscreenWidth;
+		m_resizeHeight = config.video.fullscreenHeight;
+	} else {
+		m_resizeWidth = config.video.windowedWidth;
+		m_resizeHeight = config.video.windowedHeight;
+	}
+#endif // M64P_GLIDENUI
+}
+
 void DisplayWindowMupen64plus::_swapBuffers()
 {
 	// if emulator defined a render callback function, call it before buffer swap
@@ -170,14 +184,6 @@ bool DisplayWindowMupen64plus::_resizeWindow()
 
 	if (!_supportsWithRateFunctions)
 		m_bFullscreen = false;
-
-	if (m_bFullscreen) {
-		m_resizeWidth = config.video.fullscreenWidth;
-		m_resizeHeight = config.video.fullscreenHeight;
-	} else {
-		m_resizeWidth = config.video.windowedWidth;
-		m_resizeHeight = config.video.windowedHeight;
-	}
 
 	if (_supportsWithRateFunctions) {
 		m64p_video_flags flags = {};

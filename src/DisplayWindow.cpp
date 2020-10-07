@@ -31,6 +31,7 @@ void DisplayWindow::stop()
 
 void DisplayWindow::restart()
 {
+	_restart();
 	m_bResizeWindow = true;
 }
 
