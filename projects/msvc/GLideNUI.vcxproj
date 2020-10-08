@@ -30,7 +30,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
-    <PlatformToolSet>$(DefaultPlatformToolset)</PlatformToolSet>
+    <PlatformToolSet Condition="'$(PlatformToolset)'=='' or '$(PlatformToolset)'=='v100'">$(DefaultPlatformToolset)</PlatformToolSet>
     <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
     <CharacterSet>NotSet</CharacterSet>
     <ConfigurationType>StaticLibrary</ConfigurationType>

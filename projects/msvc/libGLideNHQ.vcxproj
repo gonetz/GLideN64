@@ -32,7 +32,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolSet>$(DefaultPlatformToolset)</PlatformToolSet>
+    <PlatformToolSet Condition="'$(PlatformToolset)'=='' or '$(PlatformToolset)'=='v100'">$(DefaultPlatformToolset)</PlatformToolSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
