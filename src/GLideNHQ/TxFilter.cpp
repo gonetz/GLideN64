@@ -129,6 +129,11 @@ TxFilter::TxFilter(int maxwidth,
 	if (ident && wcscmp(ident, wst("DEFAULT")) != 0)
 		_ident.assign(ident);
 
+	/* replace : in rom names with -*/
+	std::wstring replace = L"-";
+	for (size_t pos = _ident.find(':'); pos != std::string::npos; pos = _ident.find(':', pos))
+		_ident.replace(pos, 1, replace);
+
 	if (TxMemBuf::getInstance()->init(_maxwidth, _maxheight)) {
 		if (!_tex1)
 			_tex1 = TxMemBuf::getInstance()->get(0);
