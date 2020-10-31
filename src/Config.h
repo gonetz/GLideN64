@@ -215,6 +215,20 @@ struct Config
 		u32 pos;
 	} onScreenDisplay;
 
+	enum HotKey {
+		hkTexDump = 0,
+		hkHdTexReload,
+		hkHdTexToggle,
+		hkVsyncToggle,
+		hkFBEmulationToggle,
+		hkN64DepthCompareToggle,
+		hkTotal
+	};
+
+	struct {
+		u8 keys[hkTotal];
+	} hotkeys;
+
 	struct {
 		u32 dumpMode;
 	} debug;

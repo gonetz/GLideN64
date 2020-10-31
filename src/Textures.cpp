@@ -1514,7 +1514,7 @@ void TextureCache::_updateBackground()
 	current[0] = pCurrent;
 }
 
-void TextureCache::_clear()
+void TextureCache::clear()
 {
 	current[0] = current[1] = nullptr;
 
@@ -1532,7 +1532,7 @@ void TextureCache::update(u32 _t)
 			/* Force reload hi-res textures. Useful for texture artists */
 			if (isKeyPressed(G64_VK_R, 0x0001)) {
 				if (txfilter_reloadhirestex()) {
-					_clear();
+					clear();
 				}
 			}
 		}
@@ -1543,7 +1543,7 @@ void TextureCache::update(u32 _t)
 				m_toggleDumpTex = !m_toggleDumpTex;
 				if (m_toggleDumpTex) {
 					displayLoadProgress(L"Texture dump - ON\n");
-					_clear();
+					clear();
 					std::this_thread::sleep_for(std::chrono::seconds(1));
 				}
 				else {

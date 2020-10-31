@@ -8,6 +8,7 @@
 #include "Config.h"
 #include "GBI.h"
 #include "wst.h"
+#include "osal_keys.h"
 
 void Config::resetToDefaults()
 {
@@ -132,6 +133,9 @@ void Config::resetToDefaults()
 	onScreenDisplay.fps = 0;
 	onScreenDisplay.percent = 0;
 	onScreenDisplay.pos = posBottomLeft;
+
+	hotkeys.keys[HotKey::hkTexDump] = KEY_D;
+	hotkeys.keys[HotKey::hkHdTexToggle] = KEY_T;
 
 	debug.dumpMode = 0;
 }

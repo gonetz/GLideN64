@@ -13,7 +13,8 @@
 #include "Performance.h"
 #include "Debugger.h"
 #include "DebugDump.h"
-#include "Keys.h"
+//#include "Keys.h"
+#include "osal_keys.h"
 #include "DisplayWindow.h"
 #include <Graphics/Context.h>
 
@@ -98,6 +99,22 @@ void VI_UpdateSize()
 	VI.rheight = VI.height != 0 ? 1.0f / VI.height : 0.0f;
 }
 
+static void checkHotkeys()
+{
+	if (osal_is_key_pressed(KEY_G, 0x0001)) {
+		SwitchDump(config.debug.dumpMode);
+	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkHdTexToggle], 0x0001)) {
+		if (config.textureFilter.txHiresEnable == 0)
+			dwnd().getDrawer().showMessage("Enable HD textures\n", Milliseconds(750));
+		else
+			dwnd().getDrawer().showMessage("Disable HD textures\n", Milliseconds(750));
+		config.textureFilter.txHiresEnable ^= 1;
+		textureCache().clear();
+	}
+}
+
 void VI_UpdateScreen()
 {
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
@@ -117,9 +134,10 @@ void VI_UpdateScreen()
 	wnd.saveScreenshot();
 	g_debugger.checkDebugState();
 
-	if (isKeyPressed(G64_VK_G, 0x0001)) {
-		SwitchDump(config.debug.dumpMode);
-	}
+	//if (isKeyPressed(G64_VK_G, 0x0001)) {
+	//	SwitchDump(config.debug.dumpMode);
+	//}
+	checkHotkeys();
 
 	bool bVIUpdated = false;
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
