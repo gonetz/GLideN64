@@ -3656,6 +3656,20 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="hotkeyTab">
+      <attribute name="title">
+       <string>Hotkey</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_45">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_40">
+         <item>
+          <widget class="QListWidget" name="hotkeyListWidget"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="debugTab">
       <attribute name="title">
        <string>Debug</string>

@@ -219,9 +219,9 @@ struct Config
 		hkTexDump = 0,
 		hkHdTexReload,
 		hkHdTexToggle,
-		hkVsyncToggle,
-		hkFBEmulationToggle,
-		hkN64DepthCompareToggle,
+		hkVsync,
+		hkFBEmulation,
+		hkN64DepthCompare,
 		hkTotal
 	};
 
@@ -235,6 +235,7 @@ struct Config
 
 	void resetToDefaults();
 	void validate();
+	static const char* hotkeyIniName(u32 _idx);
 };
 
 #define hack_Ogre64					(1<<0)  //Ogre Battle 64 background copy

@@ -138,6 +138,12 @@ void _loadSettings(QSettings & settings)
 	config.onScreenDisplay.pos = settings.value("osdPos", config.onScreenDisplay.pos).toInt();
 	settings.endGroup();
 
+	settings.beginGroup("hotkeys");
+	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
+		config.hotkeys.keys[idx] = settings.value(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]).toInt();
+	}
+	settings.endGroup();
+
 	settings.beginGroup("debug");
 	config.debug.dumpMode = settings.value("dumpMode", config.debug.dumpMode).toInt();
 	settings.endGroup();
@@ -302,6 +308,12 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("showInternalResolution", config.onScreenDisplay.internalResolution);
 	settings.setValue("showRenderingResolution", config.onScreenDisplay.renderingResolution);
 	settings.setValue("osdPos", config.onScreenDisplay.pos);
+	settings.endGroup();
+
+	settings.beginGroup("hotkeys");
+	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
+		settings.setValue(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]);
+	}
 	settings.endGroup();
 
 	settings.beginGroup("debug");

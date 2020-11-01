@@ -159,3 +159,23 @@ void Config::validate()
 			graphics2D.correctTexrectCoords = tcDisable;
 	}
 }
+
+const char* Config::hotkeyIniName(u32 _idx)
+{
+	switch (_idx)
+	{
+	case Config::HotKey::hkTexDump:
+		return "hkTexDump";
+	case Config::HotKey::hkHdTexReload:
+		return "hkHdTexReload";
+	case Config::HotKey::hkHdTexToggle:
+		return "hkHdTexToggle";
+	case Config::HotKey::hkVsync:
+		return "hkVsync";
+	case Config::HotKey::hkFBEmulation:
+		return "hkFBEmulation";
+	case Config::HotKey::hkN64DepthCompare:
+		return "hkN64DepthCompare";
+	}
+	return nullptr;
+}

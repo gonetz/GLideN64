@@ -123,6 +123,12 @@
     <CustomBuild Include="..\..\src\GLideNUI\icon.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <None Include="Debug\ConfigDialog.moc">
+      <Filter>Generated Files\Debug</Filter>
+    </None>
+    <None Include="Release\ConfigDialog.moc">
+      <Filter>Generated Files\Release</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_AboutDialog.h">
