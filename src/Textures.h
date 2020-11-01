@@ -61,6 +61,7 @@ struct TextureCache
 	void activateDummy(u32 _t);
 	void activateMSDummy(u32 _t);
 	void update(u32 _t);
+	void toggleDumpTex();
 
 	static TextureCache & get();
 

@@ -64,7 +64,9 @@ static const unsigned short KEYCODE_WINDOWS_NAME_OFFSET[] = {
 
 EXPORT unsigned int CALL osal_is_key_pressed(unsigned int _key, unsigned int _mask)
 {
-	return (GetAsyncKeyState(WIN_HID_TO_NATIVE[_key]) & _mask) != 0;
+	if (_key == 0 || _key > 255)
+		return 0;
+	return GetAsyncKeyState(WIN_HID_TO_NATIVE[_key]) & _mask;
 }
 
 EXPORT unsigned int CALL osal_virtual_key_to_hid(unsigned int _key)

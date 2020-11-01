@@ -16,6 +16,7 @@
 //#include "Keys.h"
 #include "osal_keys.h"
 #include "DisplayWindow.h"
+#include "GLideNHQ/Ext_TxFilter.h"
 #include <Graphics/Context.h>
 
 using namespace std;
@@ -113,6 +114,21 @@ static void checkHotkeys()
 		config.textureFilter.txHiresEnable ^= 1;
 		textureCache().clear();
 	}
+
+	if (config.textureFilter.txHiresEnable != 0) {
+		/* Force reload hi-res textures. Useful for texture artists */
+		if (osal_is_key_pressed(config.hotkeys.keys[Config::hkHdTexReload], 0x0001)) {
+			dwnd().getDrawer().showMessage("Reload HD textures\n", Milliseconds(750));
+			if (txfilter_reloadhirestex()) {
+				textureCache().clear();
+			}
+		}
+
+		/* Turn on texture dump */
+		if (osal_is_key_pressed(config.hotkeys.keys[Config::hkTexDump], 0x0001))
+			textureCache().toggleDumpTex();
+	}
+
 }
 
 void VI_UpdateScreen()

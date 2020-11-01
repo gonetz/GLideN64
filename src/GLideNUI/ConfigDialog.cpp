@@ -300,10 +300,6 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->texturePackGroupBox->setChecked(config.textureFilter.txHiresEnable != 0);
 	ui->alphaChannelCheckBox->setChecked(config.textureFilter.txHiresFullAlphaChannel != 0);
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
-	ui->textureDumpCheckBox->toggle();
-	ui->textureDumpCheckBox->setChecked(config.textureFilter.txDump != 0);
-	ui->textureReloadCheckBox->toggle();
-	ui->textureReloadCheckBox->setChecked(config.textureFilter.txReloadHiresTex != 0);
 	ui->force16bppCheckBox->setChecked(config.textureFilter.txForce16bpp != 0);
 	ui->compressCacheCheckBox->setChecked(config.textureFilter.txCacheCompression != 0);
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
@@ -605,8 +601,6 @@ void ConfigDialog::accept(bool justSave) {
 	config.textureFilter.txHiresEnable = ui->texturePackGroupBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHiresFullAlphaChannel = ui->alphaChannelCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHresAltCRC = ui->alternativeCRCCheckBox->isChecked() ? 1 : 0;
-	config.textureFilter.txDump = ui->textureDumpCheckBox->isChecked() ? 1 : 0;
-	config.textureFilter.txReloadHiresTex = ui->textureReloadCheckBox->isChecked() ? 1 : 0;
 
 	config.textureFilter.txCacheCompression = ui->compressCacheCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txForce16bpp = ui->force16bppCheckBox->isChecked() ? 1 : 0;
@@ -647,7 +641,7 @@ void ConfigDialog::accept(bool justSave) {
 	QDir txDumpPath(ui->texDumpPathLineEdit->text());
 	if (txDumpPath.exists()) {
 		config.textureFilter.txDumpPath[txDumpPath.absolutePath().toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
-	} else if (config.textureFilter.txHiresEnable != 0 && config.textureFilter.txDump != 0) {
+	} else if (config.textureFilter.txHiresEnable != 0 && config.hotkeys.keys[Config::HotKey::hkTexDump] != 0) {
 		QMessageBox msgBox;
 		msgBox.setStandardButtons(QMessageBox::Close);
 		msgBox.setWindowTitle("GLideN64");
