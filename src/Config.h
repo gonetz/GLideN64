@@ -220,6 +220,11 @@ struct Config
 		hkVsync,
 		hkFBEmulation,
 		hkN64DepthCompare,
+		hkOsdVis,
+		hkOsdFps,
+		hkOsdPercent,
+		hkOsdInternalResolution,
+		hkOsdRenderingResolution,
 		hkTotal
 	};
 

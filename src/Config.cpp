@@ -174,6 +174,16 @@ const char* Config::hotkeyIniName(u32 _idx)
 		return "hkFBEmulation";
 	case Config::HotKey::hkN64DepthCompare:
 		return "hkN64DepthCompare";
+	case Config::HotKey::hkOsdVis:
+		return "hkOsdVis";
+	case Config::HotKey::hkOsdFps:
+		return "hkOsdFps";
+	case Config::HotKey::hkOsdPercent:
+		return "hkOsdPercent";
+	case Config::HotKey::hkOsdInternalResolution:
+		return "hkOsdInternalResolution";
+	case Config::HotKey::hkOsdRenderingResolution:
+		return "hkOsdRenderingResolution";
 	}
 	return nullptr;
 }

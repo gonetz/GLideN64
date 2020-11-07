@@ -111,7 +111,7 @@ static void checkHotkeys()
 			dwnd().getDrawer().showMessage("Enable HD textures\n", Milliseconds(750));
 		else
 			dwnd().getDrawer().showMessage("Disable HD textures\n", Milliseconds(750));
-		config.textureFilter.txHiresEnable ^= 1;
+		config.textureFilter.txHiresEnable = !config.textureFilter.txHiresEnable;
 		textureCache().clear();
 	}
 
@@ -129,6 +129,63 @@ static void checkHotkeys()
 			textureCache().toggleDumpTex();
 	}
 
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkVsync], 0x0001)) {
+		config.video.verticalSync = !config.video.verticalSync;
+		dwnd().stop();
+		dwnd().start();
+		if (config.video.verticalSync == 0)
+			dwnd().getDrawer().showMessage("Disable vertical sync\n", Milliseconds(1000));
+		else
+			dwnd().getDrawer().showMessage("Enable vertical sync\n", Milliseconds(1000));
+	}
+
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkFBEmulation], 0x0001)) {
+		config.frameBufferEmulation.enable = !config.frameBufferEmulation.enable;
+		dwnd().stop();
+		dwnd().start();
+		if (config.frameBufferEmulation.enable == 0)
+			dwnd().getDrawer().showMessage("Disable frame buffer emulation\n", Milliseconds(2000));
+		else
+			dwnd().getDrawer().showMessage("Enable frame buffer emulation\n", Milliseconds(1000));
+	}
+
+	if (config.frameBufferEmulation.enable != 0 &&
+		osal_is_key_pressed(config.hotkeys.keys[Config::hkN64DepthCompare], 0x0001)) {
+		static u32 N64DepthCompare = Config::N64DepthCompareMode::dcCompatible;
+		if (config.frameBufferEmulation.N64DepthCompare != Config::N64DepthCompareMode::dcDisable) {
+			N64DepthCompare = config.frameBufferEmulation.N64DepthCompare;
+			config.frameBufferEmulation.N64DepthCompare = Config::N64DepthCompareMode::dcDisable;
+		} else
+			config.frameBufferEmulation.N64DepthCompare = N64DepthCompare;
+		dwnd().stop();
+		dwnd().start();
+		if (config.frameBufferEmulation.N64DepthCompare == Config::N64DepthCompareMode::dcDisable)
+			dwnd().getDrawer().showMessage("Disable N64 depth compare\n", Milliseconds(1000));
+		else
+			dwnd().getDrawer().showMessage("Enable N64 depth compare\n", Milliseconds(1000));
+	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdVis], 0x0001)) {
+		config.onScreenDisplay.vis = !config.onScreenDisplay.vis;
+	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdFps], 0x0001)) {
+		config.onScreenDisplay.fps = !config.onScreenDisplay.fps;
+	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdPercent], 0x0001)) {
+		config.onScreenDisplay.percent = !config.onScreenDisplay.percent;
+	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdInternalResolution], 0x0001)) {
+		config.onScreenDisplay.internalResolution = !config.onScreenDisplay.internalResolution;
+	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdRenderingResolution], 0x0001)) {
+		config.onScreenDisplay.renderingResolution = !config.onScreenDisplay.renderingResolution;
+	}
 }
 
 void VI_UpdateScreen()

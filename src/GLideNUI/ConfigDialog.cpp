@@ -84,6 +84,16 @@ QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 		return tr("Toggle frame buffer emulation");
 	case Config::HotKey::hkN64DepthCompare:
 		return tr("Toggle N64 depth compare");
+	case Config::HotKey::hkOsdVis:
+		return tr("Toggle OSD VI/S");
+	case Config::HotKey::hkOsdFps:
+		return tr("Toggle OSD FPS");
+	case Config::HotKey::hkOsdPercent:
+		return tr("Toggle OSD percent");
+	case Config::HotKey::hkOsdInternalResolution:
+		return tr("Toggle OSD internal resolution");
+	case Config::HotKey::hkOsdRenderingResolution:
+		return tr("Toggle OSD rendering resolution");
 	}
 	return tr("Unknown hotkey");
 }
