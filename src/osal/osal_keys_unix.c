@@ -16,7 +16,7 @@ EXPORT unsigned int CALL osal_virtual_key_to_hid(unsigned int _key)
 
 EXPORT const char * CALL osal_keycode_name(unsigned int _hidCode)
 {
-	return NULL;
+	return 0;
 }
 
 #ifdef __cplusplus

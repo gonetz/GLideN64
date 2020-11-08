@@ -14,7 +14,6 @@
 #include "convert.h"
 #include "FrameBuffer.h"
 #include "Config.h"
-#include "Keys.h"
 #include "GLideNHQ/Ext_TxFilter.h"
 #include "TextureFilterHandler.h"
 #include "DisplayLoadProgress.h"
