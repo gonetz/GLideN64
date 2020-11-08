@@ -207,9 +207,6 @@ void VI_UpdateScreen()
 	wnd.saveScreenshot();
 	g_debugger.checkDebugState();
 
-	//if (isKeyPressed(G64_VK_G, 0x0001)) {
-	//	SwitchDump(config.debug.dumpMode);
-	//}
 	checkHotkeys();
 
 	bool bVIUpdated = false;
