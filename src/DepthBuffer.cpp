@@ -342,7 +342,7 @@ void DepthBuffer::bindDepthImageTexture(ObjectHandle _fbo)
 		bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
 		bindParams.texture = m_pDepthImageDeltaZTexture->name;
 		gfxContext.bindImageTexture(bindParams);
-	} else if (Context::FramebufferFetch) {
+	} else if (Context::FramebufferFetchDepth) {
 		Context::FrameBufferRenderTarget targetParams;
 		targetParams.bufferHandle = _fbo;
 		targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
