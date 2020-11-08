@@ -141,7 +141,8 @@ enum {
     KEY_RightControl = 228,
     KEY_RightShift = 229,
     KEY_RightAlt = 230,
-    KEY_RightGUI = 231
+    KEY_RightGUI = 231,
+	MB_Left = 233 // GLideN64 - specific. Not an actual HID keycode.
 };
 
 #endif
