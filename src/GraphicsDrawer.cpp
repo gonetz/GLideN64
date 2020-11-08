@@ -23,6 +23,7 @@
 #include "RSP.h"
 #include "RDP.h"
 #include "VI.h"
+#include "Log.h"
 
 using namespace graphics;
 
@@ -672,6 +673,11 @@ void GraphicsDrawer::setBlendMode(bool _forceLegacyBlending) const
 
 	if (Context::DualSourceBlending && !isTexrectDrawerMode()) {
 		_dualSourceBlending();
+		return;
+	}
+
+	if (Context::FramebufferFetchColor && !isTexrectDrawerMode()) {
+		gfxContext.enable(enable::BLEND, false);
 		return;
 	}
 
