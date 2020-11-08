@@ -80,10 +80,10 @@ EXPORT const char * CALL osal_keycode_name(unsigned int _hidCode)
 {
 	unsigned offset;
 	if (232 <= _hidCode)
-		return 0;
+		return NULL;
 	offset = KEYCODE_WINDOWS_NAME_OFFSET[_hidCode];
 	if (offset == 0)
-		return 0;
+		return NULL;
 	return KEYCODE_WINDOWS_NAME_DATA + offset;
 }
 

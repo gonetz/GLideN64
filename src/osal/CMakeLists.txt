@@ -5,7 +5,7 @@ project( osal )
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(UNIX)
-  set(OSAL_SOURCES osal_files_unix.c)
+  set(OSAL_SOURCES osal_files_unix.c osal_keys_unix.c)
   add_definitions(
     -DNDEBUG
     -DOS_LINUX
@@ -13,7 +13,7 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
-  set(OSAL_SOURCES osal_files_win32.c)
+  set(OSAL_SOURCES osal_files_win32.c osal_keys_win.c)
   add_definitions(
 	-DOS_WINDOWS
 	-D_CRT_SECURE_NO_WARNINGS
