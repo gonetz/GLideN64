@@ -2,8 +2,8 @@
 
 namespace opengl {
 
-	std::vector<char> GlDrawArraysUnbufferedCommand::m_attribsData(2 * 1024 * 1024, 0);
-	std::vector<char> GlDrawElementsUnbufferedCommand::m_attribsData(2 * 1024 * 1024, 0);
+	std::vector<char> GlDrawArraysUnbufferedCommand::m_attribsData(15 * 1024 * 1024, 0);
+	std::vector<char> GlDrawElementsUnbufferedCommand::m_attribsData(15 * 1024 * 1024, 0);
 	GLenum GlMapBufferRangeWriteAsyncCommand::m_targetTemp;
 	GLintptr GlMapBufferRangeWriteAsyncCommand::m_offsetTemp;
 	GLsizeiptr GlMapBufferRangeWriteAsyncCommand::m_lengthTemp;
