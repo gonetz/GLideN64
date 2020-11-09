@@ -18,6 +18,7 @@
 #include "FullscreenResolutions.h"
 #include "qevent.h"
 #include "osal_keys.h"
+#include "QtKeyToHID.h"
 
 static
 struct
@@ -1095,10 +1096,12 @@ public:
 			return;
 		}
 		m_nativeVK = pEvent->nativeVirtualKey();
+		m_Key = pEvent->key();
 		QMessageBox::keyPressEvent(pEvent);
 		close();
 	}
 
+	quint32 m_Key = 0;
 	quint32 m_nativeVK = 0;
 };
 
@@ -1113,7 +1116,7 @@ void ConfigDialog::on_btn_clicked() {
 			//msgBox.setIcon(QMessageBox::Information);
 			msgBox.exec();
 			if (msgBox.m_nativeVK != 0) {
-				const unsigned int hidCode = osal_virtual_key_to_hid(msgBox.m_nativeVK);
+				const unsigned int hidCode = QtKeyToHID(msgBox.m_Key);
 				for (quint32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
 					QListWidgetItem * pItem = ui->hotkeyListWidget->item(idx);
 					HotkeyItemWidget* pWgt = (HotkeyItemWidget*)ui->hotkeyListWidget->itemWidget(pItem);
