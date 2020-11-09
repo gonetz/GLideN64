@@ -101,6 +101,8 @@ void VI_UpdateSize()
 
 static void checkHotkeys()
 {
+	osal_keys_update_state();
+
 	if (osal_is_key_pressed(KEY_G, 0x0001)) {
 		SwitchDump(config.debug.dumpMode);
 	}

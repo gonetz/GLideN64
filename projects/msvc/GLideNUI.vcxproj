@@ -107,6 +107,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\QtKeyToHID.cpp" />
     <ClCompile Include="Debug\moc_AboutDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClCompile>

@@ -18,6 +18,7 @@
 #include "FullscreenResolutions.h"
 #include "qevent.h"
 #include "osal_keys.h"
+#include "QtKeyToHID.h"
 
 static
 struct
@@ -1094,26 +1095,22 @@ public:
 			QMessageBox::keyPressEvent(pEvent);
 			return;
 		}
-		m_nativeVK = pEvent->nativeVirtualKey();
+		m_Key = pEvent->key();
 		QMessageBox::keyPressEvent(pEvent);
 		close();
 	}
 
-	quint32 m_nativeVK = 0;
+	quint32 m_Key = Qt::Key::Key_unknown;
 };
 
 void ConfigDialog::on_btn_clicked() {
 	if (QPushButton* pBtn = qobject_cast<QPushButton*>(sender())) {
 		if (QLabel* pLabel = pBtn->parent()->findChild< QLabel* >()) {
-			//QMessageBox::information(this, "Button was clicked!", e->text());
 			HotkeyMessageBox msgBox(this);
-			//msgBox.setWindowTitle("Hotkey");
-			//msgBox.setText("Press a key");
 			msgBox.setInformativeText(QString("Press a key for ") + pLabel->text());
-			//msgBox.setIcon(QMessageBox::Information);
 			msgBox.exec();
-			if (msgBox.m_nativeVK != 0) {
-				const unsigned int hidCode = osal_virtual_key_to_hid(msgBox.m_nativeVK);
+			if (msgBox.m_Key != Qt::Key::Key_unknown) {
+				const unsigned int hidCode = QtKeyToHID(msgBox.m_Key);
 				for (quint32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
 					QListWidgetItem * pItem = ui->hotkeyListWidget->item(idx);
 					HotkeyItemWidget* pWgt = (HotkeyItemWidget*)ui->hotkeyListWidget->itemWidget(pItem);

@@ -1265,6 +1265,7 @@ void Debugger::_drawDebugInfo()
 	const f32 lry = -((f32)(winHeight * 5 / 8)* (2.0f * scaleY) - 1.0f);
 
 	while (!osal_is_key_pressed(KEY_Insert, 0x0001)) {
+		osal_keys_update_state();
 		_debugKeys();
 		_drawFrameBuffer(frameBufferList().findBuffer(*m_curFBAddr));
 		_drawTextureCache();
