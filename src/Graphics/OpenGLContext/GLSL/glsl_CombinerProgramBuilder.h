@@ -81,7 +81,6 @@ namespace glsl {
 		ShaderPartPtr m_fragmentCallN64Depth;
 		ShaderPartPtr m_fragmentRenderTarget;
 		ShaderPartPtr m_shaderFragmentMainEnd;
-		ShaderPartPtr m_shaderFragmentMainEndSpecial;
 
 		ShaderPartPtr m_shaderNoise;
 		ShaderPartPtr m_shaderDither;

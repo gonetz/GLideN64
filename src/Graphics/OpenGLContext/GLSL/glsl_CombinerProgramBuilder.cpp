@@ -1090,34 +1090,28 @@ public:
 
 		if (_glinfo.dual_source_blending) {
 			m_part +=
-					"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"
-					"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;	\n"
-					"#define LAST_FRAG_COLOR vec4(0.0) \n"
-					"#define LAST_FRAG_COLOR_ALPHA 0.0 \n"
-			;
-					;
+				"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"  // MAIN FRAGMENT SHADER OUTPUT
+				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;	\n"  // SECONDARY FRAGMENT SHADER OUTPUT
+				"#define LAST_FRAG_COLOR vec4(0.0)							\n"  // DUMMY
+				;
 		} else if (_glinfo.ext_fetch) {
 			m_part +=
-					"layout(location = 0) inout lowp vec4 fragColor;				\n"
-					"lowp vec4 fragColor1;	\n"
-					"#define LAST_FRAG_COLOR realFragColor \n"
-					"#define LAST_FRAG_COLOR_ALPHA realFragColor.a \n"
-					;
+				"layout(location = 0) inout lowp vec4 fragColor;		\n"  // MAIN FRAGMENT SHADER OUTPUT
+				"lowp vec4 fragColor1;									\n"  // DUMMY
+				"#define LAST_FRAG_COLOR fragColor						\n"  // CURRENT FRAMEBUFFER COLOR/ALPHA
+				;
 		} else if (_glinfo.ext_fetch_arm) {
 			m_part +=
-					"OUT lowp vec4 fragColor;	\n"
-					"lowp vec4 fragColor1;	\n"
-					"#define LAST_FRAG_COLOR gl_LastFragColorARM \n"
-					"#define LAST_FRAG_COLOR_ALPHA gl_LastFragColorARM.a \n"
-					;
+				"OUT lowp vec4 fragColor;								\n"  // MAIN FRAGMENT SHADER OUTPUT
+				"lowp vec4 fragColor1;									\n"  // DUMMY
+				"#define LAST_FRAG_COLOR gl_LastFragColorARM			\n"  // CURRENT FRAMEBUFFER COLOR/ALPHA
+				;
 		} else {
 			m_part +=
-					"OUT lowp vec4 fragColor;	\n"
-					"lowp vec4 fragColor1;	\n"
-					"#define LAST_FRAG_COLOR vec4(0.0) \n"
-					"#define LAST_FRAG_COLOR_ALPHA 0.0 \n"
-					;
-			;
+				"OUT lowp vec4 fragColor;								\n"  // MAIN FRAGMENT SHADER OUTPUT
+				"lowp vec4 fragColor1;									\n"  // DUMMY
+				"#define LAST_FRAG_COLOR vec4(0.0)						\n"  // DUMMY
+				;
 		}
 
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
@@ -1762,10 +1756,6 @@ public:
 		if (_glinfo.isGLES2) {
 			m_part =
 					"  gl_FragColor = fragColor; \n"
-					"} \n\n";
-		} else if (!_glinfo.dual_source_blending && _glinfo.ext_fetch) {
-			m_part =
-					"  realFragColor = fragColor; \n"
 					"} \n\n";
 		} else {
 			m_part =
@@ -2974,7 +2964,6 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_glinfo))
 , m_fragmentRenderTarget(new ShaderFragmentRenderTarget(_glinfo))
 , m_shaderFragmentMainEnd(new ShaderFragmentMainEnd(_glinfo))
-, m_shaderFragmentMainEndSpecial(new ShaderFragmentMainEndSpecial(_glinfo))
 , m_shaderNoise(new ShaderNoise(_glinfo))
 , m_shaderDither(new ShaderDither(_glinfo))
 , m_shaderWriteDepth(new ShaderWriteDepth(_glinfo))
