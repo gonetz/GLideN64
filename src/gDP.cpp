@@ -102,7 +102,7 @@ void gDPSetTextureLUT( u32 mode )
 #endif
 }
 
-void gDPSetCombine( s32 muxs0, s32 muxs1 )
+void gDPSetCombine( u32 muxs0, u32 muxs1 )
 {
 	gDP.combine.muxs0 = muxs0;
 	gDP.combine.muxs1 = muxs1;
@@ -814,10 +814,10 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 )
 {
-	gDP.convert.k0 = (SIGN(k0, 9) << 1) + 1;
-	gDP.convert.k1 = (SIGN(k1, 9) << 1) + 1;
-	gDP.convert.k2 = (SIGN(k2, 9) << 1) + 1;
-	gDP.convert.k3 = (SIGN(k3, 9) << 1) + 1;
+	gDP.convert.k0 = (s32)((u32)SIGN(k0, 9) << 1) + 1;
+	gDP.convert.k1 = (s32)((u32)SIGN(k1, 9) << 1) + 1;
+	gDP.convert.k2 = (s32)((u32)SIGN(k2, 9) << 1) + 1;
+	gDP.convert.k3 = (s32)((u32)SIGN(k3, 9) << 1) + 1;
 	gDP.convert.k4 = k4;
 	gDP.convert.k5 = k5;
 
@@ -1295,7 +1295,7 @@ void LLETriangle::flush(u32 _cmd)
 #endif
 }
 
-void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
+void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 {
 	DebugMsg(DEBUG_NORMAL, "gDPLLETriangle shade: %d, texture: %d, zbuffer: %d\n",
 		int(_shade), int(_texture), int(_zbuffer));
@@ -1305,21 +1305,22 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 	if (tile != m_tile)
 		flush(0);
 	m_tile = tile;
-	const int flip = (_pData[0] & 0x800000) >> 23;
+//	const int flip = (_pData[0] & 0x800000) >> 23; // unused
 	start(tile);
 
-	int yl = SIGN(_pData[0], 14);
-	int ym = _pData[1] >> 16;
+	s32* pDataSigned = reinterpret_cast<s32*>(_pData);
+	int yl = SIGN(pDataSigned[0], 14);
+	int ym = pDataSigned[1] >> 16;
 	ym = SIGN(ym, 14);
-	int yh = SIGN(_pData[1], 14);
+	int yh = SIGN(pDataSigned[1], 14);
 
-	int xl = SIGN(_pData[2], 28);
-	int xh = SIGN(_pData[4], 28);
-	int xm = SIGN(_pData[6], 28);
+	int xl = SIGN(pDataSigned[2], 28);
+	int xh = SIGN(pDataSigned[4], 28);
+	int xm = SIGN(pDataSigned[6], 28);
 
-	const int dxldy = SIGN(_pData[3], 30);
-	const int dxhdy = SIGN(_pData[5], 30);
-	const int dxmdy = SIGN(_pData[7], 30);
+	const int dxldy = SIGN(pDataSigned[3], 30);
+	const int dxhdy = SIGN(pDataSigned[5], 30);
+	const int dxmdy = SIGN(pDataSigned[7], 30);
 
 	yh &= ~3;
 
@@ -1328,41 +1329,41 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 	int drde = 0, dgde = 0, dbde = 0, dade = 0;
 
 	if (_shade) {
-		r = (_pData[8] & 0xffff0000) | ((_pData[12] >> 16) & 0x0000ffff);
-		g = ((_pData[8] << 16) & 0xffff0000) | (_pData[12] & 0x0000ffff);
-		b = (_pData[9] & 0xffff0000) | ((_pData[13] >> 16) & 0x0000ffff);
-		a = ((_pData[9] << 16) & 0xffff0000) | (_pData[13] & 0x0000ffff);
-		drdx = (_pData[10] & 0xffff0000) | ((_pData[14] >> 16) & 0x0000ffff);
-		dgdx = ((_pData[10] << 16) & 0xffff0000) | (_pData[14] & 0x0000ffff);
-		dbdx = (_pData[11] & 0xffff0000) | ((_pData[15] >> 16) & 0x0000ffff);
-		dadx = ((_pData[11] << 16) & 0xffff0000) | (_pData[15] & 0x0000ffff);
-		drde = (_pData[16] & 0xffff0000) | ((_pData[20] >> 16) & 0x0000ffff);
-		dgde = ((_pData[16] << 16) & 0xffff0000) | (_pData[20] & 0x0000ffff);
-		dbde = (_pData[17] & 0xffff0000) | ((_pData[21] >> 16) & 0x0000ffff);
-		dade = ((_pData[17] << 16) & 0xffff0000) | (_pData[21] & 0x0000ffff);
+		r = static_cast<int>((_pData[8] & 0xffff0000) | ((_pData[12] >> 16) & 0x0000ffff));
+		g = static_cast<int>(((_pData[8] << 16) & 0xffff0000) | (_pData[12] & 0x0000ffff));
+		b = static_cast<int>((_pData[9] & 0xffff0000) | ((_pData[13] >> 16) & 0x0000ffff));
+		a = static_cast<int>(((_pData[9] << 16) & 0xffff0000) | (_pData[13] & 0x0000ffff));
+		drdx = static_cast<int>((_pData[10] & 0xffff0000) | ((_pData[14] >> 16) & 0x0000ffff));
+		dgdx = static_cast<int>(((_pData[10] << 16) & 0xffff0000) | (_pData[14] & 0x0000ffff));
+		dbdx = static_cast<int>((_pData[11] & 0xffff0000) | ((_pData[15] >> 16) & 0x0000ffff));
+		dadx = static_cast<int>(((_pData[11] << 16) & 0xffff0000) | (_pData[15] & 0x0000ffff));
+		drde = static_cast<int>((_pData[16] & 0xffff0000) | ((_pData[20] >> 16) & 0x0000ffff));
+		dgde = static_cast<int>(((_pData[16] << 16) & 0xffff0000) | (_pData[20] & 0x0000ffff));
+		dbde = static_cast<int>((_pData[17] & 0xffff0000) | ((_pData[21] >> 16) & 0x0000ffff));
+		dade = static_cast<int>(((_pData[17] << 16) & 0xffff0000) | (_pData[21] & 0x0000ffff));
 	}
 
 	int s = 0, t = 0, w = 0x30000;
 	int dsdx = 0, dtdx = 0, dwdx = 0;
 	int dsde = 0, dtde = 0, dwde = 0;
 	if (_texture) {
-		s = (_pData[24] & 0xffff0000) | ((_pData[28] >> 16) & 0x0000ffff);
-		t = ((_pData[24] << 16) & 0xffff0000) | (_pData[28] & 0x0000ffff);
-		w = (_pData[25] & 0xffff0000) | ((_pData[29] >> 16) & 0x0000ffff);
-		dsdx = (_pData[26] & 0xffff0000) | ((_pData[30] >> 16) & 0x0000ffff);
-		dtdx = ((_pData[26] << 16) & 0xffff0000) | (_pData[30] & 0x0000ffff);
-		dwdx = (_pData[27] & 0xffff0000) | ((_pData[31] >> 16) & 0x0000ffff);
-		dsde = (_pData[32] & 0xffff0000) | ((_pData[36] >> 16) & 0x0000ffff);
-		dtde = ((_pData[32] << 16) & 0xffff0000) | (_pData[36] & 0x0000ffff);
-		dwde = (_pData[33] & 0xffff0000) | ((_pData[37] >> 16) & 0x0000ffff);
+		s = static_cast<int>((_pData[24] & 0xffff0000) | ((_pData[28] >> 16) & 0x0000ffff));
+		t = static_cast<int>(((_pData[24] << 16) & 0xffff0000) | (_pData[28] & 0x0000ffff));
+		w = static_cast<int>((_pData[25] & 0xffff0000) | ((_pData[29] >> 16) & 0x0000ffff));
+		dsdx = static_cast<int>((_pData[26] & 0xffff0000) | ((_pData[30] >> 16) & 0x0000ffff));
+		dtdx = static_cast<int>(((_pData[26] << 16) & 0xffff0000) | (_pData[30] & 0x0000ffff));
+		dwdx = static_cast<int>((_pData[27] & 0xffff0000) | ((_pData[31] >> 16) & 0x0000ffff));
+		dsde = static_cast<int>((_pData[32] & 0xffff0000) | ((_pData[36] >> 16) & 0x0000ffff));
+		dtde = static_cast<int>(((_pData[32] << 16) & 0xffff0000) | (_pData[36] & 0x0000ffff));
+		dwde = static_cast<int>((_pData[33] & 0xffff0000) | ((_pData[37] >> 16) & 0x0000ffff));
 	}
 
 	int z = 0xffff0000;
 	int dzdx = 0, dzde = 0;
 	if (_zbuffer) {
-		z = _pData[40];
-		dzdx = _pData[41];
-		dzde = _pData[42];
+		z = pDataSigned[40];
+		dzdx = pDataSigned[41];
+		dzde = pDataSigned[42];
 	}
 
 	std::array<SPVertex, 8> vertices;
@@ -1671,7 +1672,7 @@ static void gDPTriangle(u32 _w1, u32 _w2, int shade, int texture, int zbuffer)
 void gDPTriFill(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 8 * sizeof(s32));
 	memset(&ewdata[8], 0, 36 * sizeof(s32));
 	LLETriangle::get().draw(0, 0, 0, ewdata);
@@ -1684,7 +1685,7 @@ void gDPTriFill(u32 w0, u32 w1)
 void gDPTriShade(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 24 * sizeof(s32));
 	memset(&ewdata[24], 0, 20 * sizeof(s32));
 	LLETriangle::get().draw(1, 0, 0, ewdata);
@@ -1697,7 +1698,7 @@ void gDPTriShade(u32 w0, u32 w1)
 void gDPTriTxtr(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 8 * sizeof(s32));
 	memset(&ewdata[8], 0, 16 * sizeof(s32));
 	memcpy(&ewdata[24], RDP.cmd_data + RDP.cmd_cur + 8, 16 * sizeof(s32));
@@ -1712,7 +1713,7 @@ void gDPTriTxtr(u32 w0, u32 w1)
 void gDPTriShadeTxtr(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 40 * sizeof(s32));
 	memset(&ewdata[40], 0, 4 * sizeof(s32));
 	LLETriangle::get().draw(1, 1, 0, ewdata);
@@ -1725,7 +1726,7 @@ void gDPTriShadeTxtr(u32 w0, u32 w1)
 void gDPTriFillZ(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 8 * sizeof(s32));
 	memset(&ewdata[8], 0, 32 * sizeof(s32));
 	memcpy(&ewdata[40], RDP.cmd_data + RDP.cmd_cur + 8, 4 * sizeof(s32));
@@ -1739,7 +1740,7 @@ void gDPTriFillZ(u32 w0, u32 w1)
 void gDPTriShadeZ(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 24 * sizeof(s32));
 	memset(&ewdata[24], 0, 16 * sizeof(s32));
 	memcpy(&ewdata[40], RDP.cmd_data + RDP.cmd_cur + 24, 4 * sizeof(s32));
@@ -1753,7 +1754,7 @@ void gDPTriShadeZ(u32 w0, u32 w1)
 void gDPTriTxtrZ(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 8 * sizeof(s32));
 	memset(&ewdata[8], 0, 16 * sizeof(s32));
 	memcpy(&ewdata[24], RDP.cmd_data + RDP.cmd_cur + 8, 16 * sizeof(s32));
@@ -1768,7 +1769,7 @@ void gDPTriTxtrZ(u32 w0, u32 w1)
 void gDPTriShadeTxtrZ(u32 w0, u32 w1)
 {
 #ifndef OLD_LLE
-	s32 ewdata[44];
+	u32 ewdata[44];
 	memcpy(&ewdata[0], RDP.cmd_data + RDP.cmd_cur, 44 * sizeof(s32));
 	LLETriangle::get().draw(1, 1, 1, ewdata);
 #else

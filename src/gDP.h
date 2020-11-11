@@ -265,7 +265,7 @@ extern gDPInfo gDP;
 class LLETriangle
 {
 public:
-	void draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData);
+	void draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData);
 	void flush(u32 _cmd);
 	static LLETriangle& get();
 
@@ -284,7 +284,7 @@ void gDPSetOtherMode( u32 mode0, u32 mode1 );
 void gDPSetPrimDepth( u16 z, u16 dz );
 void gDPSetTexturePersp( u32 enable );
 void gDPSetTextureLUT( u32 mode );
-void gDPSetCombine( s32 muxs0, s32 muxs1 );
+void gDPSetCombine( u32 muxs0, u32 muxs1 );
 void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address );
 void gDPSetTextureImage( u32 format, u32 size, u32 width, u32 address );
 void gDPSetDepthImage( u32 address );
