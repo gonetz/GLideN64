@@ -1644,9 +1644,6 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 	if (_zbuffer)
 		gSP.geometryMode |= G_ZBUFFER;
 
-	if (vtxCount < 3)
-		return;
-
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 
 	for (u32 i = 0; i < vtxCount - 2; ++i) {
