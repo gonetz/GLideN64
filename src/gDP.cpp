@@ -143,7 +143,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 	gDP.colorImage.height = 0;
 	gDP.colorImage.address = address;
 
-	frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, false);
+	frameBufferList().saveBuffer(address, static_cast<u16>(format), static_cast<u16>(size), static_cast<u16>(width), false);
 
 #ifdef DEBUG_DUMP
 	DebugMsg( DEBUG_NORMAL, "gDPSetColorImage( %s, %s, %i, 0x%08X );\n",
@@ -163,7 +163,7 @@ void gDPSetTextureImage(u32 format, u32 size, u32 width, u32 address)
 	gDP.textureImage.bpl = gDP.textureImage.width << gDP.textureImage.size >> 1;
 	if (gSP.DMAOffsets.tex_offset != 0) {
 		if (format == G_IM_FMT_RGBA) {
-			u16 * t = (u16*)(RDRAM + gSP.DMAOffsets.tex_offset);
+			u16 * t = reinterpret_cast<u16*>(RDRAM + gSP.DMAOffsets.tex_offset);
 			gSP.DMAOffsets.tex_shift = t[gSP.DMAOffsets.tex_count ^ 1];
 			gDP.textureImage.address += gSP.DMAOffsets.tex_shift;
 		} else {
@@ -227,8 +227,8 @@ void gDPSetFogColor( u32 r, u32 g, u32 b, u32 a )
 void gDPSetFillColor( u32 c )
 {
 	gDP.fillColor.color = c;
-	gDP.fillColor.z = (f32)_SHIFTR( c,  2, 14 );
-	gDP.fillColor.dz = (f32)_SHIFTR( c, 0, 2 );
+	gDP.fillColor.z = static_cast<f32>(_SHIFTR( c,  2, 14 ));
+	gDP.fillColor.dz = static_cast<f32>(_SHIFTR( c, 0, 2 ));
 
 	DebugMsg( DEBUG_NORMAL, "gDPSetFillColor( 0x%08X );\n", c );
 }
@@ -240,7 +240,7 @@ void gDPGetFillColor(f32 _fillColor[4])
 		_fillColor[0] = _FIXED2FLOATCOLOR( _SHIFTR( c, 11, 5 ), 5 );
 		_fillColor[1] = _FIXED2FLOATCOLOR( _SHIFTR( c,  6, 5 ), 5 );
 		_fillColor[2] = _FIXED2FLOATCOLOR( _SHIFTR( c,  1, 5 ), 5 );
-		_fillColor[3] = (f32)_SHIFTR( c,  0, 1 );
+		_fillColor[3] = static_cast<f32>(_SHIFTR( c,  0, 1 ));
 	} else {
 		_fillColor[0] = _FIXED2FLOATCOLOR( _SHIFTR( c, 24, 8 ), 8 );
 		_fillColor[1] = _FIXED2FLOATCOLOR( _SHIFTR( c, 16, 8 ), 8 );
@@ -380,7 +380,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 
 		const u32 texEndAddress = _address + _bytes - 1;
 		if (_address > pBuffer->m_startAddress &&
-			std::abs((s32)pBuffer->m_width - (s32)_width) > 1 &&
+			std::abs(static_cast<s32>(pBuffer->m_width) - static_cast<s32>(_width)) > 1 &&
 			texEndAddress > (pBuffer->m_endAddress + (pBuffer->m_width << pBuffer->m_size >> 1))) {
 			//fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
@@ -409,7 +409,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 		break;
 	}
 
-	for (int nTile = gSP.texture.tile; nTile < 6; ++nTile) {
+	for (u32 nTile = gSP.texture.tile; nTile < 6; ++nTile) {
 		if (gDP.tiles[nTile].tmem == gDP.loadTile->tmem) {
 			gDPTile & curTile = gDP.tiles[nTile];
 			curTile.textureMode = gDP.loadTile->textureMode;
@@ -432,8 +432,8 @@ void gDPLoadTile32b(u32 uls, u32 ult, u32 lrs, u32 lrt)
 	const u32 line = gDP.loadTile->line << 2;
 	const u32 tbase = gDP.loadTile->tmem << 2;
 	const u32 addr = gDP.textureImage.address >> 2;
-	const u32 * src = (const u32*)RDRAM;
-	u16 * tmem16 = (u16*)TMEM;
+	const u32 * src = reinterpret_cast<const u32*>(RDRAM);
+	u16 * tmem16 = reinterpret_cast<u16*>(TMEM);
 	u32 c, ptr, tline, s, xorval;
 
 	for (u32 j = 0; j < height; ++j) {
@@ -483,14 +483,14 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
 	info.texAddress = gDP.loadTile->imageAddress;
-	info.uls = gDP.loadTile->uls;
-	info.ult = gDP.loadTile->ult;
-	info.lrs = gDP.loadTile->lrs;
-	info.lrt = gDP.loadTile->lrt;
-	info.width = gDP.loadTile->masks != 0 ? (u16)min(width, 1U << gDP.loadTile->masks) : (u16)width;
-	info.height = gDP.loadTile->maskt != 0 ? (u16)min(height, 1U << gDP.loadTile->maskt) : (u16)height;
-	info.texWidth = gDP.textureImage.width;
-	info.size = gDP.textureImage.size;
+	info.uls = static_cast<u16>(gDP.loadTile->uls);
+	info.ult = static_cast<u16>(gDP.loadTile->ult);
+	info.lrs = static_cast<u16>(gDP.loadTile->lrs);
+	info.lrt = static_cast<u16>(gDP.loadTile->lrt);
+	info.width = static_cast<u16>(gDP.loadTile->masks != 0 ? min(width, 1U << gDP.loadTile->masks) : width);
+	info.height = static_cast<u16>(gDP.loadTile->maskt != 0 ? min(height, 1U << gDP.loadTile->maskt) : height);
+	info.texWidth = static_cast<u16>(gDP.textureImage.width);
+	info.size = static_cast<u8>(gDP.textureImage.size);
 	info.loadType = LOADTYPE_TILE;
 	info.bytes = bpl * height;
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
@@ -504,7 +504,7 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		gDP.loadTile->loadWidth = max(gDP.loadTile->loadWidth, info.width);
 	if (gDP.loadTile->maskt == 0) {
 		if (gDP.otherMode.cycleType != G_CYC_2CYCLE && gDP.loadTile->tmem % gDP.loadTile->line == 0) {
-			u16 theight = info.height + gDP.loadTile->tmem / gDP.loadTile->line;
+			u16 theight = static_cast<u16>(info.height + gDP.loadTile->tmem / gDP.loadTile->line);
 			gDP.loadTile->loadHeight = max(gDP.loadTile->loadHeight, theight);
 		} else
 			gDP.loadTile->loadHeight = max(gDP.loadTile->loadHeight, info.height);
@@ -516,7 +516,7 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		bpl2 = (gDP.textureImage.width - gDP.loadTile->uls);
 	u32 height2 = height;
 	if (gDP.loadTile->lrt > gDP.scissor.lry)
-		height2 = (u32)gDP.scissor.lry - gDP.loadTile->ult;
+		height2 = static_cast<u32>(gDP.scissor.lry) - gDP.loadTile->ult;
 
 	if (CheckForFrameBufferTexture(address, info.width, bpl2*height2))
 		return;
@@ -529,11 +529,11 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		const u32 qwpr = bpr >> 3;
 		for (u32 y = 0; y < height; ++y) {
 			if (address + bpl > RDRAMSize)
-				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, RDRAMSize - address);
+				UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, RDRAMSize - address);
 			else
-				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpr);
+				UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, bpr);
 			if (y & 1)
-				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, qwpr);
+				DWordInterleaveWrap(reinterpret_cast<u32*>(TMEM), tmemAddr << 1, 0x3FF, qwpr);
 
 			address += gDP.textureImage.bpl;
 			if (address >= RDRAMSize)
@@ -552,17 +552,17 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 //
 void gDPLoadBlock32(u32 uls,u32 lrs, u32 dxt)
 {
-	const u32 * src = (const u32*)RDRAM;
+	const u32 * src = reinterpret_cast<const u32*>(RDRAM);
 	const u32 tb = gDP.loadTile->tmem << 2;
 	const u32 line = gDP.loadTile->line << 2;
 
-	u16 *tmem16 = (u16*)TMEM;
+	u16 *tmem16 = reinterpret_cast<u16*>(TMEM);
 	u32 addr = gDP.loadTile->imageAddress >> 2;
 	u32 width = (lrs - uls + 1) << 2;
 	if (width == 4) // lr_s == 0, 1x1 texture
 		width = 1;
 	else if (width & 7)
-		width = (width & (~7)) + 8;
+		width = (width & (~7U)) + 8;
 
 	if (dxt != 0) {
 		u32 j = 0;
@@ -617,19 +617,19 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 
 	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
 	info.texAddress = gDP.loadTile->imageAddress;
-	info.uls = gDP.loadTile->uls;
-	info.ult = gDP.loadTile->ult;
-	info.lrs = gDP.loadTile->lrs;
-	info.lrt = gDP.loadTile->lrt;
-	info.width = gDP.loadTile->lrs;
+	info.uls = static_cast<u16>(gDP.loadTile->uls);
+	info.ult = static_cast<u16>(gDP.loadTile->ult);
+	info.lrs = static_cast<u16>(gDP.loadTile->lrs);
+	info.lrt = static_cast<u16>(gDP.loadTile->lrt);
+	info.width = static_cast<u16>(gDP.loadTile->lrs);
 	info.dxt = dxt;
-	info.size = gDP.textureImage.size;
+	info.size = static_cast<u8>(gDP.textureImage.size);
 	info.loadType = LOADTYPE_BLOCK;
 
 	const u32 width = (lrs - uls + 1) & 0x0FFF;
 	u32 bytes = width << gDP.loadTile->size >> 1;
 	if ((bytes & 7) != 0)
-		bytes = (bytes & (~7)) + 8;
+		bytes = (bytes & (~7U)) + 8;
 
 	info.bytes = bytes;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
@@ -658,7 +658,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 		memcpy(TMEM, &RDRAM[address], bytes); // HACK!
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
-		UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bytes);
+		UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, bytes);
 		if (dxt != 0) {
 			u32 dxtCounter = 0;
 			u32 qwords = (bytes >> 3);
@@ -678,12 +678,12 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 						goto end_dxt_test;
 					dxtCounter += dxt;
 				} while ((dxtCounter & 0x800) != 0);
-				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
+				DWordInterleaveWrap(reinterpret_cast<u32*>(TMEM), tmemAddr << 1, 0x3FF, line);
 				tmemAddr += line;
 				line = 0;
 			}
 			end_dxt_test:
-				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
+				DWordInterleaveWrap(reinterpret_cast<u32*>(TMEM), tmemAddr << 1, 0x3FF, line);
 		}
 	}
 
@@ -697,16 +697,16 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "gDPLoadTLUT wrong tile tmem addr: tile[%d].tmem=%04x;\n", tile, gDP.tiles[tile].tmem);
 		return;
 	}
-	u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
+	u16 count = static_cast<u16>((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
 	u32 address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
-	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);
+	u16 pal = static_cast<u16>((gDP.tiles[tile].tmem - 256) >> 4);
 	u16 * dest = reinterpret_cast<u16*>(TMEM);
 	u32 destIdx = gDP.tiles[tile].tmem << 2;
 
 	int i = 0;
 	while (i < count) {
 		for (u16 j = 0; (j < 16) && (i < count); ++j, ++i) {
-			dest[(destIdx | 0x0400) & 0x07FF] = swapword(*(u16*)(RDRAM + (address ^ 2)));
+			dest[(destIdx | 0x0400) & 0x07FF] = swapword(*reinterpret_cast<u16*>(RDRAM + (address ^ 2)));
 			address += 2;
 			destIdx += 4;
 		}
@@ -718,9 +718,9 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 	gDP.paletteCRC256 = CRC_Calculate(UINT64_MAX, gDP.paletteCRC16, sizeof(u64) * 16);
 
 	if (TFH.isInited()) {
-		const u16 start = gDP.tiles[tile].tmem - 256; // starting location in the palettes
-		u16 *spal = (u16*)(RDRAM + gDP.textureImage.address);
-		memcpy((u8*)(gDP.TexFilterPalette + start), spal, count<<1);
+		const u16 start = static_cast<u16>(gDP.tiles[tile].tmem) - 256; // starting location in the palettes
+		u16 *spal = reinterpret_cast<u16*>(RDRAM + gDP.textureImage.address);
+		memcpy(reinterpret_cast<u8*>(gDP.TexFilterPalette + start), spal, u32(count)<<1);
 	}
 
 	gDP.changed |= CHANGED_TMEM;
@@ -814,10 +814,10 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 )
 {
-	gDP.convert.k0 = (s32)((u32)SIGN(k0, 9) << 1) + 1;
-	gDP.convert.k1 = (s32)((u32)SIGN(k1, 9) << 1) + 1;
-	gDP.convert.k2 = (s32)((u32)SIGN(k2, 9) << 1) + 1;
-	gDP.convert.k3 = (s32)((u32)SIGN(k3, 9) << 1) + 1;
+	gDP.convert.k0 = static_cast<s32>(static_cast<u32>(SIGN(k0, 9) << 1)) + 1;
+	gDP.convert.k1 = static_cast<s32>(static_cast<u32>(SIGN(k1, 9) << 1)) + 1;
+	gDP.convert.k2 = static_cast<s32>(static_cast<u32>(SIGN(k2, 9) << 1)) + 1;
+	gDP.convert.k3 = static_cast<s32>(static_cast<u32>(SIGN(k3, 9) << 1)) + 1;
 	gDP.convert.k4 = k4;
 	gDP.convert.k5 = k5;
 
@@ -1447,8 +1447,6 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 		if (_texture) {
 			if (gDP.otherMode.texturePersp != 0) {
 				f32 vw = wf + dwdef * diffY + dwdxf * diffx * 4.0f;
-				if (vw == 0)
-					int t = 0;
 				vtx->w = static_cast<f32>(1.0f / (vw > 0.0f ? vw : (1.0f + vw - ceil(vw))));
 				//vtx->w = static_cast<f32>(1.0f / vw);
 				if (vw <= 0.0f) {
@@ -1504,24 +1502,24 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 
 			SPVertex * vtx = &vertices[vtxCount++];
 			vtx->x = static_cast<f32>(xhyf);
-			vtx->y = static_cast<f32>(yf * 0.25);
+			vtx->y = static_cast<f32>(yf * 0.25f);
 			updateVtx(vtx, diffyf, 0.0f);
 
 			vtx = &vertices[vtxCount++];
 			vtx->x = static_cast<f32>(xmyf);
-			vtx->y = static_cast<f32>(yf * 0.25);
+			vtx->y = static_cast<f32>(yf * 0.25f);
 			updateVtx(vtx, diffyf, diffxf);
 		}
 #endif
 
 		vtx = &vertices[vtxCount++];
 		vtx->x = static_cast<f32>(xhym);
-		vtx->y = static_cast<f32>(ymf * 0.25);
+		vtx->y = static_cast<f32>(ymf * 0.25f);
 		updateVtx(vtx, diffym, 0.0f);
 
 		vtx = &vertices[vtxCount++];
 		vtx->x = static_cast<f32>(xmym);
-		vtx->y = static_cast<f32>(ymf * 0.25);
+		vtx->y = static_cast<f32>(ymf * 0.25f);
 		updateVtx(vtx, diffym, diffxm);
 
 		if (dxldy != dxmdy && ym < yl) {
@@ -1531,7 +1529,7 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 			f32 y4f = (lc - hc) / (hk - lk);
 			vtx = &vertices[vtxCount++];
 			vtx->x = static_cast<f32>(hk * y4f + hc);
-			vtx->y = static_cast<f32>(y4f * 0.25);
+			vtx->y = static_cast<f32>(y4f * 0.25f);
 			updateVtx(vtx, (y4f - yhf), 0.0f);
 		}
 	} else {
@@ -1558,7 +1556,7 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 
 		vtx = &vertices[vtxCount++];
 		vtx->x = static_cast<f32>(xlf);
-		vtx->y = static_cast<f32>(y1f * 0.25);
+		vtx->y = static_cast<f32>(y1f * 0.25f);
 
 		f32 x1f = hk * y1f + hc;
 		f32 diffx1 = xlf - x1f;
@@ -1620,20 +1618,17 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, u32 * _pData)
 			f32 x2f = hk * ylf + hc;
 			f32 diffx2 = vtx->x - x2f;
 			updateVtx(vtx, ydiff, diffx2);
-		}
-		else if (mk == lk) {
+		} else if (mk == lk) {
 			vtx = &vertices[vtxCount++];
 			vtx->x = static_cast<f32>(hk * ylf + hc);
 			vtx->y = static_cast<f32>(ylf * 0.25f);
 			updateVtx(vtx, (ylf - yhf), 0.0f);
-		}
-		else {
+		} else {
 			f32 y2f = ylf;
 
 			if (yl == ym) {
 				y2f = (lc - mc) / (mk - lk);
-			}
-			else {
+			} else {
 				y2f = (lc - hc) / (hk - lk);
 			}
 

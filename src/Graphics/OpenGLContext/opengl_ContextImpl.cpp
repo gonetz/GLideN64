@@ -485,7 +485,6 @@ void ContextImpl::drawLine(f32 _width, SPVertex * _vertices)
 	m_graphicsDrawer->drawLine(_width, _vertices);
 }
 
-
 f32 ContextImpl::getMaxLineWidth()
 {
 	GLfloat lineWidthRange[2] = { 0.0f, 0.0f };

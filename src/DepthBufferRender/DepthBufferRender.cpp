@@ -208,7 +208,7 @@ void Rasterize(vertexi * vtx, int vertices, int dzdx)
 	int shift;
 
 	const u16 * const zLUT = depthBufferList().getZLUT();
-	const u32 depthBufferWidth = depthBufferList().getCurrent()->m_width;
+	const s32 depthBufferWidth = static_cast<s32>(depthBufferList().getCurrent()->m_width);
 
 	for (;;) {
 		int x1 = iceil(left_x);
