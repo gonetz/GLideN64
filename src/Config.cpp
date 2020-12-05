@@ -132,8 +132,8 @@ void Config::resetToDefaults()
 	onScreenDisplay.percent = 0;
 	onScreenDisplay.pos = posBottomLeft;
 
-	hotkeys.keys[HotKey::hkTexDump] = KEY_D;
-	hotkeys.keys[HotKey::hkHdTexToggle] = KEY_T;
+	for (u32 idx = 0; idx < HotKey::hkTotal; ++idx)
+		hotkeys.keys[idx] = 0;
 
 	debug.dumpMode = 0;
 }
