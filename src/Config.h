@@ -225,6 +225,7 @@ struct Config
 		hkOsdPercent,
 		hkOsdInternalResolution,
 		hkOsdRenderingResolution,
+		hkForceGammaCorrection,
 		hkTotal
 	};
 

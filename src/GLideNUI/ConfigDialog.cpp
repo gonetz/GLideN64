@@ -95,6 +95,8 @@ QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 		return tr("Toggle OSD internal resolution");
 	case Config::HotKey::hkOsdRenderingResolution:
 		return tr("Toggle OSD rendering resolution");
+	case Config::HotKey::hkForceGammaCorrection:
+		return tr("Toggle force gamma correction");
 	}
 	return tr("Unknown hotkey");
 }

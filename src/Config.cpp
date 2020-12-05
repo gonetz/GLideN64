@@ -184,6 +184,8 @@ const char* Config::hotkeyIniName(u32 _idx)
 		return "hkOsdInternalResolution";
 	case Config::HotKey::hkOsdRenderingResolution:
 		return "hkOsdRenderingResolution";
+	case Config::HotKey::hkForceGammaCorrection:
+		return "hkForceGammaCorrection";
 	}
 	return nullptr;
 }

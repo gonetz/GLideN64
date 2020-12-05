@@ -187,6 +187,14 @@ static void checkHotkeys()
 	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdRenderingResolution], 0x0001)) {
 		config.onScreenDisplay.renderingResolution = !config.onScreenDisplay.renderingResolution;
 	}
+
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkForceGammaCorrection], 0x0001)) {
+		if (config.gammaCorrection.force == 0)
+			dwnd().getDrawer().showMessage("Force gamma correction on\n", Milliseconds(750));
+		else
+			dwnd().getDrawer().showMessage("Force gamma correction off\n", Milliseconds(750));
+		config.gammaCorrection.force = !config.gammaCorrection.force;
+	}
 }
 
 void VI_UpdateScreen()
