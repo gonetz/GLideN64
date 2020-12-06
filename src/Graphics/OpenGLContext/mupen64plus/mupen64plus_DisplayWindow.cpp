@@ -40,6 +40,7 @@ private:
 	void _changeWindow() override;
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override {}
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override;
+	u32 _maxMSAALevel() const override;
 #ifdef M64P_GLIDENUI
 	bool _supportsWithRateFunctions = true;
 #endif // M64P_GLIDENUI
@@ -324,4 +325,11 @@ graphics::ObjectHandle DisplayWindowMupen64plus::_getDefaultFramebuffer()
 	if (CoreVideo_GL_GetDefaultFramebuffer != nullptr)
 		return graphics::ObjectHandle(CoreVideo_GL_GetDefaultFramebuffer());
 	return graphics::ObjectHandle::null;
+}
+
+u32 DisplayWindowMupen64plus::_maxMSAALevel() const
+{
+	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
+
+	return FunctionWrapper::maxMSAALevel();
 }

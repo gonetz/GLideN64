@@ -221,5 +221,6 @@ namespace opengl {
 		static void WaitForSwapBuffersQueued();
 
 		static int getTextureBytes(GLenum format, GLenum type, int width, int height);
+		static u32 maxMSAALevel();
 	};
 }

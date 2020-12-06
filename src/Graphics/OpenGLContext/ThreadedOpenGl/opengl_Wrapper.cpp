@@ -375,7 +375,7 @@ namespace opengl {
 			ptrDrawElements(mode, count, type, indices);
 			return;
 		}
-		
+
 		int typeSizeBytes;
 		unsigned int maxElementIndex;
 
@@ -1443,7 +1443,7 @@ namespace opengl {
 		if (m_threaded_wrapper) {
 			executeCommand(CoreVideoQuitCommand::get());
 			executeCommand(ShutdownCommand::get());
-		} 
+		}
 		else
 			CoreVideoQuitCommand::get()->performCommandSingleThreaded();
 
@@ -1657,5 +1657,21 @@ namespace opengl {
 		}
 
 		return textureSize;
+	}
+
+	u32 FunctionWrapper::maxMSAALevel()
+	{
+#if defined(OS_WINDOWS) && !defined(MUPENPLUSAPI)
+		u32 returnValue;
+
+		if (m_threaded_wrapper)
+			executeCommand(WindowsMaxMSAALevelCommand::get(returnValue));
+		else
+			WindowsMaxMSAALevelCommand::get(returnValue)->performCommandSingleThreaded();
+
+		return returnValue;
+#else
+		return 8;
+#endif
 	}
 }
