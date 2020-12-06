@@ -412,9 +412,11 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 		if (fullscreenRate == i)
 			RefreshRateComboBox.SetCurSel(index);
 	}
+	const u32 maxMSAALevel = m_Dlg.getMSAALevel();
 	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
-		? config.video.multisampling
-		: 8;
+		? min(config.video.multisampling, maxMSAALevel)
+		: maxMSAALevel;
+	m_AliasingSlider.SetRangeMax(powof(maxMSAALevel));
 	m_AliasingSlider.SetPos(powof(multisampling));
 	std::wstring AliasingText = FormatStrW(L"%dx", multisampling);
 	CWindow(GetDlgItem(IDC_ALIASING_LABEL)).SetWindowTextW(AliasingText.c_str());

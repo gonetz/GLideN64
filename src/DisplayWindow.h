@@ -22,6 +22,7 @@ public:
 	void setToggleFullscreen() { m_bToggleFullscreen = true; }
 	void readScreen(void **_pDest, long *_pWidth, long *_pHeight);
 	void readScreen2(void * _dest, int * _width, int * _height, int _front);
+	u32 maxMSAALevel() const;
 
 	void updateScale();
 	f32 getScaleX() const { return m_scaleX; }
@@ -81,6 +82,8 @@ private:
 	virtual void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) = 0;
 	virtual void _readScreen2(void * _dest, int * _width, int * _height, int _front) = 0;
 	virtual graphics::ObjectHandle _getDefaultFramebuffer() = 0;
+	virtual u32 _maxMSAALevel() const = 0;
+
 };
 
 inline

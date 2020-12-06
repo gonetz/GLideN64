@@ -17,7 +17,8 @@ void Config_DoConfig(/*HWND hParent*/)
 	api().FindPluginPath(strIniFolderPath);
 
 	ConfigOpen = true;
-	const bool bRestart = RunConfig(strIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr);
+	const u32 maxMsaa = dwnd().maxMSAALevel();
+	const bool bRestart = RunConfig(strIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr, maxMsaa);
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
 	config.validate();
