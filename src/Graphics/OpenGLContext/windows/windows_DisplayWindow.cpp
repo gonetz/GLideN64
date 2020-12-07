@@ -231,7 +231,5 @@ graphics::ObjectHandle DisplayWindowWindows::_getDefaultFramebuffer()
 
 u32 DisplayWindowWindows::_maxMSAALevel() const
 {
-	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
-
 	return FunctionWrapper::maxMSAALevel();
 }
