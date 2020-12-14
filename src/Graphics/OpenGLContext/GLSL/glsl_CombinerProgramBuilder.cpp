@@ -673,7 +673,6 @@ public:
 		if (_glinfo.dual_source_blending || _glinfo.ext_fetch || _glinfo.ext_fetch_arm) {
 			m_part +=
 				"if (uBlendAlphaMode != 2) {							\n"
-				"  lowp float cvg = clampedColor.a;						\n"
 				"  lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);		\n"
 				"  lowp vec4 dstFactorAlpha = vec4(1.0, 1.0, 0.0, 1.0);	\n"
 				"  if (uBlendAlphaMode == 0)							\n"
@@ -941,7 +940,7 @@ public:
 			"highp vec2 tcData1[5];					\n"
 			"uniform lowp int uCvgDest;				\n"
 			"uniform lowp int uBlendAlphaMode;		\n"
-			"lowp float mcvg;"
+			"lowp float cvg;"
 			;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -1063,7 +1062,7 @@ public:
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"uniform lowp int uCvgDest; \n"
 			"uniform lowp int uBlendAlphaMode; \n"
-			"lowp float mcvg; \n"
+			"lowp float cvg; \n"
 		;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -2603,9 +2602,9 @@ public:
 			"highp vec2 deltaBC1 = vec2(dBCdx[1], dBCdy[1]);		\n"
 			"highp vec2 deltaBC2 = vec2(dBCdx[2], dBCdy[2]);		\n"
 			"highp vec2 deltaBC3 = vec2(dBCdx[3], dBCdy[3]);		\n"
-			"mcvg = 0.0;											\n"
+			"cvg = 0.0;											\n"
 			"for (int i = 0; i<8; i++) {							\n"
-			"  mcvg += 0.125 * step(0.0, vBaryCoords[0] + dot(deltaBC0, bias[i])) * step(0.0, vBaryCoords[1] + dot(deltaBC1, bias[i])) "
+			"  cvg += 0.125 * step(0.0, vBaryCoords[0] + dot(deltaBC0, bias[i])) * step(0.0, vBaryCoords[1] + dot(deltaBC1, bias[i])) "
 			"  * step(0.0, vBaryCoords[2] + dot(deltaBC2, bias[i])) * step(0.0, vBaryCoords[3] + dot(deltaBC3, bias[i])); \n"
 			"}														\n"
 			;
@@ -2724,8 +2723,13 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 	else
 		ssShader << "  lowp vec4 clampedColor = clamp(cmbRes, 0.0, 1.0);" << std::endl;
 
-	if (g_cycleType <= G_CYC_2CYCLE)
-		m_callDither->write(ssShader);
+    if (g_cycleType <= G_CYC_2CYCLE) {
+        m_callDither->write(ssShader);
+
+		ssShader << "if (uCvgXAlpha != 0) cvg *= clampedColor.a;" << std::endl;
+		ssShader << "if (uAlphaCvgSel != 0) clampedColor.a = cvg; " << std::endl;
+	}
+
 
 	if (config.generalEmulation.enableLegacyBlending == 0) {
 		if (g_cycleType <= G_CYC_2CYCLE) {
@@ -2819,7 +2823,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	if (g_cycleType <= G_CYC_2CYCLE)
 		m_shaderCoverage->write(ssShader);
 	else
-		ssShader << "mcvg = 1.0f; \n" << std::endl;
+		ssShader << "cvg = 1.0f; \n" << std::endl;
 
 
 
