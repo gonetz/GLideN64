@@ -941,6 +941,7 @@ public:
 			"highp vec2 tcData1[5];					\n"
 			"uniform lowp int uCvgDest;				\n"
 			"uniform lowp int uBlendAlphaMode;		\n"
+			"lowp float mcvg;"
 			;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -1058,7 +1059,7 @@ public:
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"uniform lowp int uCvgDest; \n"
 			"uniform lowp int uBlendAlphaMode; \n"
-
+			"lowp float mcvg; \n"
 		;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -2581,6 +2582,28 @@ public:
 	}
 };
 
+class ShaderCoverage : public ShaderPart {
+public:
+	ShaderCoverage() {
+		m_part =
+			"const highp vec2 bias[8] = vec2[8] (vec2(-0.5,-0.5), vec2(0.0, -0.5), vec2(-0.25,-0.25), vec2(-0.25, 0.25), \n"
+			"                   vec2(-0.5, 0.0), vec2(0.0,0.0), vec2(-0.25,0.25), vec2(0.25,0.25)); \n"
+			"highp vec4 dBCdx = dFdx(vBaryCoords);					\n"
+			"highp vec4 dBCdy = dFdy(vBaryCoords);					\n"
+			"highp vec2 deltaBC0 = vec2(dBCdx[0], dBCdy[0]);		\n"
+			"highp vec2 deltaBC1 = vec2(dBCdx[1], dBCdy[1]);		\n"
+			"highp vec2 deltaBC2 = vec2(dBCdx[2], dBCdy[2]);		\n"
+			"highp vec2 deltaBC3 = vec2(dBCdx[3], dBCdy[3]);		\n"
+			"mcvg = 0.0;											\n"
+			"for (int i = 0; i<8; i++) {							\n"
+			"  mcvg += 0.125 * step(0.0, vBaryCoords[0] + dot(deltaBC0, bias[i])) * step(0.0, vBaryCoords[1] + dot(deltaBC1, bias[i])) "
+			"  * step(0.0, vBaryCoords[2] + dot(deltaBC2, bias[i])) * step(0.0, vBaryCoords[3] + dot(deltaBC3, bias[i])); \n"
+			"}														\n"
+			;
+	}
+};
+
+
 /*---------------ShaderPartsEnd-------------*/
 
 static
@@ -2780,8 +2803,16 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	else
 		m_fragmentMain->write(ssShader);
 
+
 	if (g_cycleType <= G_CYC_2CYCLE)
 		m_fragmentBlendMux->write(ssShader);
+
+	if (g_cycleType <= G_CYC_2CYCLE)
+		m_shaderCoverage->write(ssShader);
+	else
+		ssShader << "mcvg = 1.0f; \n" << std::endl;
+
+
 
 	if (bUseTextures) {
 		if (combinerInputs.usesTile(0))
@@ -2970,6 +3001,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
 , m_shaderTextureEngine(new ShaderTextureEngine(_glinfo))
+, m_shaderCoverage(new ShaderCoverage())
 , m_useProgram(_useProgram)
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {
