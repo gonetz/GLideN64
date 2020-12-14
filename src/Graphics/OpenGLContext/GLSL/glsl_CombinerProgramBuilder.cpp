@@ -2746,6 +2746,11 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		m_legacyBlender->write(ssShader);
 	}
 
+	
+	// SHOW COVERAGE HACK
+	//	ssShader << "fragColor.rgb = vec3(cvg);" << std::endl;
+	
+
 	_strShader = ssShader.str();
 	return inputs;
 }
