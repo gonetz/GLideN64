@@ -998,27 +998,31 @@ public:
 
 		if (_glinfo.dual_source_blending) {
 			m_part +=
-				"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"  // MAIN FRAGMENT SHADER OUTPUT 
+				"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;	\n"  // SECONDARY FRAGMENT SHADER OUTPUT
 				"#define LAST_FRAG_COLOR vec4(0.0)							\n"  // DUMMY
+				"#define LAST_FRAG_ALPHA 1.0								\n"  // DUMMY
 				;
 		} else if (_glinfo.ext_fetch) {
 			m_part +=
 				"layout(location = 0) inout lowp vec4 fragColor;		\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"lowp vec4 fragColor1;									\n"  // DUMMY
 				"#define LAST_FRAG_COLOR fragColor						\n"  // CURRENT FRAMEBUFFER COLOR/ALPHA
+				"#define LAST_FRAG_ALPHA fragColor.a					\n"  // CURRENT FRAMEBUFFER ALPHA
 				;
 		} else if (_glinfo.ext_fetch_arm) {
 			m_part +=
 				"OUT lowp vec4 fragColor;								\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"lowp vec4 fragColor1;									\n"  // DUMMY
 				"#define LAST_FRAG_COLOR gl_LastFragColorARM			\n"  // CURRENT FRAMEBUFFER COLOR/ALPHA
+				"#define LAST_FRAG_ALPHA gl_LastFragColorARM.a			\n"  // CURRENT FRAMEBUFFER ALPHA
 				;
 		} else {
 			m_part +=
 				"OUT lowp vec4 fragColor;								\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"lowp vec4 fragColor1;									\n"  // DUMMY
- 				"#define LAST_FRAG_COLOR vec4(0.0)						\n"  // DUMMY
+				"#define LAST_FRAG_COLOR vec4(0.0)						\n"  // DUMMY
+				"#define LAST_FRAG_ALPHA 1.0							\n"  // DUMMY
 				;
 		}
 
@@ -1108,24 +1112,28 @@ public:
 				"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;	\n"  // SECONDARY FRAGMENT SHADER OUTPUT
 				"#define LAST_FRAG_COLOR vec4(0.0)							\n"  // DUMMY
+				"#define LAST_FRAG_ALPHA 1.0								\n"  // DUMMY
 				;
 		} else if (_glinfo.ext_fetch) {
 			m_part +=
 				"layout(location = 0) inout lowp vec4 fragColor;		\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"lowp vec4 fragColor1;									\n"  // DUMMY
 				"#define LAST_FRAG_COLOR fragColor						\n"  // CURRENT FRAMEBUFFER COLOR/ALPHA
+				"#define LAST_FRAG_ALPHA fragColor.a					\n"  // CURRENT FRAMEBUFFER ALPHA
 				;
 		} else if (_glinfo.ext_fetch_arm) {
 			m_part +=
 				"OUT lowp vec4 fragColor;								\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"lowp vec4 fragColor1;									\n"  // DUMMY
 				"#define LAST_FRAG_COLOR gl_LastFragColorARM			\n"  // CURRENT FRAMEBUFFER COLOR/ALPHA
+				"#define LAST_FRAG_ALPHA gl_LastFragColorARM.a			\n"  // CURRENT FRAMEBUFFER ALPHA
 				;
 		} else {
 			m_part +=
 				"OUT lowp vec4 fragColor;								\n"  // MAIN FRAGMENT SHADER OUTPUT
 				"lowp vec4 fragColor1;									\n"  // DUMMY
 				"#define LAST_FRAG_COLOR vec4(0.0)						\n"  // DUMMY
+				"#define LAST_FRAG_ALPHA 1.0							\n"  // DUMMY
 				;
 		}
 
@@ -1541,9 +1549,10 @@ public:
 				"  #define MUXPM(pos) muxPM*(STVEC(pos))									\n"
 				"  #define MUXF(pos) dot(muxF, STVEC(pos))									\n"
 				"  lowp vec4 lastFragColor = LAST_FRAG_COLOR;								\n"
+				"  lowp float lastFragAlpha = LAST_FRAG_ALPHA;								\n"
 				"  lowp mat4 muxPM = mat4(vec4(0.0), lastFragColor, uBlendColor, uFogColor); \n"
 				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, shadeColor.a, 0.0);				\n"
-				"  lowp vec4 muxB = vec4(0.0, lastFragColor.a, 1.0, 0.0);				\n"
+				"  lowp vec4 muxB = vec4(0.0, lastFragAlpha, 1.0, 0.0);				\n"
 				"  lowp vec4 muxF = vec4(0.0, 1.0, 0.0, 0.0);								\n"
 				"  lowp vec4 muxp, muxm, srcColor1, srcColor2;								\n"
 				"  lowp float muxa, muxb, dstFactor1, dstFactor2, muxaf, muxbf;				\n"
