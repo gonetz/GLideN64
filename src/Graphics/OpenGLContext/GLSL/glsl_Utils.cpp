@@ -9,6 +9,7 @@ void Utils::locateAttributes(GLuint _program, bool _rect, bool _textures)
 {
 	if (_rect) {
 		glBindAttribLocation(_program, opengl::rectAttrib::position, "aRectPosition");
+		glBindAttribLocation(_program, opengl::rectAttrib::barycoords, "aBaryCoords");
 		if (_textures) {
 			glBindAttribLocation(_program, opengl::rectAttrib::texcoord0, "aTexCoord0");
 			glBindAttribLocation(_program, opengl::rectAttrib::texcoord1, "aTexCoord1");
@@ -20,6 +21,7 @@ void Utils::locateAttributes(GLuint _program, bool _rect, bool _textures)
 	glBindAttribLocation(_program, opengl::triangleAttrib::color, "aColor");
 	glBindAttribLocation(_program, opengl::triangleAttrib::numlights, "aNumLights");
 	glBindAttribLocation(_program, opengl::triangleAttrib::modify, "aModify");
+	glBindAttribLocation(_program, opengl::triangleAttrib::barycoords, "aBaryCoords");
 	if (_textures)
 		glBindAttribLocation(_program, opengl::triangleAttrib::texcoord, "aTexCoord");
 }

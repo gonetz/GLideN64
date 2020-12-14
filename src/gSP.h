@@ -43,6 +43,7 @@ struct SPVertex
 	u32 modify;
 	u8 HWLight;
 	u8 clip;
+	f32 bc0, bc1, bc2;
 	s16 flag;
 };
 
