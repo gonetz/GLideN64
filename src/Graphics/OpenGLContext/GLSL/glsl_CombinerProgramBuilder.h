@@ -92,6 +92,7 @@ namespace glsl {
 		ShaderPartPtr m_shaderN64DepthCompare;
 		ShaderPartPtr m_shaderN64DepthRender;
 		ShaderPartPtr m_shaderTextureEngine;
+		ShaderPartPtr m_shaderCoverage;
 
 		std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
 
