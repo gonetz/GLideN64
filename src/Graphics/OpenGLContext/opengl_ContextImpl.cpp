@@ -450,11 +450,6 @@ graphics::ShaderProgram * ContextImpl::createGammaCorrectionShader()
 	return m_specialShadersFactory->createGammaCorrectionShader();
 }
 
-graphics::ShaderProgram * ContextImpl::createOrientationCorrectionShader()
-{
-	return m_specialShadersFactory->createOrientationCorrectionShader();
-}
-
 graphics::ShaderProgram * ContextImpl::createFXAAShader()
 {
 	return m_specialShadersFactory->createFXAAShader();

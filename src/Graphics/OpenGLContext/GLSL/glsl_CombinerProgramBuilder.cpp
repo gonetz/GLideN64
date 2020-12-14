@@ -1730,24 +1730,6 @@ public:
 	}
 };
 
-class ShaderFragmentMainEndSpecial : public ShaderPart
-{
-public:
-	ShaderFragmentMainEndSpecial(const opengl::GLInfo & _glinfo)
-	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"  gl_FragColor = fragColor; \n"
-				"} \n\n"
-				;
-		} else {
-			m_part =
-				"} \n\n"
-				;
-		}
-	}
-};
-
 class ShaderFragmentMainEnd : public ShaderPart
 {
 public:

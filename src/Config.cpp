@@ -51,7 +51,6 @@ void Config::resetToDefaults()
 	generalEmulation.hacks = 0;
 #if defined(OS_ANDROID) || defined(OS_IOS)
 	generalEmulation.enableFragmentDepthWrite = 0;
-	generalEmulation.enableBlitScreenWorkaround = 0;
 	generalEmulation.forcePolygonOffset = 0;
 	generalEmulation.polygonOffsetFactor = 0.0f;
 	generalEmulation.polygonOffsetUnits = 0.0f;
