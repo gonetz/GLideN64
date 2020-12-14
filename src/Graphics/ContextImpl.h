@@ -63,7 +63,6 @@ namespace graphics {
 		virtual ShaderProgram * createTexrectDownscaleCopyShader() = 0;
 		virtual ShaderProgram * createTexrectColorAndDepthDownscaleCopyShader() = 0;
 		virtual ShaderProgram * createGammaCorrectionShader() = 0;
-		virtual ShaderProgram * createOrientationCorrectionShader() = 0;
 		virtual ShaderProgram * createFXAAShader() = 0;
 		virtual TextDrawerShaderProgram * createTextDrawerShader() = 0;
 		virtual void resetShaderProgram() = 0;
