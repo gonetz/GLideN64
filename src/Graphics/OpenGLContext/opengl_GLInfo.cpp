@@ -104,7 +104,9 @@ void GLInfo::init() {
 		config.generalEmulation.enableHybridFilter = 0;
 	}
 
-	drawElementsBaseVertex = !isGLESX || Utils::isExtensionSupported(*this, "GL_EXT_draw_elements_base_vertex");
+	drawElementsBaseVertex = !isGLESX ||
+		(Utils::isExtensionSupported(*this, "GL_EXT_draw_elements_base_vertex") && (renderer != Renderer::PowerVR ||
+		numericVersion >= 32));
 
 	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported(*this, "GL_ARB_buffer_storage") ||
 			Utils::isExtensionSupported(*this, "GL_EXT_buffer_storage");
