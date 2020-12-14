@@ -58,6 +58,13 @@ void GraphicsDrawer::addTriangle(u32 _v0, u32 _v1, u32 _v2)
 		triangles.vertices[_v1].modify |
 		triangles.vertices[_v2].modify;
 
+	for (u32 i = firstIndex; i < triangles.num; ++i) {
+		SPVertex& vtx = triangles.vertices[triangles.elements[i]];
+		vtx.bc0 = i - firstIndex == 0 ? 1.0f : 0.0f;
+		vtx.bc1 = i - firstIndex == 1 ? 1.0f : 0.0f;
+		vtx.bc2 = i - firstIndex == 2 ? 1.0f : 0.0f;
+	}
+
 	if ((gSP.geometryMode & G_LIGHTING) == 0) {
 		if ((gSP.geometryMode & G_SHADE) == 0) {
 			// Prim shading
@@ -853,6 +860,10 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 		if (vtx.x < 0) vtx.clip |= CLIP_NEGX;
 		if (vtx.y > gSP.viewport.height) vtx.clip |= CLIP_POSY;
 		if (vtx.y < 0) vtx.clip |= CLIP_NEGY;
+
+		vtx.bc0 = (i % 3 == 0) ? 1.0f : 0.0f;
+		vtx.bc1 = (i % 3 == 1) ? 1.0f : 0.0f;
+		vtx.bc2 = (i % 3 == 2) ? 1.0f : 0.0f;
 	}
 	m_modifyVertices = MODIFY_ALL;
 
@@ -1060,6 +1071,15 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	m_rect[3].y = m_rect[2].y;
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
+
+	m_rect[0].bc0 = 0.0f;
+	m_rect[0].bc1 = 0.0f;
+	m_rect[1].bc0 = 0.0f;
+	m_rect[1].bc1 = 1.0f;
+	m_rect[2].bc0 = 1.0f;
+	m_rect[2].bc1 = 0.0f;
+	m_rect[3].bc0 = 1.0f;
+	m_rect[3].bc1 = 1.0f;
 
 	DisplayWindow & wnd = dwnd();
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_lrx - _ulx) < VI.width * 9 / 10)) {
@@ -1447,6 +1467,16 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		for (u32 i = 0; i < 4; ++i)
 			m_rect[i].x *= scale;
 	}
+
+	m_rect[0].bc0 = 0.0f;
+	m_rect[0].bc1 = 0.0f;
+	m_rect[1].bc0 = 0.0f;
+	m_rect[1].bc1 = 1.0f;
+	m_rect[2].bc0 = 1.0f;
+	m_rect[2].bc1 = 0.0f;
+	m_rect[3].bc0 = 1.0f;
+	m_rect[3].bc1 = 1.0f;
+
 
 	if (bUseTexrectDrawer) {
 		if (m_bBGMode) {

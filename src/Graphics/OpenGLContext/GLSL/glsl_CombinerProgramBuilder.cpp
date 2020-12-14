@@ -278,6 +278,7 @@ public:
 			"IN highp vec2 aTexCoord;							\n"
 			"IN lowp float aNumLights;							\n"
 			"IN highp vec4 aModify;								\n"
+			"IN highp vec3 aBaryCoords;							\n"
 			"													\n"
 			"uniform int uTexturePersp;							\n"
 			"uniform lowp int uTextureFilterMode;		\n"
@@ -297,6 +298,7 @@ public:
 			"OUT mediump vec2 vLodTexCoord;						\n"
 			"OUT lowp float vNumLights;							\n"
 			"OUT lowp vec4 vShadeColor;							\n"
+			"OUT highp vec4 vBaryCoords;						\n"
 		;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
 			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
@@ -348,6 +350,7 @@ public:
 			"    else														\n"
 			"      vShadeColor.rgb = vec3(fp);								\n"
 			"  }															\n"
+			"  vBaryCoords = vec4(aBaryCoords, 0.5f);						\n"
 			;
 	}
 };
@@ -362,6 +365,7 @@ public:
 			"IN lowp vec4 aColor;											\n"
 			"IN lowp float aNumLights;										\n"
 			"IN highp vec4 aModify;											\n"
+			"IN highp vec3 aBaryCoords;										\n"
 			"																\n"
 			"uniform lowp int uFogUsage;									\n"
 			"uniform mediump vec2 uFogScale;								\n"
@@ -369,6 +373,7 @@ public:
 			"																\n"
 			"OUT lowp float vNumLights;										\n"
 			"OUT lowp vec4 vShadeColor;										\n"
+			"OUT highp vec4 vBaryCoords;									\n"
 		;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
 			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
@@ -405,6 +410,7 @@ public:
 			"    else														\n"
 			"      vShadeColor.rgb = vec3(fp);								\n"
 			"  }															\n"
+			"  vBaryCoords = vec4(aBaryCoords, 0.5f);						\n"
 			;
 	}
 };
@@ -418,11 +424,13 @@ public:
 			"IN highp vec4 aRectPosition;						\n"
 			"IN highp vec2 aTexCoord0;							\n"
 			"IN highp vec2 aTexCoord1;							\n"
+			"IN highp vec2 aBaryCoords;							\n"
 			"													\n"
 			"OUT highp vec2 vTexCoord0;							\n"
 			"OUT highp vec2 vTexCoord1;							\n"
 			"OUT lowp vec4 vShadeColor;							\n"
-		;
+			"OUT highp vec4 vBaryCoords;"
+			;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
 			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
 		else
@@ -436,6 +444,7 @@ public:
 			"  vShadeColorNoperspective = uRectColor;			\n"
 			"  vTexCoord0 = aTexCoord0;							\n"
 			"  vTexCoord1 = aTexCoord1;							\n"
+			"  vBaryCoords = vec4(aBaryCoords, vec2(1.0) - aBaryCoords);	\n"
 			;
 	}
 };
@@ -447,8 +456,10 @@ public:
 	{
 		m_part =
 			"IN highp vec4 aRectPosition;						\n"
+			"IN highp vec2 aBaryCoords;							\n"
 			"													\n"
 			"OUT lowp vec4 vShadeColor;							\n"
+			"OUT highp vec4 vBaryCoords; \n"
 			;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
 			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
@@ -461,6 +472,7 @@ public:
 			"  gl_Position = aRectPosition;						\n"
 			"  vShadeColor = uRectColor;						\n"
 			"  vShadeColorNoperspective = uRectColor;			\n"
+			"  vBaryCoords = vec4(aBaryCoords, vec2(1.0f) - aBaryCoords);\n"
 			;
 	}
 };
@@ -980,6 +992,7 @@ public:
 			"IN highp vec2 vTexCoord1;		\n"
 			"IN mediump vec2 vLodTexCoord;	\n"
 			"IN lowp float vNumLights;		\n"
+			"IN highp vec4 vBaryCoords;		\n"
 		;
 
 		if (_glinfo.dual_source_blending) {
@@ -1086,6 +1099,7 @@ public:
 		m_part +=
 			"IN lowp vec4 vShadeColor;	\n"
 			"IN lowp float vNumLights;	\n"
+			"IN highp vec4 vBaryCoords; \n"
 		;
 
 		if (_glinfo.dual_source_blending) {
