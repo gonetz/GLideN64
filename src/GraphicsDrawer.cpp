@@ -470,9 +470,6 @@ void GraphicsDrawer::_legacyBlending() const
 		} else {
 			gfxContext.enable(enable::BLEND, false);
 		}
-	} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
-		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(blend::ZERO, blend::ONE);
 	} else {
 		gfxContext.enable(enable::BLEND, false);
 	}
@@ -480,7 +477,6 @@ void GraphicsDrawer::_legacyBlending() const
 
 void GraphicsDrawer::_ordinaryBlending() const
 {
-
 	// Set unsupported blend modes
 	if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
 		const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
@@ -605,9 +601,6 @@ void GraphicsDrawer::_ordinaryBlending() const
 		}
 		gfxContext.enable(enable::BLEND, true);
 		gfxContext.setBlending(srcFactor, dstFactor);
-	} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
-		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(blend::ZERO, blend::ONE);
 	} else if ((gDP.otherMode.forceBlender == 0 && gDP.otherMode.cycleType < G_CYC_COPY)) {
 		// Just use first mux of blender
 		bool useMemColor = false;
@@ -652,11 +645,8 @@ void GraphicsDrawer::_dualSourceBlending() const
 					dstFactor = blend::DST_ALPHA;
 				}
 			}
-		} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 &&
-			gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
-			srcFactor = blend::ZERO;
-			dstFactor = blend::ONE;
 		}
+
 		gfxContext.enable(enable::BLEND, true);
 		gfxContext.setBlendingSeparate(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
 	} else {
@@ -666,6 +656,15 @@ void GraphicsDrawer::_dualSourceBlending() const
 
 void GraphicsDrawer::setBlendMode(bool _forceLegacyBlending) const
 {
+	bool blastCorpsHack = (config.generalEmulation.hacks & hack_blastCorps) != 0 &&
+						  gSP.texture.on == 0 && gDP.otherMode.cycleType < G_CYC_COPY && currentCombiner()->usesTexture();
+
+	if (blastCorpsHack) {
+		gfxContext.enable(enable::BLEND, true);
+		gfxContext.setBlending(blend::ZERO, blend::ONE);
+		return;
+	}
+
 	if (_forceLegacyBlending || config.generalEmulation.enableLegacyBlending != 0) {
 		_legacyBlending();
 		return;
