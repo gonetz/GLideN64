@@ -358,7 +358,7 @@ public:
 		const int forceBlend2 = gDP.otherMode.forceBlender;
 		uForceBlendCycle2.set(forceBlend2, _force);
 
-		if (!graphics::Context::DualSourceBlending || dwnd().getDrawer().isTexrectDrawerMode()) {
+		if (!(graphics::Context::DualSourceBlending || graphics::Context::FramebufferFetchColor) || dwnd().getDrawer().isTexrectDrawerMode()) {
 			// Modes, which shader blender can't emulate
 			const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
 			switch (mode) {
