@@ -396,8 +396,8 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 		origConfig.G.S != settings.value(#S, config.G.S).toFloat()) \
 		settings.setValue(#S, config.G.S)
 #define WriteCustomSettingS(S) \
-	const QString new##S = QString::fromWCharArray(config.textureFilter.txPath); \
-	const QString orig##S = QString::fromWCharArray(origConfig.textureFilter.txPath); \
+	const QString new##S = QString::fromWCharArray(config.textureFilter.S); \
+	const QString orig##S = QString::fromWCharArray(origConfig.textureFilter.S); \
 	if (orig##S  != new##S || \
 		orig##S != settings.value(#S, new##S).toString()) \
 		settings.setValue(#S, new##S)
