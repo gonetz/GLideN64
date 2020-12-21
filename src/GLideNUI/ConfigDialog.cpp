@@ -622,49 +622,53 @@ void ConfigDialog::accept(bool justSave) {
 	config.textureFilter.txHiresTextureFileStorage = ui->hiresTexFileStorageCheckBox->isChecked() ? 1 : 0;
 
 	QDir txPath(ui->texPackPathLineEdit->text());
-	if (txPath.exists()) {
-		config.textureFilter.txPath[txPath.absolutePath().toWCharArray(config.textureFilter.txPath)] = L'\0';
-	} else if (config.textureFilter.txHiresEnable != 0) {
+	if (!txPath.exists() &&
+		!txPath.mkdir(txPath.absolutePath()) &&
+		config.textureFilter.txHiresEnable != 0) {
 		QMessageBox msgBox;
 		msgBox.setStandardButtons(QMessageBox::Close);
 		msgBox.setWindowTitle("GLideN64");
-		msgBox.setText(tr("The texture pack folder is missing. Please change the folder or turn off texture packs."));
+		msgBox.setText(tr("Failed to create the texture pack folder. Please change the folder or turn off texture packs."));
 		msgBox.exec();
 		ui->tabWidget->setCurrentIndex(3);
 		ui->texPackPathLineEdit->setFocus(Qt::PopupFocusReason);
 		ui->texPackPathLineEdit->selectAll();
 		return;
 	}
+	config.textureFilter.txPath[txPath.path().toWCharArray(config.textureFilter.txPath)] = L'\0';
 
 	QDir txCachePath(ui->texCachePathLineEdit->text());
-	if (txCachePath.exists()) {
-		config.textureFilter.txCachePath[txCachePath.absolutePath().toWCharArray(config.textureFilter.txCachePath)] = L'\0';
-	} else if (config.textureFilter.txHiresEnable != 0) {
+	if (!txCachePath.exists() &&
+		!txCachePath.mkdir(txCachePath.absolutePath()) &&
+		config.textureFilter.txHiresEnable != 0) {
 		QMessageBox msgBox;
 		msgBox.setStandardButtons(QMessageBox::Close);
 		msgBox.setWindowTitle("GLideN64");
-		msgBox.setText(tr("The texture pack cache folder is missing. Please change the folder or turn off texture packs."));
+		msgBox.setText(tr("Failed to create the texture pack cache folder. Please change the folder or turn off texture packs."));
 		msgBox.exec();
 		ui->tabWidget->setCurrentIndex(3);
 		ui->texCachePathLineEdit->setFocus(Qt::PopupFocusReason);
 		ui->texCachePathLineEdit->selectAll();
 		return;
 	}
+	config.textureFilter.txCachePath[txCachePath.path().toWCharArray(config.textureFilter.txCachePath)] = L'\0';
 
 	QDir txDumpPath(ui->texDumpPathLineEdit->text());
-	if (txDumpPath.exists()) {
-		config.textureFilter.txDumpPath[txDumpPath.absolutePath().toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
-	} else if (config.textureFilter.txHiresEnable != 0 && config.hotkeys.keys[Config::HotKey::hkTexDump] != 0) {
+	if (!txDumpPath.exists() &&
+		!txDumpPath.mkdir(txDumpPath.absolutePath()) &&
+		config.textureFilter.txHiresEnable != 0 &&
+		config.hotkeys.keys[Config::HotKey::hkTexDump] != 0) {
 		QMessageBox msgBox;
 		msgBox.setStandardButtons(QMessageBox::Close);
 		msgBox.setWindowTitle("GLideN64");
-		msgBox.setText(tr("The texture dump folder is missing. Please change the folder or turn off dumping texture packs."));
+		msgBox.setText(tr("Failed to create the texture dump folder. Please change the folder or turn off dumping texture packs."));
 		msgBox.exec();
 		ui->tabWidget->setCurrentIndex(3);
 		ui->texDumpPathLineEdit->setFocus(Qt::PopupFocusReason);
 		ui->texDumpPathLineEdit->selectAll();
 		return;
 	}
+	config.textureFilter.txDumpPath[txDumpPath.path().toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
 
 	// OSD settings
 	config.font.size = ui->fontSizeSpinBox->value();
