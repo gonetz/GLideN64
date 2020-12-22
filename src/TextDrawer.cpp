@@ -25,9 +25,10 @@
 
 #include "TextDrawer.h"
 
+#include <osal_files.h>
+
 #ifdef MUPENPLUSAPI
 #include "mupenplus/GLideN64_mupenplus.h"
-#include <osal_files.h>
 #endif
 
 using namespace graphics;
@@ -212,6 +213,12 @@ bool getFontFileName(char * _strName)
 #else
 	sprintf(_strName, "/usr/share/fonts/truetype/freefont/%s", config.font.name.c_str());
 #endif
+
+	// if the font name is a full path, use that instead
+	if (osal_path_existsA(config.font.name.c_str())) {
+		sprintf(_strName, "%s", config.font.name.c_str());
+	}
+
 #ifdef MUPENPLUSAPI
 	if (!osal_path_existsA(_strName)) {
 		const char * fontPath = ConfigGetSharedDataFilepath("font.ttf");

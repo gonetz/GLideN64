@@ -9,6 +9,7 @@
 #include <QCursor>
 #include <QRegExpValidator>
 #include <QInputDialog>
+#include <QDirIterator>
 
 #include "../Config.h"
 #include "../DebugDump.h"
@@ -936,15 +937,15 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 		ui->tabWidget->setCursor(QCursor(Qt::WaitCursor));
 
 		QMap<QString, QStringList> internalFontList;
-		QDir fontDir(QStandardPaths::locate(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory));
+		QString fontDir = QStandardPaths::locate(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory);
 		QStringList fontFilter;
 		fontFilter << "*.ttf";
-		fontDir.setNameFilters(fontFilter);
-		QFileInfoList fontList = fontDir.entryInfoList();
-		for (int i = 0; i < fontList.size(); ++i) {
-			int id = QFontDatabase::addApplicationFont(fontList.at(i).absoluteFilePath());
+		QDirIterator fontIt(fontDir, fontFilter, QDir::Files, QDirIterator::Subdirectories);
+		while (fontIt.hasNext()) {
+			QString font = fontIt.next();
+			int id = QFontDatabase::addApplicationFont(font);
 			QString fontListFamily = QFontDatabase::applicationFontFamilies(id).at(0);
-			internalFontList[fontListFamily].append(fontList.at(i).fileName());
+			internalFontList[fontListFamily].append(font);
 		}
 
 		QMap<QString, QStringList>::const_iterator i;
