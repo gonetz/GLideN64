@@ -25,6 +25,7 @@ void Config::resetToDefaults()
 	video.fullscreenRefresh = 60;
 	video.fxaa = 0;
 	video.multisampling = 0;
+	video.maxMultiSampling = 0;
 	video.verticalSync = 0;
 
 #if defined(OS_MAC_OS_X)

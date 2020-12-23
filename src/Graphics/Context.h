@@ -285,6 +285,7 @@ namespace graphics {
 		f32 getMaxLineWidth();
 
 		/*---------------Misc-------------*/
+		s32 getMaxMSAALevel();
 
 		bool isError() const;
 

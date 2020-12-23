@@ -28,7 +28,6 @@ private:
 	void _changeWindow() override;
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override;
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override {}
-	u32 _maxMSAALevel() const override;
 	graphics::ObjectHandle _getDefaultFramebuffer() override;
 };
 
@@ -227,9 +226,4 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 graphics::ObjectHandle DisplayWindowWindows::_getDefaultFramebuffer()
 {
 	return graphics::ObjectHandle::null;
-}
-
-u32 DisplayWindowWindows::_maxMSAALevel() const
-{
-	return FunctionWrapper::maxMSAALevel();
 }
