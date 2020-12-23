@@ -26,7 +26,7 @@ struct Config
 		u32 windowedWidth, windowedHeight;
 		u32 fullscreenWidth, fullscreenHeight, fullscreenRefresh;
 		u32 fxaa;
-		u32 multisampling;
+		u32 multisampling, maxMultiSampling;
 		u32 verticalSync;
 		u32 threadedVideo;
 	} video;

@@ -5326,36 +5326,6 @@ private:
 		std::function<void()> m_swapBuffersCallback;
 	};
 
-	class WindowsMaxMSAALevelCommand : public OpenGlCommand
-	{
-	public:
-		WindowsMaxMSAALevelCommand() :
-			OpenGlCommand(true, false, "WindowsMaxMSAALevelCommand", false)
-		{
-		}
-
-		static std::shared_ptr<OpenGlCommand> get(u32& returnValue)
-		{
-			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
-			auto ptr = getFromPool<WindowsMaxMSAALevelCommand>(poolId);
-			ptr->set(returnValue);
-			return ptr;
-		}
-
-		void commandToExecute() override
-		{
-			*m_returnValue = WindowsWGL::maxMSAALevel();
-		}
-
-	private:
-		void set(u32& returnValue)
-		{
-			m_returnValue = &returnValue;
-		}
-
-		u32* m_returnValue;
-	};
-
 #endif
 }
 #ifdef __clang__

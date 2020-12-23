@@ -19,6 +19,11 @@ bool DisplayWindow::start()
 	m_drawer._initData();
 	m_buffersSwapCount = 0;
 
+	// only query max MSAA when needed
+	if (m_maxMsaa == 0) {
+		m_maxMsaa = gfxContext.getMaxMSAALevel();
+	}
+
 	return true;
 }
 
@@ -193,5 +198,5 @@ void DisplayWindow::readScreen2(void * _dest, int * _width, int * _height, int _
 
 u32 DisplayWindow::maxMSAALevel() const
 {
-	return _maxMSAALevel();
+	return m_maxMsaa;
 }

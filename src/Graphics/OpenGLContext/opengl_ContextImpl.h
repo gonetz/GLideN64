@@ -152,6 +152,8 @@ namespace opengl {
 
 		bool isSupported(graphics::SpecialFeatures _feature) const override;
 
+		s32 getMaxMSAALevel() override;
+
 		bool isError() const override;
 
 		bool isFramebufferError() const override;

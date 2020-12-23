@@ -5,7 +5,6 @@
 
 HGLRC WindowsWGL::hRC = NULL;
 HDC WindowsWGL::hDC = NULL;
-unsigned int WindowsWGL::m_sMaxMsaa = 0;
 
 bool WindowsWGL::start()
 {
@@ -103,57 +102,6 @@ bool WindowsWGL::start()
 		}
 	}
 
-	if (m_sMaxMsaa > 0)
-		return true;
-
-	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB =
-		(PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-	if (wglChoosePixelFormatARB != nullptr) {
-
-		const int piAttribIList16[] =
-		{
-			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-			WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-			WGL_COLOR_BITS_ARB, 32,
-			WGL_DEPTH_BITS_ARB, 24,
-			WGL_STENCIL_BITS_ARB, 8,
-			WGL_SAMPLE_BUFFERS_ARB, 1,
-			WGL_SAMPLES_EXT, 16,
-			0 // zero term
-		};
-		const float pfAttribFList[] = { 0.0f };
-
-		int piFormats;
-		unsigned int nNumFormats;
-		int res = wglChoosePixelFormatARB(hDC, piAttribIList16, pfAttribFList, 1, &piFormats, &nNumFormats);
-		if (res > 0 && nNumFormats > 0)
-			m_sMaxMsaa = 16;
-		else {
-			const int piAttribIList8[] =
-			{
-				WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-				WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-				WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-				WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-				WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-				WGL_COLOR_BITS_ARB, 32,
-				WGL_DEPTH_BITS_ARB, 24,
-				WGL_STENCIL_BITS_ARB, 8,
-				WGL_SAMPLE_BUFFERS_ARB, 1,
-				WGL_SAMPLES_EXT, 8,
-				0 // zero term
-			};
-			res = wglChoosePixelFormatARB(hDC, piAttribIList16, pfAttribFList, 1, &piFormats, &nNumFormats);
-			if (res > 0 && nNumFormats > 0)
-				m_sMaxMsaa = 8;
-			else
-				m_sMaxMsaa = 4;
-		}
-	}
-
 	return true;
 }
 
@@ -178,14 +126,4 @@ void WindowsWGL::swapBuffers()
 		SwapBuffers(wglGetCurrentDC());
 	else
 		SwapBuffers(hDC);
-}
-
-unsigned int WindowsWGL::maxMSAALevel()
-{
-	if (hRC != NULL || m_sMaxMsaa > 0)
-		return m_sMaxMsaa;
-
-	start();
-	stop();
-	return m_sMaxMsaa;
 }

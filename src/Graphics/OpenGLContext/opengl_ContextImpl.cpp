@@ -527,6 +527,13 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	return false;
 }
 
+s32 ContextImpl::getMaxMSAALevel()
+{
+	GLint maxMSAALevel = 0;
+	glGetIntegerv(GL_MAX_SAMPLES, &maxMSAALevel);
+	return maxMSAALevel;
+}
+
 bool ContextImpl::isError() const
 {
 	return Utils::isGLError();

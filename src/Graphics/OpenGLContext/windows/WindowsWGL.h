@@ -11,11 +11,9 @@ public:
 	static bool start();
 	static void stop();
 	static void swapBuffers();
-	static unsigned int maxMSAALevel();
 
 private:
 	static HGLRC hRC;
 	static HDC hDC;
-	static unsigned int m_sMaxMsaa;
 };
 

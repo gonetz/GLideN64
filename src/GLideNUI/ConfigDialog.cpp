@@ -167,9 +167,21 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
+	if (m_maxMSAA == 0 && config.video.maxMultiSampling == 0) {
+		// default value
+		m_maxMSAA = 8;
+	} else if (m_maxMSAA == 0 && config.video.maxMultiSampling != 0) {
+		// use cached value
+		m_maxMSAA = config.video.maxMultiSampling;
+	} else {
+		// assign cached value
+		config.video.maxMultiSampling = m_maxMSAA;
+	}
+
 	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
 		? std::min(config.video.multisampling, m_maxMSAA)
 		: m_maxMSAA;
+
 	ui->aliasingSlider->blockSignals(true);
 	ui->aliasingSlider->setMaximum(powof(m_maxMSAA));
 	ui->aliasingSlider->setValue(powof(multisampling));
