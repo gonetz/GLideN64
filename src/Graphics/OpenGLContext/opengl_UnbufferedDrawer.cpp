@@ -15,10 +15,12 @@ UnbufferedDrawer::UnbufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArr
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::numlights, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
+	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::barycoords, false);
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::barycoords, false);
 
 	m_attribsData.fill(nullptr);
 }
@@ -69,12 +71,20 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 			glVertexAttribPointer(triangleAttrib::modify, 4, GL_BYTE, GL_FALSE, sizeof(SPVertex), ptr);
 	}
 
+	{
+		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::barycoords, true);
+		const void * ptr = &_params.vertices->bc0;
+		if (_updateAttribPointer(triangleAttrib::barycoords, ptr))
+			glVertexAttribPointer(triangleAttrib::barycoords, 3, GL_FLOAT, GL_FALSE, sizeof(SPVertex), ptr);
+	}
+
 	if (isHWLightingAllowed())
 		glVertexAttrib1f(triangleAttrib::numlights, GLfloat(_params.vertices[0].HWLight));
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::barycoords, false);
 
 	if (config.frameBufferEmulation.N64DepthCompare != Config::dcCompatible) {
 		if (_params.elements == nullptr) {
@@ -133,10 +143,18 @@ void UnbufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _
 	} else
 		m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
 
+	{
+		m_cachedAttribArray->enableVertexAttribArray(rectAttrib::barycoords, true);
+		const void * ptr = &_params.vertices->bc0;
+		if (_updateAttribPointer(rectAttrib::barycoords, ptr))
+			glVertexAttribPointer(rectAttrib::barycoords, 2, GL_FLOAT, GL_FALSE, sizeof(RectVertex), ptr);
+	}
+
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::color, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
+	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::barycoords, false);
 
 	glDrawArrays(GLenum(_params.mode), 0, _params.verticesCount);
 }
@@ -159,6 +177,7 @@ void UnbufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
 
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
+	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::barycoords, false);
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
