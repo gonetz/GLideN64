@@ -67,9 +67,11 @@ void ContextImpl::init()
 	}
 
 	{
+#ifndef FORCE_UNBUFFERED_DRAWER
 		if (!m_glInfo.isGLESX || (m_glInfo.bufferStorage && m_glInfo.drawElementsBaseVertex))
 			m_graphicsDrawer.reset(new BufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray(), m_cachedFunctions->getCachedBindBuffer()));
 		else
+#endif
 			m_graphicsDrawer.reset(new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
 	}
 
