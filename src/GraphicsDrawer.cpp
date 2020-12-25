@@ -62,7 +62,6 @@ void GraphicsDrawer::addTriangle(u32 _v0, u32 _v1, u32 _v2)
 		SPVertex& vtx = triangles.vertices[triangles.elements[i]];
 		vtx.bc0 = i - firstIndex == 0 ? 1.0f : 0.0f;
 		vtx.bc1 = i - firstIndex == 1 ? 1.0f : 0.0f;
-		vtx.bc2 = i - firstIndex == 2 ? 1.0f : 0.0f;
 	}
 
 	if ((gSP.geometryMode & G_LIGHTING) == 0) {
@@ -863,7 +862,6 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 
 		vtx.bc0 = (i % 3 == 0) ? 1.0f : 0.0f;
 		vtx.bc1 = (i % 3 == 1) ? 1.0f : 0.0f;
-		vtx.bc2 = (i % 3 == 2) ? 1.0f : 0.0f;
 	}
 	m_modifyVertices = MODIFY_ALL;
 
