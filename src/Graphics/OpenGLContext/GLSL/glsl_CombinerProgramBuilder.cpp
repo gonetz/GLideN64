@@ -2824,11 +2824,10 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	if (g_cycleType <= G_CYC_2CYCLE)
 		m_fragmentBlendMux->write(ssShader);
 
-	if (g_cycleType <= G_CYC_2CYCLE)
+	if (g_cycleType <= G_CYC_2CYCLE && m_useCoverage)
 		m_shaderCoverage->write(ssShader);
 	else
 		ssShader << "cvg = 1.0f; \n" << std::endl;
-
 
 
 	if (bUseTextures) {
@@ -3027,6 +3026,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get(), m_vertexEnd.get());
 	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedTriangle.get(), m_vertexEnd.get());
 	m_uniformFactory.reset(new CombinerProgramUniformFactory(_glinfo));
+	m_useCoverage = (config.generalEmulation.enableCoverage != 0) && (_glinfo.dual_source_blending || _glinfo.ext_fetch || _glinfo.ext_fetch_arm);
 }
 
 CombinerProgramBuilder::~CombinerProgramBuilder()

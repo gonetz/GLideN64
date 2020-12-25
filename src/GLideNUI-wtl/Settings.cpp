@@ -48,6 +48,7 @@ void _loadSettings(GlSettings & settings)
 	config.generalEmulation.rdramImageDitheringMode = settings.value("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
+	config.generalEmulation.enableCoverage = settings.value("enableCoverage", config.generalEmulation.enableCoverage).toInt();
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
 	config.generalEmulation.enableLegacyBlending = settings.value("enableLegacyBlending", config.generalEmulation.enableLegacyBlending).toInt();			 //ini only
 	config.generalEmulation.enableHybridFilter = settings.value("enableHybridFilter", config.generalEmulation.enableHybridFilter).toInt();					 //ini only
@@ -231,6 +232,7 @@ void writeSettings(const char * _strIniFolder)
 		settings.setValue("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode);
 		settings.setValue("enableLOD", config.generalEmulation.enableLOD);
 		settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
+		settings.setValue("enableCoverage", config.generalEmulation.enableCoverage);
 		settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
 		settings.setValue("enableLegacyBlending", config.generalEmulation.enableLegacyBlending);		 //ini only
 		settings.setValue("enableHybridFilter", config.generalEmulation.enableHybridFilter);			 //ini only
@@ -432,6 +434,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 	WriteCustomSetting(generalEmulation, rdramImageDitheringMode);
 	WriteCustomSetting(generalEmulation, enableLOD);
 	WriteCustomSetting(generalEmulation, enableHWLighting);
+	WriteCustomSetting(generalEmulation, enableCoverage);
 	WriteCustomSetting(generalEmulation, enableShadersStorage);
 	settings.endGroup();
 
