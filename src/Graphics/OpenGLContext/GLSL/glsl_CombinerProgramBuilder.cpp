@@ -278,7 +278,7 @@ public:
 			"IN highp vec2 aTexCoord;							\n"
 			"IN lowp float aNumLights;							\n"
 			"IN highp vec4 aModify;								\n"
-			"IN highp vec3 aBaryCoords;							\n"
+			"IN highp vec2 aBaryCoords;							\n"
 			"													\n"
 			"uniform int uTexturePersp;							\n"
 			"uniform lowp int uTextureFilterMode;		\n"
@@ -350,7 +350,7 @@ public:
 			"    else														\n"
 			"      vShadeColor.rgb = vec3(fp);								\n"
 			"  }															\n"
-			"  vBaryCoords = vec4(aBaryCoords, 0.5f);						\n"
+			"  vBaryCoords = vec4(aBaryCoords, 1.0 - aBaryCoords.x - aBaryCoords.y, 0.5f);	\n"
 			;
 	}
 };
@@ -365,7 +365,7 @@ public:
 			"IN lowp vec4 aColor;											\n"
 			"IN lowp float aNumLights;										\n"
 			"IN highp vec4 aModify;											\n"
-			"IN highp vec3 aBaryCoords;										\n"
+			"IN highp vec2 aBaryCoords;										\n"
 			"																\n"
 			"uniform lowp int uFogUsage;									\n"
 			"uniform mediump vec2 uFogScale;								\n"
@@ -410,7 +410,7 @@ public:
 			"    else														\n"
 			"      vShadeColor.rgb = vec3(fp);								\n"
 			"  }															\n"
-			"  vBaryCoords = vec4(aBaryCoords, 0.5f);						\n"
+			"  vBaryCoords = vec4(aBaryCoords, 1.0 - aBaryCoords.x - aBaryCoords.y, 0.5f); \n"
 			;
 	}
 };

@@ -75,7 +75,7 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::barycoords, true);
 		const void * ptr = &_params.vertices->bc0;
 		if (_updateAttribPointer(triangleAttrib::barycoords, ptr))
-			glVertexAttribPointer(triangleAttrib::barycoords, 3, GL_FLOAT, GL_FALSE, sizeof(SPVertex), ptr);
+			glVertexAttribPointer(triangleAttrib::barycoords, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), ptr);
 	}
 
 	if (isHWLightingAllowed())

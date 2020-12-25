@@ -50,7 +50,7 @@ BufferedDrawer::BufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArray *
 	glVertexAttribPointer(triangleAttrib::color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)(offsetof(Vertex, r)));
 	glVertexAttribPointer(triangleAttrib::texcoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid *)(offsetof(Vertex, s)));
 	glVertexAttribPointer(triangleAttrib::modify, 4, GL_BYTE, GL_TRUE, sizeof(Vertex), (const GLvoid *)(offsetof(Vertex, modify)));
-	glVertexAttribPointer(triangleAttrib::barycoords, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)(offsetof(Vertex, bc0)));
+	glVertexAttribPointer(triangleAttrib::barycoords, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)(offsetof(Vertex, bc0)));
 }
 
 void BufferedDrawer::_initBuffer(Buffer & _buffer, GLuint _bufSize)
@@ -168,7 +168,6 @@ void BufferedDrawer::_convertFromSPVertex(bool _flatColors, u32 _count, const SP
 		dst.modify = src.modify;
 		dst.bc0 = src.bc0;
 		dst.bc1 = src.bc1;
-		dst.bc2 = src.bc2;
 	}
 }
 
