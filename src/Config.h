@@ -60,6 +60,7 @@ struct Config
 		u32 rdramImageDitheringMode;
 		u32 enableLOD;
 		u32 enableHWLighting;
+		u32 enableCoverage;
 		u32 enableCustomSettings;
 		u32 enableShadersStorage;
 		u32 enableLegacyBlending;

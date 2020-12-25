@@ -1144,6 +1144,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="enableCoverageCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable pixel coverage calculation. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;Enables approximated pixel coverage calculation. N64 uses pixel coverage for anti-aliasing and in some special blending modes. Some games have wire-frame mode aka 'pen and ink' mode. This mode also needs pixel coverage calculated. &lt;/p&gt;&lt;p&gt;[Recommended: Checked, unless performance is hurt]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Enable pixel coverage calculation</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="enableShadersStorageCheckBox">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use persistent storage for compiled shader programs.&lt;br/&gt;Each game uses a set of combiners. A combiner is an equation that defines how to build output color from various color inputs. GLideN64 translates shaders, and compiles shader programs on the fly. Shaders are large and complex. If the game uses several new combiners, compiling new shaders will take time and result in stuttering. When this option is checked, these shaders are saved so they're not recompiled the next time you run the game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

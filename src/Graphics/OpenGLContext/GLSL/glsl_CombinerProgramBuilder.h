@@ -102,6 +102,7 @@ namespace glsl {
 		GLuint  m_vertexShaderTexturedTriangle;
 		opengl::CachedUseProgram * m_useProgram;
 		u32 m_combinerOptionsBits;
+		bool m_useCoverage = false;
 	};
 
 }
