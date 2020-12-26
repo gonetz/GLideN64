@@ -96,7 +96,7 @@ void GLInfo::init() {
 	fragment_interlock = Utils::isExtensionSupported(*this, "GL_ARB_fragment_shader_interlock") && !hasBuggyFragmentShaderInterlock;
 	fragment_interlockNV = Utils::isExtensionSupported(*this, "GL_NV_fragment_shader_interlock") && !fragment_interlock && !hasBuggyFragmentShaderInterlock;
 	fragment_ordering = Utils::isExtensionSupported(*this, "GL_INTEL_fragment_shader_ordering") && !fragment_interlock && !fragment_interlockNV;
-	
+
 	const bool imageTexturesInterlock = imageTextures && (fragment_interlock || fragment_interlockNV || fragment_ordering);
 
 	if (isGLES2) {
@@ -196,6 +196,13 @@ void GLInfo::init() {
 				LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.");
 			}
 		}
+	}
+
+	coverage = dual_source_blending || ext_fetch || ext_fetch_arm;
+	if (coverage) {
+		GLint maxVertexAttribs = 0;
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVertexAttribs);
+		coverage = maxVertexAttribs >= 10;
 	}
 
 #ifdef EGL

@@ -2604,7 +2604,7 @@ public:
 			"  for (int j=0; j<4; j++) {							\n"
 			"    addend *= step(0.0, vBaryCoords[j] + dot(vec2(dBCdx[j], dBCdy[j]), bias[i])); \n"
 			"  }													\n"
-			"  cvg += addend;										\n" 
+			"  cvg += addend;										\n"
 			"}														\n"
 			;
 	}
@@ -3019,13 +3019,13 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_shaderCoverage(new ShaderCoverage())
 , m_useProgram(_useProgram)
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
+, m_useCoverage(_glinfo.coverage && config.generalEmulation.enableCoverage != 0)
 {
 	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get(), m_vertexEnd.get());
 	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get(), m_vertexEnd.get());
 	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get(), m_vertexEnd.get());
 	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedTriangle.get(), m_vertexEnd.get());
 	m_uniformFactory.reset(new CombinerProgramUniformFactory(_glinfo));
-	m_useCoverage = (config.generalEmulation.enableCoverage != 0) && (_glinfo.dual_source_blending || _glinfo.ext_fetch || _glinfo.ext_fetch_arm);
 }
 
 CombinerProgramBuilder::~CombinerProgramBuilder()

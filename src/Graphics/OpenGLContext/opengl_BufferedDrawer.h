@@ -57,8 +57,8 @@ namespace opengl {
 			f32 x, y, z, w;
 			f32 r, g, b, a;
 			f32 s, t;
-			u32 modify;
 			f32 bc0, bc1;
+			u32 modify;
 		};
 
 		void _initBuffer(Buffer & _buffer, GLuint _bufSize);
