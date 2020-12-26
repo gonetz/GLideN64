@@ -102,8 +102,8 @@ void _loadSettings(GlSettings & settings)
 	config.textureFilter.txEnhancedTextureFileStorage = settings.value("txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage).toInt();
 	config.textureFilter.txHiresTextureFileStorage = settings.value("txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage).toInt();
 	wcscpy_s(config.textureFilter.txPath, ToUTF16(settings.value("txPath", FromUTF16(config.textureFilter.txPath).c_str()).toString().c_str()).c_str());
-	wcscpy_s(config.textureFilter.txCachePath, ToUTF16(settings.value("txCachePath", FromUTF16(config.textureFilter.txPath).c_str()).toString().c_str()).c_str());
-	wcscpy_s(config.textureFilter.txDumpPath, ToUTF16(settings.value("txDumpPath", FromUTF16(config.textureFilter.txPath).c_str()).toString().c_str()).c_str());
+	wcscpy_s(config.textureFilter.txCachePath, ToUTF16(settings.value("txCachePath", FromUTF16(config.textureFilter.txCachePath).c_str()).toString().c_str()).c_str());
+	wcscpy_s(config.textureFilter.txDumpPath, ToUTF16(settings.value("txDumpPath", FromUTF16(config.textureFilter.txDumpPath).c_str()).toString().c_str()).c_str());
 	settings.endGroup();
 
 	settings.beginGroup("font");
@@ -399,8 +399,8 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 		origConfig.G.S != settings.value(#S, config.G.S).toFloat()) \
 		settings.setValue(#S, config.G.S)
 #define WriteCustomSettingS(S) \
-	const std::string new##S = FromUTF16(config.textureFilter.txPath); \
-	const std::string orig##S = FromUTF16(origConfig.textureFilter.txPath); \
+	const std::string new##S = FromUTF16(config.textureFilter.S); \
+	const std::string orig##S = FromUTF16(origConfig.textureFilter.S); \
 	if (orig##S != new##S || \
 		orig##S != settings.value(#S, new##S.c_str()).toString()) \
 		settings.setValue(#S, new##S.c_str())
