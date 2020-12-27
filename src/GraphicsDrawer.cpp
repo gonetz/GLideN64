@@ -879,7 +879,6 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 	g_debugger.addTriangles(triParams);
 	m_dmaVerticesNum = 0;
 
-#ifndef OLD_LLE
 	if (config.frameBufferEmulation.enable != 0) {
 		const f32 maxY = renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
 		frameBufferList().setBufferChanged(maxY);
@@ -890,7 +889,6 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 				pCurrentDepthBuffer->setDirty();
 		}
 	}
-#endif
 	gSP.changed |= CHANGED_GEOMETRYMODE;
 }
 
