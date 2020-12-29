@@ -353,9 +353,16 @@ void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 	gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
 	m_program->activate();
 
-	gfxContext.setViewport((wnd.getScreenWidth() - wnd.getWidth()) / 2, (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset(),
-		wnd.getWidth(), wnd.getHeight());
+	const s32 X = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
+	const s32 Y = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
+	const s32 W = static_cast<s32>(wnd.getWidth());
+	const s32 H = static_cast<s32>(wnd.getHeight());
+
+	gfxContext.setViewport(X, Y, W, H);
+	gfxContext.setScissor(X, Y, W, H);
+
 	gSP.changed |= CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_SCISSOR;
 
 	Context::TexParameters setParams;
 	setParams.handle = m_atlas->m_pTexture->name;
