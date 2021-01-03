@@ -61,6 +61,7 @@ struct Config
 		u32 enableLOD;
 		u32 enableHWLighting;
 		u32 enableCoverage;
+		u32 enableClipping;
 		u32 enableCustomSettings;
 		u32 enableShadersStorage;
 		u32 enableLegacyBlending;
