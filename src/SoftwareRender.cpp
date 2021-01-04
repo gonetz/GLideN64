@@ -422,6 +422,7 @@ f32 renderAndDrawTriangles(const SPVertex *_pVertices, const u16 *_pElements, u3
 		}
 	}
 
+	vResult[0].HWLight = _pVertices[0].HWLight;
 	graphics::Context::DrawTriangleParameters triParams;
 	triParams.mode = graphics::drawmode::TRIANGLES;
 	triParams.flatColors = _flatColors;
