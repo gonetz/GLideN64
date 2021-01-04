@@ -825,9 +825,13 @@ void GraphicsDrawer::drawTriangles()
 	g_debugger.addTriangles(triParams);
 
 	if (config.frameBufferEmulation.enable != 0) {
-		const f32 maxY = config.generalEmulation.enableClipping != 0 ?
-			renderAndDrawTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num, m_bFlatColors) :
-			renderTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num);
+		f32 maxY;
+		if (config.generalEmulation.enableClipping != 0) {
+			maxY = renderAndDrawTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num, m_bFlatColors);
+		} else {
+			gfxContext.drawTriangles(triParams);
+			maxY = renderTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num);
+		}
 		frameBufferList().setBufferChanged(maxY);
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 			gDP.otherMode.depthUpdate != 0) {
@@ -911,9 +915,14 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 	m_dmaVerticesNum = 0;
 
 	if (config.frameBufferEmulation.enable != 0) {
-		const f32 maxY = config.generalEmulation.enableClipping != 0 ?
-			renderAndDrawTriangles(m_dmaVertices.data(), nullptr, _numVtx, m_bFlatColors) :
-			renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
+		f32 maxY;
+		if (config.generalEmulation.enableClipping != 0) {
+			maxY = renderAndDrawTriangles(m_dmaVertices.data(), nullptr, _numVtx, m_bFlatColors);
+		}
+		else {
+			gfxContext.drawTriangles(triParams);
+			maxY = renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
+		}
 		frameBufferList().setBufferChanged(maxY);
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 			gDP.otherMode.depthUpdate != 0) {
