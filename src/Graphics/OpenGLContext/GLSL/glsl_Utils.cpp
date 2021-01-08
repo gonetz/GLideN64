@@ -55,6 +55,13 @@ bool Utils::checkShaderCompileStatus(GLuint obj)
 bool Utils::checkProgramLinkStatus(GLuint obj)
 {
 #ifdef GL_DEBUG
+	checkProgramLinkStatusRequired(obj);
+#endif
+	return true;
+}
+
+bool Utils::checkProgramLinkStatusRequired(GLuint obj)
+{
 	GLint status;
 	glGetProgramiv(obj, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE) {
@@ -64,7 +71,6 @@ bool Utils::checkProgramLinkStatus(GLuint obj)
 		LOG(LOG_ERROR, "shader_link error: %s", shader_log);
 		return false;
 	}
-#endif
 	return true;
 }
 
