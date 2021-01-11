@@ -329,16 +329,16 @@ void clipInHomogeneousSpace(SPVertex * _pVertices, std::vector<SPVertex> & _vRes
 		doCopy(w);
 		doCopy(bc0);
 		doCopy(bc1);
+		doCopy(a);
+		doCopy(flat_a);
 		if (usesColor)
 		{
 			doCopy(r);
 			doCopy(g);
 			doCopy(b);
-			doCopy(a);
 			doCopy(flat_r);
 			doCopy(flat_g);
 			doCopy(flat_b);
-			doCopy(flat_a);
 		}
 		if (usesTexture)
 		{
