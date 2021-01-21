@@ -725,6 +725,23 @@ private:
 	fUniform uClipRatio;
 };
 
+class UPolygonOffset : public UniformGroup
+{
+public:
+	UPolygonOffset(GLuint _program) {
+		LocateUniform(uPolygonOffset);
+	}
+
+	void update(bool _force) override
+	{
+		f32 offset = gfxContext.isEnabled(graphics::enable::POLYGON_OFFSET_FILL) ? 0.003f : 0.0f;
+		uPolygonOffset.set(offset, _force);
+	}
+
+private:
+	fUniform uPolygonOffset;
+};
+
 class UScreenCoordsScale : public UniformGroup
 {
 public:
@@ -1113,6 +1130,10 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
 		config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)
 		_uniforms.emplace_back(new URenderTarget(_program));
+
+	if (m_glInfo.isGLESX && m_glInfo.noPerspective) {
+		_uniforms.emplace_back(new UPolygonOffset(_program));
+	}
 
 	_uniforms.emplace_back(new UClipRatio(_program));
 

@@ -255,7 +255,8 @@ public:
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			if (_glinfo.noPerspective) {
-				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl;
+				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl
+				   << "noperspective OUT highp float vZCoord;" << std::endl;
 			}
 			m_part = ss.str();
 		}
@@ -489,12 +490,16 @@ public:
 				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;	\n"
 				;
 		} else if (config.generalEmulation.enableClipping != 0) {
-			// Move the near plane towards the camera.
-			// It helps to avoid issues with near-plane clipping in games, which do not use it.
-			// Z must be scaled back in fragment shader.
-				m_part =
-					"  gl_Position.z /= 8.0;	\n"
-				;
+
+			if (config.generalEmulation.enableFragmentDepthWrite != 0 && _glinfo.noPerspective) {
+				m_part = "  vZCoord = gl_Position.z / gl_Position.w;	\n";
+				m_part += "  gl_Position.z = 0.0;	\n";
+			} else {
+				// Move the near plane towards the camera.
+				// It helps to avoid issues with near-plane clipping in games, which do not use it.
+				// Z must be scaled back in fragment shader.
+				m_part = "  gl_Position.z /= 8.0;	\n";
+			}
 		}
 		m_part +=
 			" gl_Position.zw *= vec2(uClipRatio);	 \n"
@@ -1172,6 +1177,14 @@ public:
 				"highp float writeDepth();\n";
 			;
 		}
+		if (_glinfo.isGLESX &&  _glinfo.noPerspective) {
+			m_part =
+				"noperspective IN highp float vZCoord;	\n"
+				"uniform lowp float uPolygonOffset;	\n"
+				+ m_part
+				;
+		}
+
 	}
 };
 
@@ -1918,10 +1931,17 @@ public:
 						"{																								\n"
 						;
 					if (_glinfo.isGLESX && config.generalEmulation.enableClipping != 0) {
-						m_part +=
-							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
-							"      clamp(8.0 * (gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-							;
+						if (_glinfo.noPerspective) {
+							m_part +=
+								"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
+								"      clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+								;
+						} else {
+							m_part +=
+								"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
+								"      clamp(8.0 * (gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+								;
+						}
 					} else {
 						m_part +=
 							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
@@ -1938,13 +1958,24 @@ public:
 						;
 				} else {
 					if (_glinfo.isGLESX && config.generalEmulation.enableClipping != 0) {
-						m_part =
-							"highp float writeDepth()						        										\n"
-							"{																								\n"
-							"  if (uDepthSource != 0) return uPrimDepth;													\n"
-							"  return clamp(8.0 * (gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-							"}																								\n"
-						;
+						if (_glinfo.noPerspective) {
+							m_part =
+								"highp float writeDepth()																	\n"
+								"{																							\n"
+								"  if (uDepthSource != 0) return uPrimDepth;												\n"
+								"  return clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);		\n"
+								"}																							\n"
+								;
+						} else {
+							m_part =
+								"highp float writeDepth()						        										\n"
+								"{																								\n"
+								"  if (uDepthSource != 0) return uPrimDepth;													\n"
+								"  return clamp(8.0 * (gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+								"}																								\n"
+								;
+						}
+
 					} else {
 						m_part =
 							"highp float writeDepth()						        									\n"
