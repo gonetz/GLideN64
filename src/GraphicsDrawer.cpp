@@ -1392,15 +1392,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			texST[t].t0 = ult - gSP.textureTile[t]->fult;
 			texST[t].t1 = lrt - gSP.textureTile[t]->fult;
 
-			if (uls > lrs) {
-				texST[t].s0 -= _params.dsdx * shiftScaleS;
-				texST[t].s1 -= _params.dsdx * shiftScaleS;
-			}
-			if (ult > lrt) {
-				texST[t].t0 -= _params.dtdy * shiftScaleT;
-				texST[t].t1 -= _params.dtdy * shiftScaleT;
-			}
-
 			if (cache.current[t]->frameBufferTexture != CachedTexture::fbNone) {
 				texST[t].s0 = cache.current[t]->offsetS + texST[t].s0;
 				texST[t].t0 = cache.current[t]->offsetT + texST[t].t0;
@@ -1436,13 +1427,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			texST[t].t0 *= cache.current[t]->hdRatioT;
 			texST[t].s1 *= cache.current[t]->hdRatioS;
 			texST[t].t1 *= cache.current[t]->hdRatioT;
-
-			if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
-				texST[t].s0 -= 0.5f;
-				texST[t].t0 -= 0.5f;
-				texST[t].s1 -= 0.5f;
-				texST[t].t1 -= 0.5f;
-			}
 
 		}
 	}
