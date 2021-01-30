@@ -603,6 +603,25 @@ private:
 	fUniform uAlphaTestValue;
 };
 
+class UViewportInfo : public UniformGroup
+{
+public:
+	UViewportInfo(GLuint _program) {
+		LocateUniform(uVTrans);
+		LocateUniform(uVScale);
+	}
+
+	void update(bool _force) override
+	{
+		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
+		uVScale.set(gSP.viewport.vscale[0], gSP.viewport.vscale[1], _force);
+	}
+
+private:
+	fv2Uniform uVTrans;
+	fv2Uniform uVScale;
+};
+
 class UDepthScale : public UniformGroup
 {
 public:
@@ -1065,6 +1084,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 {
 	_uniforms.emplace_back(new UNoiseTex(_program));
 	_uniforms.emplace_back(new UScreenSpaceTriangleInfo(_program));
+	_uniforms.emplace_back(new UViewportInfo(_program));
 
 	if (!m_glInfo.isGLES2) {
 		_uniforms.emplace_back(new UDepthTex(_program));

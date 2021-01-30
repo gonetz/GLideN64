@@ -826,18 +826,6 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 				vtx.w *= adjustScale;
 		}
 	}
-	if (gSP.viewport.vscale[0] < 0) {
-		for(int i = 0; i < VNUM; ++i) {
-			SPVertex & vtx = spVtx[v+i];
-			vtx.x = -vtx.x;
-		}
-	}
-	if (gSP.viewport.vscale[1] < 0) {
-		for(int i = 0; i < VNUM; ++i) {
-			SPVertex & vtx = spVtx[v+i];
-			vtx.y = -vtx.y;
-		}
-	}
 
 	if (gSP.matrix.billboard)
 		gSPBillboardVertex<VNUM>(v, spVtx);
@@ -1671,10 +1659,12 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.x = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 2);
 			vtx0.y = _FIXED2FLOAT((s16)_SHIFTR(_val, 0, 16), 2);
 			DebugMsg(DEBUG_NORMAL, "gSPModifyVertex: XY(%02f, %02f);\n", vtx0.x, vtx0.y);
+			/*
 			if ((config.generalEmulation.hacks & hack_ModifyVertexXyInShader) == 0) {
+				
 				vtx0.x = (vtx0.x - gSP.viewport.vtrans[0]) / gSP.viewport.vscale[0];
-				if (gSP.viewport.vscale[0] < 0)
-					vtx0.x = -vtx0.x;
+				//if (gSP.viewport.vscale[0] < 0)
+				//	vtx0.x = -vtx0.x;
 				vtx0.x *= vtx0.w;
 
 				if (dwnd().isAdjustScreen()) {
@@ -1685,9 +1675,11 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				}
 
 				vtx0.y = -(vtx0.y - gSP.viewport.vtrans[1]) / gSP.viewport.vscale[1];
-				if (gSP.viewport.vscale[1] < 0)
-					vtx0.y = -vtx0.y;
+				//if (gSP.viewport.vscale[1] < 0)
+				//	vtx0.y = -vtx0.y;
 				vtx0.y *= vtx0.w;
+			*/
+			if (false) {
 			} else {
 				vtx0.modify |= MODIFY_XY;
 				if (vtx0.w == 0.0f || gDP.otherMode.depthSource == G_ZS_PRIM) {

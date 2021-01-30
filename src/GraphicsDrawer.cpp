@@ -321,6 +321,28 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
+void GraphicsDrawer::_updateScreenCoordsViewport2(const FrameBuffer* _pBuffer) const
+{
+	s32 X, Y, WIDTH, HEIGHT;
+	const s32 scale = config.frameBufferEmulation.nativeResFactor;
+	const FrameBuffer* pCurrentBuffer = _pBuffer != nullptr ? _pBuffer : frameBufferList().getCurrent();
+	f32 scaleX, scaleY;
+	if (pCurrentBuffer != nullptr) {
+		scaleX = scaleY = pCurrentBuffer->m_scale;
+	}
+	else {
+		scaleX = dwnd().getScaleX();
+		scaleY = dwnd().getScaleY();
+	}
+	X = roundup(-1024.0f, scaleX);
+	Y = roundup(-1024.0f, scaleY);
+	WIDTH = roundup(2048.0f, scaleX);
+	HEIGHT = roundup(2048.0f, scaleY);
+	gfxContext.setViewport(X, Y, WIDTH, HEIGHT);
+	gSP.changed |= CHANGED_VIEWPORT;
+}
+
+
 void GraphicsDrawer::_legacyBlending() const
 {
 	const u32 blendmode = gDP.otherMode.l >> 16;
@@ -723,7 +745,8 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 		updateScissor(frameBufferList().getCurrent());
 
 	if (gSP.changed & CHANGED_VIEWPORT)
-		_updateViewport();
+		// _updateViewport();
+		_updateScreenCoordsViewport2();
 
 	if ((gSP.changed & CHANGED_TEXTURE) ||
 		(gDP.changed & (CHANGED_TILE | CHANGED_TMEM)) ||
@@ -795,7 +818,7 @@ void GraphicsDrawer::_prepareDrawTriangle(DrawingState _drawingState)
 	m_bFlatColors = bFlatColors;
 
 	if ((m_modifyVertices & MODIFY_XY) != 0)
-		_updateScreenCoordsViewport();
+		_updateScreenCoordsViewport2();
 	m_modifyVertices = 0;
 }
 
@@ -1036,7 +1059,7 @@ void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width)
 	m_drawingState = DrawingState::Line;
 
 	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
-		_updateScreenCoordsViewport();
+		_updateScreenCoordsViewport2();
 
 	SPVertex vertexBuf[2] = { triangles.vertices[_v0], triangles.vertices[_v1] };
 	gfxContext.drawLine(lineWidth, vertexBuf);
@@ -1057,24 +1080,22 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 
 	m_drawingState = DrawingState::Rect;
 
-	_updateScreenCoordsViewport();
+	_updateScreenCoordsViewport2();
 
 	gfxContext.enable(enable::CULL_FACE, false);
 
-	f32 scaleX, scaleY;
-	calcCoordsScales(frameBufferList().getCurrent(), scaleX, scaleY);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
-	m_rect[0].x = static_cast<f32>(_ulx) * (2.0f * scaleX) - 1.0f;
-	m_rect[0].y = static_cast<f32>(_uly) * (2.0f * scaleY) - 1.0f;
+	m_rect[0].x = static_cast<f32>(_ulx);
+	m_rect[0].y = static_cast<f32>(_uly);
 	m_rect[0].z = Z;
 	m_rect[0].w = W;
-	m_rect[1].x = static_cast<f32>(_lrx) * (2.0f * scaleX) - 1.0f;
+	m_rect[1].x = static_cast<f32>(_lrx);
 	m_rect[1].y = m_rect[0].y;
 	m_rect[1].z = Z;
 	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = static_cast<f32>(_lry) * (2.0f * scaleY) - 1.0f;
+	m_rect[2].y = static_cast<f32>(_lry);
 	m_rect[2].z = Z;
 	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
@@ -1297,14 +1318,13 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		&& ((cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
 		&& (cache.current[1] == nullptr || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture)));
 
-	f32 scaleX, scaleY;
-	calcCoordsScales(pCurrentBuffer, scaleX, scaleY);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
-	const f32 ulx = _params.ulx * (2.0f * scaleX) - 1.0f;
-	const f32 uly = _params.uly * (2.0f * scaleY) - 1.0f;
-	const f32 lrx = _params.lrx * (2.0f * scaleX) - 1.0f;
-	const f32 lry = _params.lry * (2.0f * scaleY) - 1.0f;
+	const f32 ulx = _params.ulx;
+	const f32 uly = _params.uly;
+	const f32 lrx = _params.lrx;
+	const f32 lry = _params.lry;
+
 	m_rect[0].x = ulx;
 	m_rect[0].y = uly;
 	m_rect[0].z = Z;
@@ -1497,7 +1517,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			return;
 	}
 
-	_updateScreenCoordsViewport(_params.pBuffer);
+	_updateScreenCoordsViewport2(_params.pBuffer);
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
 	rectParams.verticesCount = 4;
