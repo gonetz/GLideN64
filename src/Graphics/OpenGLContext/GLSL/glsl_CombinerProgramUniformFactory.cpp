@@ -689,8 +689,9 @@ public:
 
 	void update(bool _force) override
 	{
+		float ySign = !GBI.isNegativeY() ? 1.0 : -1.0;
 		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
-		uVScale.set(gSP.viewport.vscale[0], gSP.viewport.vscale[1], _force);
+		uVScale.set(gSP.viewport.vscale[0], ySign*gSP.viewport.vscale[1], _force);
 	}
 
 private:

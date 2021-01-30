@@ -267,8 +267,8 @@ void gSPViewport( u32 v )
 	gSP.viewport.vtrans[2] = _FIXED2FLOAT( *(s16*)&RDRAM[address + 14], 10 );// * 0.00097847357f;
 	gSP.viewport.vtrans[3] = *(s16*)&RDRAM[address + 12];
 
-	if (gSP.viewport.vscale[1] < 0.0f && !GBI.isNegativeY())
-		gSP.viewport.vscale[1] = -gSP.viewport.vscale[1];
+	//if (gSP.viewport.vscale[1] < 0.0f && !GBI.isNegativeY())
+	//	gSP.viewport.vscale[1] = -gSP.viewport.vscale[1];
 
 	gSP.viewport.x		= gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];
 	gSP.viewport.y		= gSP.viewport.vtrans[1] - gSP.viewport.vscale[1];
@@ -1229,10 +1229,6 @@ u32 gSPLoadSWVertexData(const SWVertex *orgVtx, SPVertex * spVtx, u32 vi, u32 n)
 			++orgVtx;
 		}
 		gSPProcessVertex<VNUM>(vi, spVtx);
-		for (u32 j = 0; j < VNUM; ++j) {
-			SPVertex & vtx = spVtx[vi+j];
-			vtx.y = -vtx.y;
-		}
 	}
 	return vi;
 }
