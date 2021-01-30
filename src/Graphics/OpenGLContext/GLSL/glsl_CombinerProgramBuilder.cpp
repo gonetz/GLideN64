@@ -317,8 +317,8 @@ public:
 			"    vec2 texCoordOut = texCoord*uCacheShiftScale[idx];			\n"
 			"    texCoordOut -= uTexOffset[idx];							\n"
 			"    texCoordOut += uCacheOffset[idx];							\n"
-			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] != 0) \n"
-			"      texCoordOut -= vec2(0.5);								\n"
+			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] != 0) \n"	/* Workaround for framebuffer textures. */
+			"      texCoordOut -= vec2(0.0,1.0);							\n"		/* They contain garbage at the bottom.  */
 			"    return texCoordOut * uCacheScale[idx];						\n"
 			"}																\n"
 			"																\n"
