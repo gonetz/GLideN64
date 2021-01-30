@@ -221,11 +221,15 @@ public:
 	URasterInfo(GLuint _program) {
 		LocateUniform(uVertexOffset);
 		LocateUniform(uTexCoordOffset);
+		LocateUniform(uUseTexCoordBounds);
+		LocateUniform(uTexCoordBounds0);
+		LocateUniform(uTexCoordBounds1);
 	}
 
 	void update(bool _force) override {
 		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
 		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
+		const bool useTexCoordBounds = isTexRect && !isNativeRes && config.graphics2D.enableTexCoordBounds;
 		float scale[2] = { 0.0f, 0.0f };
 		if (config.frameBufferEmulation.nativeResFactor != 0) {
 			scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
@@ -246,14 +250,46 @@ public:
 				texCoordOffset[1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy;
 			}
 		}
+		float tcbounds[2][4] = {};
+		if (useTexCoordBounds) {
+			f32 s, t, dsdx, dtdy, uls, lrs, ult, lrt;
+			s = _FIXED2FLOAT(gDP.lastTexRectInfo.s, 5);
+			t = _FIXED2FLOAT(gDP.lastTexRectInfo.t, 5);
+			uls = s + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx;
+			lrs = s + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx;
+			ult = t + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy;
+			lrt = t + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy;
+
+			for (int t = 0; t < 2; t++) {
+				CachedTexture* _pTexture = textureCache().current[t];
+				if (_pTexture != nullptr) {
+					tcbounds[t][0] = (fmin(uls, lrs) - gSP.textureTile[t]->fuls) * _pTexture->hdRatioS;
+					tcbounds[t][1] = (fmin(ult, lrt) - gSP.textureTile[t]->fult) * _pTexture->hdRatioT;
+					tcbounds[t][2] = (fmax(uls, lrs) - gSP.textureTile[t]->fuls) * _pTexture->hdRatioS;
+					tcbounds[t][3] = (fmax(ult, lrt) - gSP.textureTile[t]->fult) * _pTexture->hdRatioT;
+					if (_pTexture->frameBufferTexture != CachedTexture::fbNone) {
+						tcbounds[t][0] += _pTexture->offsetS * _pTexture->hdRatioS;
+						tcbounds[t][1] += _pTexture->offsetT * _pTexture->hdRatioT;
+						tcbounds[t][2] += _pTexture->offsetS * _pTexture->hdRatioS;
+						tcbounds[t][3] += _pTexture->offsetT * _pTexture->hdRatioT;
+					}
+				}
+			}
+		}
 
 		uVertexOffset.set(vertexOffset, vertexOffset, _force);
 		uTexCoordOffset.set(texCoordOffset[0], texCoordOffset[1], _force);
+		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
+		uTexCoordBounds0.set(tcbounds[0], _force);
+		uTexCoordBounds1.set(tcbounds[1], _force);
 	}
 
 private:
 	fv2Uniform uVertexOffset;
 	fv2Uniform uTexCoordOffset;
+	iUniform uUseTexCoordBounds;
+	fv4Uniform uTexCoordBounds0;
+	fv4Uniform uTexCoordBounds1;
 };
 
 class UFrameBufferInfo : public UniformGroup

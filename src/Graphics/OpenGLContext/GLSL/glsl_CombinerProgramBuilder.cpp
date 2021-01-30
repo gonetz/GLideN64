@@ -952,6 +952,9 @@ public:
 			"uniform lowp vec2 uTexClampEn0;		\n"
 			"uniform lowp vec2 uTexClampEn1;		\n"
 			"uniform highp vec2 uTexCoordOffset;	\n"
+			"uniform lowp int uUseTexCoordBounds;	\n"
+			"uniform highp vec4 uTexCoordBounds0;	\n"
+			"uniform highp vec4 uTexCoordBounds1;	\n"
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"uniform lowp int uTextureFilterMode;	\n"
 			"highp vec2 texCoord0;					\n"
@@ -2573,6 +2576,10 @@ public:
 			" highp vec2 mTexCoord1 = vTexCoord1 + vec2(0.0001);						\n"
 			" mTexCoord0 += uTexCoordOffset;											\n"
 			" mTexCoord1 += uTexCoordOffset;											\n"
+			" if (uUseTexCoordBounds != 0) {											\n"
+			" mTexCoord0 = clamp(mTexCoord0, uTexCoordBounds0.xy, uTexCoordBounds0.zw); \n"
+			" mTexCoord1 = clamp(mTexCoord1, uTexCoordBounds1.xy, uTexCoordBounds1.zw); \n"
+			" }																			\n"
 			;
 	}
 };
