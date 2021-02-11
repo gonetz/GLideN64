@@ -2637,18 +2637,17 @@ class ShaderCoverage : public ShaderPart {
 public:
 	ShaderCoverage() {
 		m_part =
-			"const highp vec2 bias[8] = vec2[8] (vec2(-0.5,-0.5), vec2(0.0, -0.5), vec2(-0.25,-0.25), vec2(-0.25, 0.25), \n"
+			"const highp vec2 bias[8] = vec2[8] (vec2(-0.5,-0.5), vec2(0.0, -0.5), vec2(-0.25,-0.25), vec2(0.25, -0.25), \n"
 			"                   vec2(-0.5, 0.0), vec2(0.0,0.0), vec2(-0.25,0.25), vec2(0.25,0.25)); \n"
-			"highp vec4 dBCdx = dFdx(vBaryCoords);					\n"
-			"highp vec4 dBCdy = dFdy(vBaryCoords);					\n"
-			"cvg = 0.0;												\n"
-			"for (int i = 0; i<8; i++) {							\n"
-			"  lowp float addend = 0.125;							\n"
-			"  for (int j=0; j<4; j++) {							\n"
-			"    addend *= step(0.0, vBaryCoords[j] + dot(vec2(dBCdx[j], dBCdy[j]), bias[i])); \n"
-			"  }													\n"
-			"  cvg += addend;										\n"
-			"}														\n"
+			"highp vec4 dBCdx = dFdx(vBaryCoords);														\n"
+			"highp vec4 dBCdy = dFdy(vBaryCoords);														\n"
+			"cvg = 0.0;																					\n"
+			"for (int i = 0; i<8; i++) {																\n"
+			"  highp vec2 currentBias = bias[i];														\n"
+			"  highp vec4 baryCoordsBiased = vBaryCoords + dBCdx*currentBias.x + dBCdy * currentBias.y; \n"
+			"  lowp vec4 inside = step(0.0, baryCoordsBiased);											\n"
+			"  cvg += 0.125 * inside[0] * inside[1] * inside[2] * inside[3];							\n"
+			"}																							\n"
 			;
 	}
 };
