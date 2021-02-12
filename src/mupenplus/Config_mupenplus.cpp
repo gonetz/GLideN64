@@ -178,6 +178,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "BackgroundsMode", config.graphics2D.bgMode, "Render backgrounds mode (HLE only). (0=One piece (fast), 1=Stripped (precise))");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableTexCoordBounds", config.graphics2D.enableTexCoordBounds, "Bound texture rectangle texture coordinates to the values they take in native resolutions. It prevents garbage due to fetching out of texture bounds, but can result in hard edges. (0=Off, 1=On)");
+	assert(res == M64ERR_SUCCESS);
 
 	//#Frame Buffer Settings:"
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFBEmulation", config.frameBufferEmulation.enable, "Enable frame and|or depth buffer emulation.");
@@ -381,6 +383,8 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.graphics2D.enableNativeResTexrects = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "graphics2D\\bgMode", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.graphics2D.bgMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "graphics2D\\enableTexCoordBounds", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.graphics2D.enableTexCoordBounds = atoi(value);
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\enable", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.enable = atoi(value);
@@ -507,6 +511,7 @@ void Config_LoadConfig()
 	config.graphics2D.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
 	config.graphics2D.enableNativeResTexrects = ConfigGetParamInt(g_configVideoGliden64, "EnableNativeResTexrects");
 	config.graphics2D.bgMode = ConfigGetParamInt(g_configVideoGliden64, "BackgroundsMode");
+	config.graphics2D.enableTexCoordBounds = ConfigGetParamInt(g_configVideoGliden64, "EnableTexCoordBounds");
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
 	config.frameBufferEmulation.copyAuxToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyAuxiliaryToRDRAM");
