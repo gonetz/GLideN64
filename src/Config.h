@@ -90,6 +90,7 @@ struct Config
 		u32 correctTexrectCoords;
 		u32 enableNativeResTexrects;
 		u32 bgMode;
+		u32 enableTexCoordBounds;
 	} graphics2D;
 
 	enum Aspect {
