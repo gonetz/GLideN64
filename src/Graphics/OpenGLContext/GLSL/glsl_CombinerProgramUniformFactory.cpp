@@ -230,7 +230,7 @@ public:
 	void update(bool _force) override {
 		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
 		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
-		const bool useTexCoordBounds = isTexRect && !isNativeRes;
+		const bool useTexCoordBounds = isTexRect && !isNativeRes && config.graphics2D.enableTexCoordBounds;
 		float scale[2] = { 0.0f, 0.0f };
 		if (config.frameBufferEmulation.nativeResFactor != 0) {
 			scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
