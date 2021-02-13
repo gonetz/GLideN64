@@ -256,7 +256,8 @@ public:
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			if (_glinfo.noPerspective) {
 				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl
-				   << "noperspective OUT highp float vZCoord;" << std::endl;
+					<< "noperspective OUT highp float vZCoord;" << std::endl
+					<< "uniform lowp int uClampMode;" << std::endl;
 			}
 			m_part = ss.str();
 		}
@@ -489,19 +490,17 @@ public:
 			m_part =
 				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;	\n"
 				;
-		} else if (config.generalEmulation.enableClipping != 0) {
-			// Move the near plane towards the camera.
-			// It helps to avoid issues with near-plane clipping in games, which do not use it.
-			// Z must be scaled back in fragment shader.
-			m_part = "  gl_Position.z /= 8.0;	\n";
-			if (config.generalEmulation.enableFragmentDepthWrite != 0 && _glinfo.noPerspective)
-				m_part += "  vZCoord = gl_Position.z / gl_Position.w;	\n";
 		} else if (config.generalEmulation.enableFragmentDepthWrite != 0 && _glinfo.noPerspective) {
 			m_part =
 				"  vZCoord = gl_Position.z / gl_Position.w;	\n"
 				"  if (uClampMode > 0)	\n"
 				"    gl_Position.z = 0.0;	\n"
 				;
+		} else if (config.generalEmulation.enableClipping != 0) {
+			// Move the near plane towards the camera.
+			// It helps to avoid issues with near-plane clipping in games, which do not use it.
+			// Z must be scaled back in fragment shader.
+			m_part = "  gl_Position.z /= 8.0;	\n";
 		}
 		m_part +=
 			" gl_Position.zw *= vec2(uClipRatio);	 \n"
@@ -1183,6 +1182,7 @@ public:
 			m_part =
 				"noperspective IN highp float vZCoord;	\n"
 				"uniform lowp float uPolygonOffset;	\n"
+				"uniform lowp int uClampMode; \n"
 				+ m_part
 				;
 		}
@@ -1934,17 +1934,11 @@ public:
 						;
 					if (_glinfo.isGLESX) {
 						if (_glinfo.noPerspective) {
-							if (config.generalEmulation.enableClipping == 0)
-								m_part +=
-									"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;										\n"
-									"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :							\n"
-									"         clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-								;
-							else
-								m_part +=
-								"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
-								"        clamp((8.0 * vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-								;
+							m_part +=
+								"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;										\n"
+								"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :							\n"
+								"         clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							;
 						} else if (config.generalEmulation.enableClipping != 0) {
 							m_part +=
 							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
@@ -1973,23 +1967,14 @@ public:
 				} else {
 					if (_glinfo.isGLESX) {
 						if (_glinfo.noPerspective) {
-							if (config.generalEmulation.enableClipping == 0)
-								m_part =
-									"highp float writeDepth()																	\n"
-									"{																							\n"
-									"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;											\n"
-									"  if (uDepthSource != 0) return uPrimDepth;												\n"
-									"  return clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);		\n"
-									"}																							\n"
-								;
-							else
-								m_part =
-									"highp float writeDepth()																	\n"
-									"{																							\n"
-									"  if (uDepthSource != 0) return uPrimDepth;												\n"
-									"  return clamp((8.0 * vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);\n"
-									"}																							\n"
-								;
+							m_part =
+								"highp float writeDepth()																	\n"
+								"{																							\n"
+								"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;											\n"
+								"  if (uDepthSource != 0) return uPrimDepth;												\n"
+								"  return clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);		\n"
+								"}																							\n"
+							;
 						} else if (config.generalEmulation.enableClipping != 0) {
 							m_part =
 								"highp float writeDepth()						        										\n"
