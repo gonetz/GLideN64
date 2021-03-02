@@ -360,15 +360,19 @@ f32 renderAndDrawTriangles(const SPVertex *_pVertices,
 		int dzdx = calcDzDx(pVtxClip);
 		vertexi vdraw[3];
 		for (u32 k = 0; k < 3; ++k) {
-			for (u32 k = 0; k < 3; ++k) {
-				const u32 idx = clockwise ? k : 3 - k - 1;
-				maxY = std::max(maxY, pVtxClip[idx].y);
-				vdraw[k].x = floatToFixed16(pVtxClip[idx].x);
-				vdraw[k].y = floatToFixed16(pVtxClip[idx].y);
-				vdraw[k].z = floatToFixed16(pVtxClip[idx].z);
-			}
+			const u32 idx = clockwise ? k : 3 - k - 1;
+			maxY = std::max(maxY, pVtxClip[idx].y);
+			vdraw[k].x = floatToFixed16(pVtxClip[idx].x);
+			vdraw[k].y = floatToFixed16(pVtxClip[idx].y);
+			vdraw[k].z = floatToFixed16(pVtxClip[idx].z);
 		}
 		Rasterize(vdraw, 3, dzdx);
+	};
+
+	auto calcMaxY = [&maxY](const vertexclip* pVtxClip)
+	{
+		for (u32 k = 0; k < 3; ++k)
+			maxY = std::max(maxY, pVtxClip[k].y);
 	};
 
 	for (u32 i = 0; i < _numElements; i += 3) {
@@ -402,6 +406,8 @@ f32 renderAndDrawTriangles(const SPVertex *_pVertices,
 
 			if (needResterise)
 				rasterise(vclip, clockwise);
+			else
+				calcMaxY(vclip);
 		} else {
 			assert(modify == 0);
 			// No screen space coordinates, so use clipping in homogeneous space.
