@@ -387,7 +387,7 @@ bool TexrectDrawer::draw()
 	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->height;
 	const float W = 1.0f;
 
-	drawer._updateScreenCoordsViewport(m_pBuffer);
+	drawer._updateViewport(m_pBuffer);
 
 	textureCache().activateTexture(0, m_pTexture);
 	// Disable filtering to avoid black outlines
