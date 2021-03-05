@@ -603,6 +603,25 @@ private:
 	fUniform uAlphaTestValue;
 };
 
+class UViewportInfo : public UniformGroup
+{
+public:
+	UViewportInfo(GLuint _program) {
+		LocateUniform(uVTrans);
+		LocateUniform(uVScale);
+	}
+
+	void update(bool _force) override
+	{
+		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
+		uVScale.set(gSP.viewport.vscale[0], gSP.viewport.vscale[1], _force);
+	}
+
+private:
+	fv2Uniform uVTrans;
+	fv2Uniform uVScale;
+};
+
 class UDepthScale : public UniformGroup
 {
 public:
@@ -736,22 +755,6 @@ public:
 
 private:
 	iUniform uClampMode;
-};
-
-class UClipRatio : public UniformGroup
-{
-public:
-	UClipRatio(GLuint _program) {
-		LocateUniform(uClipRatio);
-	}
-
-	void update(bool _force) override
-	{
-		uClipRatio.set(float(gSP.clipRatio), _force);
-	}
-
-private:
-	fUniform uClipRatio;
 };
 
 class UPolygonOffset : public UniformGroup
@@ -1094,6 +1097,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 {
 	_uniforms.emplace_back(new UNoiseTex(_program));
 	_uniforms.emplace_back(new UScreenSpaceTriangleInfo(_program));
+	_uniforms.emplace_back(new UViewportInfo(_program));
 
 	if (!m_glInfo.isGLES2) {
 		_uniforms.emplace_back(new UDepthTex(_program));
@@ -1164,8 +1168,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new UClampMode(_program));
 		_uniforms.emplace_back(new UPolygonOffset(_program));
 	}
-
-	_uniforms.emplace_back(new UClipRatio(_program));
 
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 

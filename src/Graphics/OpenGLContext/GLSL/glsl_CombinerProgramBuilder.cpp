@@ -267,7 +267,6 @@ public:
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
-		m_part += "uniform lowp float uClipRatio; \n";
 	}
 };
 
@@ -296,6 +295,8 @@ public:
 			"uniform mediump vec2 uCacheScale[2];				\n"
 			"uniform mediump vec2 uCacheOffset[2];				\n"
 			"uniform mediump vec2 uCacheShiftScale[2];			\n"
+			"uniform mediump vec2 uVTrans;						\n"
+			"uniform mediump vec2 uVScale;						\n"
 			"uniform lowp ivec2 uCacheFrameBuffer;				\n"
 			"OUT highp vec2 vTexCoord0;							\n"
 			"OUT highp vec2 vTexCoord1;							\n"
@@ -330,17 +331,17 @@ public:
 			"  vTexCoord1 = calcTexCoord(texCoord, 1);						\n"
 			"  vLodTexCoord = texCoord;										\n"
 			"  vNumLights = aNumLights;										\n"
-			"  if (aModify != vec4(0.0)) {									\n"
-			"    if ((aModify[0]) != 0.0) {									\n"
-			"      gl_Position.xy = gl_Position.xy * uScreenCoordsScale + vec2(-1.0, 1.0);	\n"
-			"      gl_Position.xy *= gl_Position.w;							\n"
-			"    }															\n"
-			"    if ((aModify[1]) != 0.0)									\n"
-			"      gl_Position.z *= gl_Position.w;							\n"
-			"    if ((aModify[3]) != 0.0)									\n"
-			"      vNumLights = 0.0;										\n"
+			"  if ((aModify[0]) != 0.0) {									\n"
+			"    gl_Position.xy *= gl_Position.w;							\n"
 			"  }															\n"
-			"  gl_Position.y = -gl_Position.y;								\n"
+			"  else {														\n"
+			"    gl_Position.xy = gl_Position.xy * vec2(1.0,-1.0) * uVScale.xy + uVTrans.xy * gl_Position.ww; \n"
+			"    gl_Position.xy = floor(gl_Position.xy * vec2(4.0)) * vec2(0.25); \n"
+			"  }															\n"
+			"  if ((aModify[1]) != 0.0)										\n"
+			"    gl_Position.z *= gl_Position.w;							\n"
+			"  if ((aModify[3]) != 0.0)										\n"
+			"    vNumLights = 0.0;											\n"
 			"  if (uFogUsage > 0) {											\n"
 			"    lowp float fp;												\n"
 			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
@@ -374,6 +375,8 @@ public:
 			"uniform lowp int uFogUsage;									\n"
 			"uniform mediump vec2 uFogScale;								\n"
 			"uniform mediump vec2 uScreenCoordsScale;						\n"
+			"uniform mediump vec2 uVTrans;									\n"
+			"uniform mediump vec2 uVScale;									\n"
 			"																\n"
 			"OUT lowp float vNumLights;										\n"
 			"OUT lowp vec4 vShadeColor;										\n"
@@ -390,17 +393,17 @@ public:
 			"  gl_Position = aPosition;										\n"
 			"  vShadeColor = aColor;										\n"
 			"  vNumLights = aNumLights;										\n"
-			"  if (aModify != vec4(0.0)) {									\n"
-			"    if ((aModify[0]) != 0.0) {									\n"
-			"      gl_Position.xy = gl_Position.xy * uScreenCoordsScale + vec2(-1.0, 1.0);	\n"
-			"      gl_Position.xy *= gl_Position.w;							\n"
-			"    }															\n"
-			"    if ((aModify[1]) != 0.0) 									\n"
-			"      gl_Position.z *= gl_Position.w;							\n"
-			"    if ((aModify[3]) != 0.0)									\n"
-			"      vNumLights = 0.0;										\n"
+			"  if ((aModify[0]) != 0.0) {									\n"
+			"    gl_Position.xy *= gl_Position.w;							\n"
 			"  }															\n"
-			"  gl_Position.y = -gl_Position.y;								\n"
+			"  else {														\n"
+			"    gl_Position.xy = gl_Position.xy * vec2(1.0,-1.0) * uVScale.xy + uVTrans.xy * gl_Position.ww; \n"
+			"    gl_Position.xy = floor(gl_Position.xy * vec2(4.0)) * vec2(0.25); \n"
+			"  }															\n"
+			"  if ((aModify[1]) != 0.0) 									\n"
+			"    gl_Position.z *= gl_Position.w;							\n"
+			"  if ((aModify[3]) != 0.0)										\n"
+			"    vNumLights = 0.0;											\n"
 			"  if (uFogUsage > 0) {											\n"
 			"    lowp float fp;												\n"
 			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
@@ -503,7 +506,7 @@ public:
 			m_part = "  gl_Position.z /= 8.0;	\n";
 		}
 		m_part +=
-			" gl_Position.zw *= vec2(uClipRatio);	 \n"
+			" gl_Position.zw *= vec2(1024.0f);		 \n"
 			"} \n"
 			;
 	}
