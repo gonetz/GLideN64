@@ -216,6 +216,50 @@ private:
 	iUniform uScreenSpaceTriangle;
 };
 
+class URasterInfo : public UniformGroup {
+public:
+	URasterInfo(GLuint _program) {
+		LocateUniform(uVertexOffset);
+		LocateUniform(uTexCoordOffset);
+	}
+
+	void update(bool _force) override {
+		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
+		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
+		float scale[2] = { 0.0f, 0.0f };
+		if (config.frameBufferEmulation.nativeResFactor != 0) {
+			scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+		} else {
+			scale[0] = dwnd().getScaleX();
+			scale[1] = dwnd().getScaleY();
+		}
+		/* At rasterization stage, the N64 places samples on the top left of the fragment while OpenGL		*/
+		/* places them in the fragment center. As a result, a normal approach results in shifted texture	*/
+		/* coordinates. In native resolution, this difference can be negated by shifting vertices by 0.5.	*/
+		/* In higher resolutions, there	are more samples than the game intends, so shifting is not very		*/
+		/* effective. Still, an heuristic is applied to render texture rectangles as correctly as possible  */
+		/* in higher resolutions too. See issue #2324 for details. 											*/
+		const float vertexOffset = isNativeRes ? 0.5f : 0.0f;
+		float texCoordOffset[2] = { 0.0f, 0.0f };
+		if (isTexRect && !isNativeRes) {
+			if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
+				texCoordOffset[0] = -0.5f * gDP.lastTexRectInfo.dsdx;
+				texCoordOffset[1] = -0.5f * gDP.lastTexRectInfo.dtdy;
+			} else {
+				texCoordOffset[0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? -0.5f / scale[0] : -1.0f + 0.5f / scale[0]) * gDP.lastTexRectInfo.dsdx;
+				texCoordOffset[1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy;
+			}
+		}
+
+		uVertexOffset.set(vertexOffset, vertexOffset, _force);
+		uTexCoordOffset.set(texCoordOffset[0], texCoordOffset[1], _force);
+	}
+
+private:
+	fv2Uniform uVertexOffset;
+	fv2Uniform uTexCoordOffset;
+};
+
 class UFrameBufferInfo : public UniformGroup
 {
 public:
@@ -1115,6 +1159,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 {
 	_uniforms.emplace_back(new UNoiseTex(_program));
 	_uniforms.emplace_back(new UScreenSpaceTriangleInfo(_program));
+	_uniforms.emplace_back(new URasterInfo(_program));
 	_uniforms.emplace_back(new UViewportInfo(_program));
 
 	if (!m_glInfo.isGLES2) {
