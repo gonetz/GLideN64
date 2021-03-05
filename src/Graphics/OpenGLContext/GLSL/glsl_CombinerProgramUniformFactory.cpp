@@ -1,3 +1,4 @@
+#include <cmath>
 #include <Config.h>
 #include "glsl_CombinerProgramUniformFactory.h"
 #include <Graphics/Parameters.h>
@@ -221,11 +222,15 @@ public:
 	URasterInfo(GLuint _program) {
 		LocateUniform(uVertexOffset);
 		LocateUniform(uTexCoordOffset);
+		LocateUniform(uUseTexCoordBounds);
+		LocateUniform(uTexCoordBounds0);
+		LocateUniform(uTexCoordBounds1);
 	}
 
 	void update(bool _force) override {
 		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
 		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
+		const bool useTexCoordBounds = isTexRect && !isNativeRes;
 		float scale[2] = { 0.0f, 0.0f };
 		if (config.frameBufferEmulation.nativeResFactor != 0) {
 			scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
@@ -250,14 +255,68 @@ public:
 				texCoordOffset[1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy;
 			}
 		}
+		float tcbounds[2][4] = {};
+		if (useTexCoordBounds) {
+			f32 uls, lrs, ult, lrt, S, T, shiftScaleS, shiftScaleT;
+			s16 shiftedS, shiftedT;
+			u32 shifts, shiftt;
+			for (int t = 0; t < 2; t++) {
+				const CachedTexture * _pTexture = textureCache().current[t];
+				const gDPTile * _pTile = gSP.textureTile[t];
+				if (_pTexture != nullptr && _pTile != nullptr){
+					if (_pTile->shifts > 10) {
+						shifts = 16 - _pTile->shifts;
+						shiftedS = static_cast<s16>(gDP.lastTexRectInfo.s << shifts);
+						shiftScaleS = static_cast<f32>(1 << shifts);
+					} else {
+						shifts = _pTile->shifts;
+						shiftedS = static_cast<s16>(gDP.lastTexRectInfo.s >> shifts);
+						shiftScaleS = 1.0f / static_cast<f32>(1 << shifts);
+					}
+					if (_pTile->shiftt > 10) {
+						shiftt = 16 - _pTile->shiftt;
+						shiftedT = static_cast<s16>(gDP.lastTexRectInfo.t << shiftt);
+						shiftScaleT = static_cast<f32>(1 << shiftt);
+					} else {
+						shiftt = _pTile->shiftt;
+						shiftedT = static_cast<s16>(gDP.lastTexRectInfo.t >> shiftt);
+						shiftScaleT = 1.0f / static_cast<f32>(1 << shiftt);
+					}
+
+					S = _FIXED2FLOAT(shiftedS, 5);
+					T = _FIXED2FLOAT(shiftedT, 5);
+					uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx * shiftScaleS;
+					lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx * shiftScaleS;
+					ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy * shiftScaleT;
+					lrt = T + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy * shiftScaleT;
+
+					tcbounds[t][0] = (fmin(uls, lrs) - _pTile->fuls) * _pTexture->hdRatioS;
+					tcbounds[t][1] = (fmin(ult, lrt) - _pTile->fult) * _pTexture->hdRatioT;
+					tcbounds[t][2] = (fmax(uls, lrs) - _pTile->fuls) * _pTexture->hdRatioS;
+					tcbounds[t][3] = (fmax(ult, lrt) - _pTile->fult) * _pTexture->hdRatioT;
+					if (_pTexture->frameBufferTexture != CachedTexture::fbNone) {
+						tcbounds[t][0] += _pTexture->offsetS * _pTexture->hdRatioS;
+						tcbounds[t][1] += _pTexture->offsetT * _pTexture->hdRatioT;
+						tcbounds[t][2] += _pTexture->offsetS * _pTexture->hdRatioS;
+						tcbounds[t][3] += _pTexture->offsetT * _pTexture->hdRatioT;
+					}
+				}
+			}
+		}
 
 		uVertexOffset.set(vertexOffset, vertexOffset, _force);
 		uTexCoordOffset.set(texCoordOffset[0], texCoordOffset[1], _force);
+		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
+		uTexCoordBounds0.set(tcbounds[0], _force);
+		uTexCoordBounds1.set(tcbounds[1], _force);
 	}
 
 private:
 	fv2Uniform uVertexOffset;
 	fv2Uniform uTexCoordOffset;
+	iUniform uUseTexCoordBounds;
+	fv4Uniform uTexCoordBounds0;
+	fv4Uniform uTexCoordBounds1;
 };
 
 class UFrameBufferInfo : public UniformGroup
