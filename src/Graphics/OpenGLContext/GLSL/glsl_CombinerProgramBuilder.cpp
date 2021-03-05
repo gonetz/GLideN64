@@ -268,6 +268,7 @@ public:
 			m_part = ss.str();
 		}
 		m_part += "uniform lowp float uClipRatio; \n";
+		m_part += "uniform lowp vec2 uVertexOffset; \n";
 	}
 };
 
@@ -507,6 +508,7 @@ public:
 			m_part = "  gl_Position.z /= 8.0;	\n";
 		}
 		m_part +=
+			" gl_Position.xy += uVertexOffset * vec2(gl_Position.w); \n"
 			" gl_Position.zw *= vec2(1024.0f);		 \n"
 			"} \n"
 			;
@@ -950,6 +952,7 @@ public:
 			"uniform lowp vec2 uTexMirrorEn1;		\n"
 			"uniform lowp vec2 uTexClampEn0;		\n"
 			"uniform lowp vec2 uTexClampEn1;		\n"
+			"uniform highp vec2 uTexCoordOffset;	\n"
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"highp vec2 texCoord0;					\n"
 			"highp vec2 texCoord1;					\n"
@@ -2579,6 +2582,19 @@ public:
 };
 
 
+class ShaderFragmentCorrectTexCoords : public ShaderPart {
+public:
+	ShaderFragmentCorrectTexCoords() {
+		m_part +=
+			" highp vec2 mTexCoord0 = vTexCoord0 + vec2(0.0001);						\n"
+			" highp vec2 mTexCoord1 = vTexCoord1 + vec2(0.0001);						\n"
+			" mTexCoord0 += uTexCoordOffset;											\n"
+			" mTexCoord1 += uTexCoordOffset;											\n"
+			;
+	}
+};
+
+
 class ShaderTextureEngine : public ShaderPart
 {
 public:
@@ -2641,7 +2657,7 @@ public:
 	ShaderFragmentTextureEngineTex0(const opengl::GLInfo _glinfo)
 	{
 		m_part =
-			"textureEngine0(vTexCoord0, tcData0); \n"
+			"textureEngine0(mTexCoord0, tcData0); \n"
 			;
 	}
 };
@@ -2651,7 +2667,7 @@ public:
 	ShaderFragmentTextureEngineTex1(const opengl::GLInfo _glinfo)
 	{
 		m_part =
-			"textureEngine1(vTexCoord1, tcData1); \n"
+			"textureEngine1(mTexCoord1, tcData1); \n"
 			;
 	}
 };
@@ -2895,6 +2911,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 
 
 	if (bUseTextures) {
+		m_fragmentCorrectTexCoords->write(ssShader);
 		if (combinerInputs.usesTile(0))
 		{
 			m_fragmentTextureEngineTex0->write(ssShader);
@@ -3064,6 +3081,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentBlendMux(new ShaderFragmentBlendMux(_glinfo))
 , m_fragmentReadTex0(new ShaderFragmentReadTex0(_glinfo))
 , m_fragmentReadTex1(new ShaderFragmentReadTex1(_glinfo))
+, m_fragmentCorrectTexCoords(new ShaderFragmentCorrectTexCoords())
 , m_fragmentTextureEngineTex0(new ShaderFragmentTextureEngineTex0(_glinfo))
 , m_fragmentTextureEngineTex1(new ShaderFragmentTextureEngineTex1(_glinfo))
 , m_fragmentReadTexCopyMode(new ShaderFragmentReadTexCopyMode(_glinfo))
