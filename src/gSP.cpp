@@ -1656,7 +1656,9 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			if ((config.generalEmulation.hacks & hack_ModifyVertexXyInShader) == 0) {
 				if (dwnd().isAdjustScreen()) {
 					const f32 adjustScale = dwnd().getAdjustScale();
+					const f32 adjustOffset = static_cast<f32>(VI.width) * (1.0f - adjustScale) / 2.0f;
 					vtx0.x *= adjustScale;
+					vtx0.x += adjustOffset;
 					if (gSP.matrix.projection[3][2] == -1.f)
 						vtx0.w *= adjustScale;
 				}
