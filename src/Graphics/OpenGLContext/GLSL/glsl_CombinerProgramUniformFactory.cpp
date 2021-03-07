@@ -695,8 +695,15 @@ public:
 	void update(bool _force) override
 	{
 		float ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
-		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
-		uVScale.set(gSP.viewport.vscale[0], ySign*gSP.viewport.vscale[1], _force);
+		float offsetX = gSP.viewport.vtrans[0];
+		float scaleX = gSP.viewport.vscale[0];
+		if (dwnd().isAdjustScreen()) {
+			offsetX *= dwnd().getAdjustScale();
+			scaleX *= dwnd().getAdjustScale();
+			offsetX += static_cast<f32>(VI.width) * (1.0f - dwnd().getAdjustScale()) / 2.0f;
+		}
+		uVTrans.set(offsetX, gSP.viewport.vtrans[1], _force);
+		uVScale.set(scaleX, ySign*gSP.viewport.vscale[1], _force);
 	}
 
 private:

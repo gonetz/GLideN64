@@ -437,7 +437,7 @@ void gSPLookAt( u32 _l, u32 _n )
 static
 void gSPUpdateLightVectors()
 {
-	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0], &gSP.lights.i_xyz[0], 
+	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0], &gSP.lights.i_xyz[0],
 			gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.numLights);
 	gSP.changed ^= CHANGED_LIGHT;
 	gSP.changed |= CHANGED_HW_LIGHT;
@@ -814,6 +814,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 
 	gSPTransformVertex<VNUM>(v, spVtx, gSP.matrix.combined );
 
+	/*
 	if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
 		const f32 adjustScale = dwnd().getAdjustScale();
 		for(int i = 0; i < VNUM; ++i) {
@@ -823,6 +824,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 				vtx.w *= adjustScale;
 		}
 	}
+	*/
 
 	if (gSP.matrix.billboard)
 		gSPBillboardVertex<VNUM>(v, spVtx);
