@@ -1057,8 +1057,11 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	DisplayWindow & wnd = dwnd();
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_lrx - _ulx) < VI.width * 9 / 10)) {
 		const float scale = wnd.getAdjustScale();
-		for (u32 i = 0; i < 4; ++i)
+		const float offsetx = VI.width * (1.0f - scale) / 2.0f;
+		for (u32 i = 0; i < 4; ++i) {
 			m_rect[i].x *= scale;
+			m_rect[i].x += offsetx;
+		}
 	}
 
 	Context::DrawRectParameters rectParams;

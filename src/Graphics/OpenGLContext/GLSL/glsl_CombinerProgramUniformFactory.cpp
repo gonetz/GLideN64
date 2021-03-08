@@ -700,7 +700,7 @@ public:
 		if (dwnd().isAdjustScreen()) {
 			offsetX *= dwnd().getAdjustScale();
 			scaleX *= dwnd().getAdjustScale();
-			offsetX += static_cast<f32>(VI.width) * (1.0f - dwnd().getAdjustScale()) / 2.0f;
+			offsetX += static_cast<f32>(gDP.colorImage.width) * (1.0f - dwnd().getAdjustScale()) / 2.0f;
 		}
 		uVTrans.set(offsetX, gSP.viewport.vtrans[1], _force);
 		uVScale.set(scaleX, ySign*gSP.viewport.vscale[1], _force);
