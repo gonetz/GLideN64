@@ -1658,6 +1658,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.modify |= MODIFY_XY;
 			vtx0.clip &= ~(CLIP_POSX | CLIP_NEGX | CLIP_POSY | CLIP_NEGY);
 			if ((config.generalEmulation.hacks & hack_ModifyVertexXyInShader) == 0) {
+				/*
 				if (dwnd().isAdjustScreen()) {
 					const f32 adjustScale = dwnd().getAdjustScale();
 					const f32 adjustOffset = static_cast<f32>(VI.width) * (1.0f - adjustScale) / 2.0f;
@@ -1666,6 +1667,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 					if (gSP.matrix.projection[3][2] == -1.f)
 						vtx0.w *= adjustScale;
 				}
+				*/
 			} else {
 				if (vtx0.w == 0.0f || gDP.otherMode.depthSource == G_ZS_PRIM) {
 					vtx0.w = 1.0f;

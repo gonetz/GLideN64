@@ -197,8 +197,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 			const u32 screenWidth = wnd.getWidth();
 			width = screenWidth;
 			if (wnd.isAdjustScreen()) {
-				width = static_cast<u32>(screenWidth*wnd.getAdjustScale());
-				x0 = (screenWidth - width) / 2;
+				//width = static_cast<u32>(screenWidth*wnd.getAdjustScale());
+				//x0 = (screenWidth - width) / 2;
 			}
 		} else {
 			width = m_pCurFrameBuffer->m_pTexture->width;

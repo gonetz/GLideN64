@@ -1055,6 +1055,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	m_rect[3].bc1 = 1.0f;
 
 	DisplayWindow & wnd = dwnd();
+	/*
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_lrx - _ulx) < VI.width * 9 / 10)) {
 		const float scale = wnd.getAdjustScale();
 		const float offsetx = VI.width * (1.0f - scale) / 2.0f;
@@ -1063,6 +1064,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 			m_rect[i].x += offsetx;
 		}
 	}
+	*/
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
@@ -1419,6 +1421,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		m_rect[2].t1 = texST[1].t1;
 	}
 
+	/*
 	if (wnd.isAdjustScreen() &&
 		(_params.forceAjustScale ||
 		((gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_params.lrx - _params.ulx) < VI.width * 9 / 10))))
@@ -1430,6 +1433,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			m_rect[i].x += offsetx;
 		}
 	}
+	*/
 
 	m_rect[0].bc0 = 0.0f;
 	m_rect[0].bc1 = 0.0f;
