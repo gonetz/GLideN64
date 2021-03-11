@@ -763,11 +763,13 @@ void gSPBillboardVertex(u32 v, SPVertex * spVtx)
 template <u32 VNUM>
 void gSPClipVertex(u32 v, SPVertex * spVtx)
 {
+	const f32 scale = dwnd().getAdjustScale();
 	for (u32 j = 0; j < VNUM; ++j) {
 		SPVertex & vtx = spVtx[v+j];
 		vtx.clip = 0;
-		if (vtx.x > +vtx.w) vtx.clip |= CLIP_POSX;
-		if (vtx.x < -vtx.w) vtx.clip |= CLIP_NEGX;
+		const f32 scaledX = vtx.x * scale;
+		if (scaledX > +vtx.w) vtx.clip |= CLIP_POSX;
+		if (scaledX < -vtx.w) vtx.clip |= CLIP_NEGX;
 		if (vtx.y > +vtx.w) vtx.clip |= CLIP_POSY;
 		if (vtx.y < -vtx.w) vtx.clip |= CLIP_NEGY;
 		if (vtx.w < 0.01f) vtx.clip |= CLIP_W;
