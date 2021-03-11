@@ -690,25 +690,30 @@ public:
 	UViewportInfo(GLuint _program) {
 		LocateUniform(uVTrans);
 		LocateUniform(uVScale);
+		LocateUniform(uAdjustTrans);
+		LocateUniform(uAdjustScale);
 	}
 
 	void update(bool _force) override
 	{
 		float ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
-		float offsetX = gSP.viewport.vtrans[0];
-		float scaleX = gSP.viewport.vscale[0];
+		float adjustTrans = 0.0f;
+		float adjustScale = 1.0f;
 		if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
-			offsetX *= dwnd().getAdjustScale();
-			scaleX *= dwnd().getAdjustScale();
-			offsetX += static_cast<f32>(gDP.colorImage.width) * (1.0f - dwnd().getAdjustScale()) / 2.0f;
+			adjustScale = dwnd().getAdjustScale();
+			adjustTrans = static_cast<f32>(gDP.colorImage.width) * (1.0f - adjustScale) / 2.0f;
 		}
-		uVTrans.set(offsetX, gSP.viewport.vtrans[1], _force);
-		uVScale.set(scaleX, ySign*gSP.viewport.vscale[1], _force);
+		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
+		uVScale.set(gSP.viewport.vscale[0], ySign*gSP.viewport.vscale[1], _force);
+		uAdjustTrans.set(adjustTrans, _force);
+		uAdjustScale.set(adjustScale, _force);
 	}
 
 private:
 	fv2Uniform uVTrans;
 	fv2Uniform uVScale;
+	fUniform uAdjustTrans;
+	fUniform uAdjustScale;
 };
 
 class UDepthScale : public UniformGroup
