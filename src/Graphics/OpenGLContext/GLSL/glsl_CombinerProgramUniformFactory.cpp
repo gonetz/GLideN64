@@ -697,7 +697,7 @@ public:
 		float ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
 		float offsetX = gSP.viewport.vtrans[0];
 		float scaleX = gSP.viewport.vscale[0];
-		if (dwnd().isAdjustScreen()) {
+		if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
 			offsetX *= dwnd().getAdjustScale();
 			scaleX *= dwnd().getAdjustScale();
 			offsetX += static_cast<f32>(gDP.colorImage.width) * (1.0f - dwnd().getAdjustScale()) / 2.0f;
