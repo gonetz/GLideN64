@@ -269,8 +269,6 @@ public:
 		}
 		m_part += "uniform lowp float uClipRatio; \n";
 		m_part += "uniform lowp vec2 uVertexOffset; \n";
-		m_part += "uniform highp float uAdjTrans; \n";
-		m_part += "uniform highp float uAdjScale; \n";
 	}
 };
 
@@ -511,7 +509,6 @@ public:
 		}
 		m_part +=
 			" gl_Position.xy += uVertexOffset * vec2(gl_Position.w); \n"
-			" gl_Position.x = gl_Position.x * uAdjScale + uAdjTrans * gl_Position.w; \n"
 			" gl_Position.zw *= vec2(1024.0f);		 \n"
 			"} \n"
 			;
