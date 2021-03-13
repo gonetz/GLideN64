@@ -245,6 +245,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	}
 
 	ui->halosRemovalCheckBox->setChecked(config.texture.enableHalosRemoval != 0);
+	ui->texCoordBoundsCheckBox->setChecked(config.graphics2D.enableTexCoordBounds != 0);
 
 	ui->nativeRes2DComboBox->setCurrentIndex(config.graphics2D.enableNativeResTexrects);
 
@@ -577,6 +578,7 @@ void ConfigDialog::accept(bool justSave) {
 		config.graphics2D.bgMode = Config::BGMode::bgStripped;
 
 	config.texture.enableHalosRemoval = ui->halosRemovalCheckBox->isChecked() ? 1 : 0;
+	config.graphics2D.enableTexCoordBounds = ui->texCoordBoundsCheckBox->isChecked() ? 1 : 0;
 	config.graphics2D.enableNativeResTexrects = ui->nativeRes2DComboBox->currentIndex();
 
 	config.frameBufferEmulation.enable = ui->frameBufferCheckBox->isChecked() ? 1 : 0;

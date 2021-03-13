@@ -59,6 +59,7 @@ void _loadSettings(QSettings & settings)
 	config.graphics2D.correctTexrectCoords = settings.value("correctTexrectCoords", config.graphics2D.correctTexrectCoords).toInt();
 	config.graphics2D.enableNativeResTexrects = settings.value("enableNativeResTexrects", config.graphics2D.enableNativeResTexrects).toInt();
 	config.graphics2D.bgMode = settings.value("bgMode", config.graphics2D.bgMode).toInt();
+	config.graphics2D.enableTexCoordBounds = settings.value("enableTexCoordBounds", config.graphics2D.enableTexCoordBounds).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");
@@ -244,6 +245,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("correctTexrectCoords", config.graphics2D.correctTexrectCoords);
 	settings.setValue("enableNativeResTexrects", config.graphics2D.enableNativeResTexrects);
 	settings.setValue("bgMode", config.graphics2D.bgMode);
+	settings.setValue("enableTexCoordBounds", config.graphics2D.enableTexCoordBounds);
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");
@@ -443,6 +445,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(graphics2D, correctTexrectCoords);
 	WriteCustomSetting(graphics2D, enableNativeResTexrects);
 	WriteCustomSetting(graphics2D, bgMode);
+	WriteCustomSetting(graphics2D, enableTexCoordBounds);
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");
