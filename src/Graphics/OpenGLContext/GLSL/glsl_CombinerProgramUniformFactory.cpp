@@ -696,6 +696,7 @@ public:
 
 	void update(bool _force) override
 	{
+		float ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
 		const bool isOrthographicProjection = gSP.matrix.projection[3][2] == -1.f;
 		float adjustTrans[2] = { 0.0f, 0.0f };
 		float adjustScale[2] = { 1.0f, 1.0f };
@@ -709,7 +710,7 @@ public:
 			}
 		}
 		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
-		uVScale.set(gSP.viewport.vscale[0], gSP.viewport.vscale[1], _force);
+		uVScale.set(gSP.viewport.vscale[0], ySign*gSP.viewport.vscale[1], _force);
 		uAdjustTrans.set(adjustTrans[0], adjustTrans[1], _force);
 		uAdjustScale.set(adjustScale[0], adjustScale[1], _force);
 	}
