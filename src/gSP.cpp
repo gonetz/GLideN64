@@ -440,7 +440,7 @@ void gSPLookAt( u32 _l, u32 _n )
 static
 void gSPUpdateLightVectors()
 {
-	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0], &gSP.lights.i_xyz[0], 
+	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0], &gSP.lights.i_xyz[0],
 			gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.numLights);
 	gSP.changed ^= CHANGED_LIGHT;
 	gSP.changed |= CHANGED_HW_LIGHT;
@@ -818,16 +818,6 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 	}
 
 	gSPTransformVertex<VNUM>(v, spVtx, gSP.matrix.combined );
-
-	if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
-		const f32 adjustScale = dwnd().getAdjustScale();
-		for(int i = 0; i < VNUM; ++i) {
-			SPVertex & vtx = spVtx[v+i];
-			vtx.x *= adjustScale;
-			if (gSP.matrix.projection[3][2] == -1.f)
-				vtx.w *= adjustScale;
-		}
-	}
 
 	if (gSP.matrix.billboard)
 		gSPBillboardVertex<VNUM>(v, spVtx);
@@ -1665,7 +1655,9 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			if ((config.generalEmulation.hacks & hack_ModifyVertexXyInShader) == 0) {
 				if (dwnd().isAdjustScreen()) {
 					const f32 adjustScale = dwnd().getAdjustScale();
+					const f32 adjustOffset = static_cast<f32>(VI.width) * (1.0f - adjustScale) / 2.0f;
 					vtx0.x *= adjustScale;
+					vtx0.x += adjustOffset;
 					if (gSP.matrix.projection[3][2] == -1.f)
 						vtx0.w *= adjustScale;
 				}
