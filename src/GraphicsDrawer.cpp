@@ -1035,8 +1035,11 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	DisplayWindow & wnd = dwnd();
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_lrx - _ulx) < VI.width * 9 / 10)) {
 		const float scale = wnd.getAdjustScale();
-		for (u32 i = 0; i < 4; ++i)
+		const float offsetx = static_cast<f32>(gDP.colorImage.width) * (1.0f - scale) / 2.0f;
+		for (u32 i = 0; i < 4; ++i) {
 			m_rect[i].x *= scale;
+			m_rect[i].x += offsetx;
+		}
 	}
 
 	Context::DrawRectParameters rectParams;
@@ -1414,8 +1417,11 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		((gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_params.lrx - _params.ulx) < VI.width * 9 / 10))))
 	{
 		const float scale = wnd.getAdjustScale();
-		for (u32 i = 0; i < 4; ++i)
+		const float offsetx = static_cast<f32>(gDP.colorImage.width) * (1.0f-scale) / 2.0f;
+		for (u32 i = 0; i < 4; ++i) {
 			m_rect[i].x *= scale;
+			m_rect[i].x += offsetx;
+		}
 	}
 
 	m_rect[0].bc0 = 0.0f;
