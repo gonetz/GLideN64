@@ -609,17 +609,35 @@ public:
 	UViewportInfo(GLuint _program) {
 		LocateUniform(uVTrans);
 		LocateUniform(uVScale);
+		LocateUniform(uAdjustTrans);
+		LocateUniform(uAdjustScale);
 	}
 
 	void update(bool _force) override
 	{
+		const bool isOrthographicProjection = gSP.matrix.projection[3][2] == -1.f;
+		float adjustTrans[2] = { 0.0f, 0.0f };
+		float adjustScale[2] = { 1.0f, 1.0f };
+		if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
+			if (isOrthographicProjection) {
+				adjustScale[1] = 1.0f / dwnd().getAdjustScale();
+				adjustTrans[1] = static_cast<f32>(gDP.colorImage.width) * 3.0f / 4.0f * (1.0f - adjustScale[1]) / 2.0f;
+			} else {
+				adjustScale[0] = dwnd().getAdjustScale();
+				adjustTrans[0] = static_cast<f32>(gDP.colorImage.width) * (1.0f - adjustScale[0]) / 2.0f;
+			}
+		}
 		uVTrans.set(gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], _force);
 		uVScale.set(gSP.viewport.vscale[0], gSP.viewport.vscale[1], _force);
+		uAdjustTrans.set(adjustTrans[0], adjustTrans[1], _force);
+		uAdjustScale.set(adjustScale[0], adjustScale[1], _force);
 	}
 
 private:
 	fv2Uniform uVTrans;
 	fv2Uniform uVScale;
+	fv2Uniform uAdjustTrans;
+	fv2Uniform uAdjustScale;
 };
 
 class UDepthScale : public UniformGroup
