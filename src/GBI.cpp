@@ -54,11 +54,11 @@ static const
 std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 {
 	{ S2DEX2,		false,	true,	false,	0x02c399dd }, // Animal Forest
-	{ F3DEX,		false,	true,	true,	0x0ace4c3f }, // Mario Kart 64
-	{ F3D,			true,	true,	false,	0x16c3a775 }, // AeroFighters
+	{ F3DEX,		false,	false,	true,	0x0ace4c3f }, // Mario Kart 64
+	{ F3D,			true,	false,	false,	0x16c3a775 }, // AeroFighters
 	{ F3DEX2CBFD,	true,	true,	false,	0x1b4ace88 }, // Conker's Bad Fur Day
 	{ F3DPD,		true,	true,	false,	0x1c4f7869 }, // Perfect Dark
-	{ F3D,			false,	true,	true,	0x1f24cc84 }, // Wayne Gretzky's 3D Hockey (U)
+	{ F3D,			false,	false,	true,	0x1f24cc84 }, // Wayne Gretzky's 3D Hockey (U)
 	{ F5Indi_Naboo,	false,	false,	false,	0x23fef05f }, // SW Ep.1 Battle for Naboo
 	{ Turbo3D,		false,	true,	false,	0x2bdcfc8a }, // Dark Rift, Turbo3D
 	{ F3DSETA,		false,	true,	true,	0x2edee7be }, // RSP SW Version: 2.0D, 04-01-96
@@ -66,14 +66,14 @@ std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 	{ F3D,			false,	false,	false,	0x4AED6B3B }, // Vivid Dolls [ALECK64]
 	{ F3D,			true,	true,	true,	0x54c558ba }, // RSP SW Version: 2.0D, 04-01-96 Pilot Wings, Blast Corps
 	{ ZSortBOSS,	false,	false,	false,	0x553538cc }, // World Driver Championship
-	{ F3D,			false,	true,	true,	0x55be9bad }, // RSP SW Version: 2.0D, 04-01-96, Mischief Makers, Mortal Combat Trilogy, J.League Live
+	{ F3D,			false,	false,	true,	0x55be9bad }, // RSP SW Version: 2.0D, 04-01-96, Mischief Makers, Mortal Combat Trilogy, J.League Live
 	{ F3DEX,		true,	true,	true,	0x637b4b58 }, // RSP SW Version: 2.0D, 04-01-96 Power League
 	{ F5Indi_Naboo,	false,	false,	false,	0x6859bf8e }, // Indiana Jones
-	{ F3D,			false,	true,	true,	0x6932365f }, // Super Mario 64
+	{ F3D,			false,	false,	true,	0x6932365f }, // Super Mario 64
 	{ ZSortBOSS,	false,	false,	false,	0x6a76f8dd }, // Stunt Racer
 	{ F3DDKR,		false,	true,	true,	0x6e6fc893 }, // Diddy Kong Racing
 	{ ZSortBOSS,	false,	false,	false,	0x75ed44cc }, // World Driver Championship, European
-	{ F3D,			true,	true,	true,	0x77195a68 }, // Dark Rift
+	{ F3D,			true,	false,	true,	0x77195a68 }, // Dark Rift
 	{ L3D,			true,	true,	true,	0x771ce0c4 }, // RSP SW Version: 2.0D, 04-01-96 Blast Corps
 	{ F3D,			false,	false,	false,	0x7d372819 }, // Pachinko nichi 365
 	{ F3DDKR,		false,	true,	true,	0x8d91244f }, // Diddy Kong Racing
@@ -84,7 +84,7 @@ std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 	{ T3DUX,		false,	true,	false,	0xd0a1aa3d }, // T3DUX vers 0.85 for Toukon Road 2
 	{ F3DBETA,		false,	true,	true,	0xd17906e2 }, // RSP SW Version: 2.0D, 04-01-96, Wave Race (U)
 	{ F3DZEX2MM,	true,	true,	false,	0xd39a0d4f }, // Animal Forest
-	{ F3D,			false,	true,	true,	0xd3ab59b2 }, // Cruise'n USA
+	{ F3D,			false,	false,	true,	0xd3ab59b2 }, // Cruise'n USA
 	{ F5Rogue,		false,	false,	false,	0xda51ccdb }, // Star Wars RS
 	{ F3D,			false,	false,	false,	0xe01e14be }, // Eikou no Saint Andrews
 	{ F3DEX2ACCLAIM,true,	true,	false,	0xe44df568 }, // Acclaim games: Turok2 & 3, Armories and South park
