@@ -257,48 +257,26 @@ public:
 		}
 		float tcbounds[2][4] = {};
 		if (useTexCoordBounds) {
-			f32 uls, lrs, ult, lrt, S, T, shiftScaleS, shiftScaleT;
-			s16 shiftedS, shiftedT;
-			u32 shifts, shiftt;
+			f32 uls, lrs, ult, lrt, S, T;
 			for (int t = 0; t < 2; t++) {
 				const CachedTexture * _pTexture = textureCache().current[t];
-				const gDPTile * _pTile = gSP.textureTile[t];
-				if (_pTexture != nullptr && _pTile != nullptr){
-					if (_pTile->shifts > 10) {
-						shifts = 16 - _pTile->shifts;
-						shiftedS = static_cast<s16>(gDP.lastTexRectInfo.s << shifts);
-						shiftScaleS = static_cast<f32>(1 << shifts);
-					} else {
-						shifts = _pTile->shifts;
-						shiftedS = static_cast<s16>(gDP.lastTexRectInfo.s >> shifts);
-						shiftScaleS = 1.0f / static_cast<f32>(1 << shifts);
-					}
-					if (_pTile->shiftt > 10) {
-						shiftt = 16 - _pTile->shiftt;
-						shiftedT = static_cast<s16>(gDP.lastTexRectInfo.t << shiftt);
-						shiftScaleT = static_cast<f32>(1 << shiftt);
-					} else {
-						shiftt = _pTile->shiftt;
-						shiftedT = static_cast<s16>(gDP.lastTexRectInfo.t >> shiftt);
-						shiftScaleT = 1.0f / static_cast<f32>(1 << shiftt);
-					}
+				if (_pTexture != nullptr) {
+					S = _FIXED2FLOAT(gDP.lastTexRectInfo.s, 5);
+					T = _FIXED2FLOAT(gDP.lastTexRectInfo.t, 5);
+					uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx;
+					lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx;
+					ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy;
+					lrt = T + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy;
 
-					S = _FIXED2FLOAT(shiftedS, 5);
-					T = _FIXED2FLOAT(shiftedT, 5);
-					uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx * shiftScaleS;
-					lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx * shiftScaleS;
-					ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy * shiftScaleT;
-					lrt = T + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy * shiftScaleT;
-
-					tcbounds[t][0] = (fmin(uls, lrs) - _pTile->fuls) * _pTexture->hdRatioS;
-					tcbounds[t][1] = (fmin(ult, lrt) - _pTile->fult) * _pTexture->hdRatioT;
-					tcbounds[t][2] = (fmax(uls, lrs) - _pTile->fuls) * _pTexture->hdRatioS;
-					tcbounds[t][3] = (fmax(ult, lrt) - _pTile->fult) * _pTexture->hdRatioT;
+					tcbounds[t][0] = fmin(uls, lrs);
+					tcbounds[t][1] = fmin(ult, lrt);
+					tcbounds[t][2] = fmax(uls, lrs);
+					tcbounds[t][3] = fmax(ult, lrt);
 					if (_pTexture->frameBufferTexture != CachedTexture::fbNone) {
-						tcbounds[t][0] += _pTexture->offsetS * _pTexture->hdRatioS;
-						tcbounds[t][1] += _pTexture->offsetT * _pTexture->hdRatioT;
-						tcbounds[t][2] += _pTexture->offsetS * _pTexture->hdRatioS;
-						tcbounds[t][3] += _pTexture->offsetT * _pTexture->hdRatioT;
+						tcbounds[t][0] += _pTexture->offsetS;
+						tcbounds[t][1] += _pTexture->offsetT;
+						tcbounds[t][2] += _pTexture->offsetS;
+						tcbounds[t][3] += _pTexture->offsetT;
 					}
 				}
 			}
@@ -1092,6 +1070,12 @@ public:
 		LocateUniform(uTexMirrorEn1);
 		LocateUniform(uTexSize0);
 		LocateUniform(uTexSize1);
+		LocateUniform(uShiftScale0);
+		LocateUniform(uShiftScale1);
+		LocateUniform(uTexOffset0);
+		LocateUniform(uTexOffset1);
+		LocateUniform(uHDRatio0);
+		LocateUniform(uHDRatio1);
 	}
 
 	void update(bool _force) override
@@ -1102,6 +1086,11 @@ public:
 		std::array<f32, 2> aTexClampEn[2] = { { 0.0f, 0.0f }, { 0.0f, 0.0f } };
 		std::array<f32, 2> aTexMirrorEn[2] = { { 0.0f, 0.0f }, { 0.0f,0.0f }};
 		std::array<f32, 2> aTexSize[2] = { { 1024.0f, 1024.0f }, { 1024.0f, 1024.0f } };
+		
+		std::array<f32, 2> aShiftScale[2] = { { 1.0f, 1.0f }, { 1.0f,1.0f } };
+		std::array<f32, 2> aTexOffset[2] = { { 0.0f, 0.0f }, { 0.0f, 0.0f } };
+
+		std::array<f32, 2> aHDRatio[2] = { { 1.0f, 1.0f }, { 1.0f, 1.0f } };
 
 		TextureCache & cache = textureCache();
 		const bool replaceTex1ByTex0 = needReplaceTex1ByTex0();
@@ -1117,6 +1106,15 @@ public:
 
 			aTexSize[t][0] = pTexture->width * pTexture->hdRatioS;
 			aTexSize[t][1] = pTexture->height * pTexture->hdRatioT;
+
+			aShiftScale[t][0] = pTile->shifts > 10 ? static_cast<f32>(1 << (16 - pTile->shifts)) : 1.0f / static_cast<f32>(1 << pTile->shifts);
+			aShiftScale[t][1] = pTile->shiftt > 10 ? static_cast<f32>(1 << (16 - pTile->shiftt)) : 1.0f / static_cast<f32>(1 << pTile->shiftt);
+
+			aTexOffset[t][0] = pTile->fuls;
+			aTexOffset[t][1] = pTile->fult;
+
+			aHDRatio[t][0] = pTexture->hdRatioS;
+			aHDRatio[t][1] = pTexture->hdRatioT;
 
 			/* Not sure if special treatment of framebuffer textures is correct */
 			if (pTexture->frameBufferTexture != CachedTexture::fbNone)
@@ -1163,6 +1161,12 @@ public:
 		uTexSize0.set(aTexSize[0][0], aTexSize[0][1], _force);
 		uTexSize1.set(aTexSize[1][0], aTexSize[1][1], _force);
 
+		uShiftScale0.set(aShiftScale[0][0], aShiftScale[0][1], _force);
+		uShiftScale1.set(aShiftScale[1][0], aShiftScale[1][1], _force);
+		uTexOffset0.set(aTexOffset[0][0], aTexOffset[0][1], _force);
+		uTexOffset1.set(aTexOffset[1][0], aTexOffset[1][1], _force);
+		uHDRatio0.set(aHDRatio[0][0], aHDRatio[0][1], _force);
+		uHDRatio1.set(aHDRatio[1][0], aHDRatio[1][1], _force);
 	}
 
 private:
@@ -1179,6 +1183,13 @@ private:
 	fv2Uniform uTexMirrorEn1;
 	fv2Uniform uTexSize0;
 	fv2Uniform uTexSize1;
+
+	fv2Uniform uShiftScale0;
+	fv2Uniform uShiftScale1;
+	fv2Uniform uTexOffset0;
+	fv2Uniform uTexOffset1;
+	fv2Uniform uHDRatio0;
+	fv2Uniform uHDRatio1;
 };
 
 class ULights : public UniformGroup

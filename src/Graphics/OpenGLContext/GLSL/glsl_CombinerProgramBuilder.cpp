@@ -315,12 +315,11 @@ public:
 		m_part +=
 			"mediump vec2 calcTexCoord(in vec2 texCoord, in int idx)		\n"
 			"{																\n"
-			"    vec2 texCoordOut = texCoord*uCacheShiftScale[idx];			\n"
-			"    texCoordOut -= uTexOffset[idx];							\n"
+			"    vec2 texCoordOut = texCoord;								\n"
 			"    texCoordOut += uCacheOffset[idx];							\n"
 			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] != 0) \n"	/* Workaround for framebuffer textures. */
 			"      texCoordOut -= vec2(0.0,1.0);							\n"		/* They contain garbage at the bottom.  */
-			"    return texCoordOut * uCacheScale[idx];						\n"
+			"    return texCoordOut;										\n"
 			"}																\n"
 			"																\n"
 			"void main()													\n"
@@ -1540,7 +1539,7 @@ public:
 			"  lowp vec4 shadeColor = uScreenSpaceTriangle == 0 ? vShadeColor : vShadeColorNoperspective;	\n"
 			;
 
-		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
+		m_part += "#define WRAP(x, low, high) (mod((x)-(low), (high)-(low)) + (low)) \n"; // Return wrapped value of x in interval [low, high)
 		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
 		// m_part += "#define WRAP(x, low, high) (x) + ((high)-(low)) * (1.0-step(low,x)) - ((high)-(low)) * step(high,x) \n"; // Step based version. Only wraps correctly if input is in the range [low-(high-low), high + (high-low)). Similar to old code.
 	}
@@ -2634,29 +2633,37 @@ public:
 			"}																				\n"
 
 			"uniform highp vec2 uTexSize0;		\n"
+			"uniform highp vec2 uShiftScale0;	\n"
+			"uniform highp vec2 uTexOffset0;	\n"
+			"uniform highp vec2 uHDRatio0;		\n"
 			"void textureEngine0(in highp vec2 texCoord, out highp vec2 tcData[5]) \n"
 			"{  \n"
-			"  mediump vec2 intPart = floor(texCoord); \n"
+			"  highp vec2 tileCoord = (WRAP(texCoord * uShiftScale0 - uTexOffset0, -1024.0, 1024.0)) * uHDRatio0; \n"
+			"  mediump vec2 intPart = floor(tileCoord); \n"
 			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
 			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
 			"  tcData[0] = wrap2D(tc00, uTexSize0); \n"
 			"  tcData[3] = wrap2D(tc11, uTexSize0); \n"
 			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
 			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
-			"  tcData[4] = texCoord - intPart; \n"
+			"  tcData[4] = tileCoord - intPart; \n"
 			"}  \n"
 
 			"uniform highp vec2 uTexSize1;		\n"
+			"uniform highp vec2 uShiftScale1;	\n"
+			"uniform highp vec2 uTexOffset1;	\n"
+			"uniform highp vec2 uHDRatio1;		\n"
 			"void textureEngine1(in highp vec2 texCoord, out highp vec2 tcData[5]) \n"
 			"{  \n"
-			"  mediump vec2 intPart = floor(texCoord); \n"
+			"  highp vec2 tileCoord = (WRAP(texCoord * uShiftScale1 - uTexOffset1, -1024.0, 1024.0)) * uHDRatio1; \n"
+			"  mediump vec2 intPart = floor(tileCoord); \n"
 			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
 			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
 			"  tcData[0] = wrap2D(tc00, uTexSize1); \n"
 			"  tcData[3] = wrap2D(tc11, uTexSize1); \n"
 			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
 			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
-			"  tcData[4] = texCoord - intPart; \n"
+			"  tcData[4] = tileCoord - intPart; \n"
 			"}  \n"
 
 			;

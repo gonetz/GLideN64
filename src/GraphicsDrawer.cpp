@@ -1281,39 +1281,15 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 	for (u32 t = 0; t < 2; ++t) {
 		if (pCurrentCombiner->usesTile(t) && cache.current[t] && gSP.textureTile[t]) {
-			f32 shiftScaleS = 1.0f;
-			f32 shiftScaleT = 1.0f;
+			const f32 uls = _FIXED2FLOAT(_params.s, 5);
+			const f32 lrs = uls + offsetX;
+			const f32 ult = _FIXED2FLOAT(_params.t, 5);
+			const f32 lrt = ult + offsetY;
 
-			s16 S = _params.s;
-			if (gSP.textureTile[t]->shifts > 10) {
-				const u32 shifts = 16 - gSP.textureTile[t]->shifts;
-				S = static_cast<s16>(S << shifts);
-				shiftScaleS = static_cast<f32>(1 << shifts);
-			} else if (gSP.textureTile[t]->shifts > 0) {
-				const u32 shifts = gSP.textureTile[t]->shifts;
-				S = static_cast<s16>(S >> shifts);
-				shiftScaleS /= static_cast<f32>(1 << shifts);
-			}
-			const f32 uls = _FIXED2FLOAT(S, 5);
-			const f32 lrs = uls + offsetX * shiftScaleS;
-
-			s16 T = _params.t;
-			if (gSP.textureTile[t]->shiftt > 10) {
-				const u32 shiftt = 16 - gSP.textureTile[t]->shiftt;
-				T = static_cast<s16>(T << shiftt);
-				shiftScaleT = static_cast<f32>(1 << shiftt);
-			} else if (gSP.textureTile[t]->shiftt > 0) {
-				const u32 shiftt = gSP.textureTile[t]->shiftt;
-				T = static_cast<s16>(T >> shiftt);
-				shiftScaleT /= static_cast<f32>(1 << shiftt);
-			}
-			const f32 ult = _FIXED2FLOAT(T, 5);
-			const f32 lrt = ult + offsetY * shiftScaleT;
-
-			texST[t].s0 = uls - gSP.textureTile[t]->fuls;
-			texST[t].s1 = lrs - gSP.textureTile[t]->fuls;
-			texST[t].t0 = ult - gSP.textureTile[t]->fult;
-			texST[t].t1 = lrt - gSP.textureTile[t]->fult;
+			texST[t].s0 = uls;
+			texST[t].s1 = lrs;
+			texST[t].t0 = ult;
+			texST[t].t1 = lrt;
 
 			if (cache.current[t]->frameBufferTexture != CachedTexture::fbNone) {
 				texST[t].s0 = cache.current[t]->offsetS + texST[t].s0;
@@ -1345,12 +1321,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 					gfxContext.setTextureParameters(texParams);
 				}
 			}
-
-			texST[t].s0 *= cache.current[t]->hdRatioS;
-			texST[t].t0 *= cache.current[t]->hdRatioT;
-			texST[t].s1 *= cache.current[t]->hdRatioS;
-			texST[t].t1 *= cache.current[t]->hdRatioT;
-
 		}
 	}
 
