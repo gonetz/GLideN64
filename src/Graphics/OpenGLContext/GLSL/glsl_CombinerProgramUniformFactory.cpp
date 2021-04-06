@@ -1058,24 +1058,24 @@ public:
 	{
 		m_useTile[0] = _useT0;
 		m_useTile[1] = _useT1;
-		LocateUniform(uTexWrap0);
-		LocateUniform(uTexWrap1);
-		LocateUniform(uTexClamp0);
-		LocateUniform(uTexClamp1);
-		LocateUniform(uTexWrapEn0);
-		LocateUniform(uTexWrapEn1);
-		LocateUniform(uTexClampEn0);
-		LocateUniform(uTexClampEn1);
-		LocateUniform(uTexMirrorEn0);
-		LocateUniform(uTexMirrorEn1);
-		LocateUniform(uTexSize0);
-		LocateUniform(uTexSize1);
-		LocateUniform(uShiftScale0);
-		LocateUniform(uShiftScale1);
-		LocateUniform(uTexOffset0);
-		LocateUniform(uTexOffset1);
-		LocateUniform(uHDRatio0);
-		LocateUniform(uHDRatio1);
+		LocateUniform(uTexWrap[0]);
+		LocateUniform(uTexWrap[1]);
+		LocateUniform(uTexClamp[0]);
+		LocateUniform(uTexClamp[1]);
+		LocateUniform(uTexWrapEn[0]);
+		LocateUniform(uTexWrapEn[1]);
+		LocateUniform(uTexClampEn[0]);
+		LocateUniform(uTexClampEn[1]);
+		LocateUniform(uTexMirrorEn[0]);
+		LocateUniform(uTexMirrorEn[1]);
+		LocateUniform(uTexSize[0]);
+		LocateUniform(uTexSize[1]);
+		LocateUniform(uShiftScale[0]);
+		LocateUniform(uShiftScale[1]);
+		LocateUniform(uTexOffset[0]);
+		LocateUniform(uTexOffset[1]);
+		LocateUniform(uHDRatio[0]);
+		LocateUniform(uHDRatio[1]);
 	}
 
 	void update(bool _force) override
@@ -1146,50 +1146,33 @@ public:
 				aTexMirrorEn[t][0] = f32(pTile->masks == 0 ? 0 : pTile->mirrors);
 				aTexMirrorEn[t][1] = f32(pTile->maskt == 0 ? 0 : pTile->mirrort);
 			}
+
+			uTexWrap[t].set(aTexWrap[t][0], aTexWrap[t][1], _force);
+			uTexClamp[t].set(aTexClamp[t][0], aTexClamp[t][1], _force);
+			uTexWrapEn[t].set(aTexWrapEn[t][0], aTexWrapEn[t][1], _force);
+			uTexWrapEn[t].set(aTexWrapEn[t][0], aTexWrapEn[t][1], _force);
+			uTexClampEn[t].set(aTexClampEn[t][0], aTexClampEn[t][1], _force);
+			uTexMirrorEn[t].set(aTexMirrorEn[t][0], aTexMirrorEn[t][1], _force);
+			uTexSize[t].set(aTexSize[t][0], aTexSize[t][1], _force);
+			uShiftScale[t].set(aShiftScale[t][0], aShiftScale[t][1], _force);
+			uTexOffset[t].set(aTexOffset[t][0], aTexOffset[t][1], _force);
+			uHDRatio[t].set(aHDRatio[t][0], aHDRatio[t][1], _force);
+
 		}
 
-		uTexWrap0.set(aTexWrap[0][0], aTexWrap[0][1], _force);
-		uTexWrap1.set(aTexWrap[1][0], aTexWrap[1][1], _force);
-		uTexClamp0.set(aTexClamp[0][0], aTexClamp[0][1], _force);
-		uTexClamp1.set(aTexClamp[1][0], aTexClamp[1][1], _force);
-		uTexWrapEn0.set(aTexWrapEn[0][0], aTexWrapEn[0][1], _force);
-		uTexWrapEn1.set(aTexWrapEn[1][0], aTexWrapEn[1][1], _force);
-		uTexClampEn0.set(aTexClampEn[0][0], aTexClampEn[0][1], _force);
-		uTexClampEn1.set(aTexClampEn[1][0], aTexClampEn[1][1], _force);
-		uTexMirrorEn0.set(aTexMirrorEn[0][0], aTexMirrorEn[0][1], _force);
-		uTexMirrorEn1.set(aTexMirrorEn[1][0], aTexMirrorEn[1][1], _force);
-		uTexSize0.set(aTexSize[0][0], aTexSize[0][1], _force);
-		uTexSize1.set(aTexSize[1][0], aTexSize[1][1], _force);
-
-		uShiftScale0.set(aShiftScale[0][0], aShiftScale[0][1], _force);
-		uShiftScale1.set(aShiftScale[1][0], aShiftScale[1][1], _force);
-		uTexOffset0.set(aTexOffset[0][0], aTexOffset[0][1], _force);
-		uTexOffset1.set(aTexOffset[1][0], aTexOffset[1][1], _force);
-		uHDRatio0.set(aHDRatio[0][0], aHDRatio[0][1], _force);
-		uHDRatio1.set(aHDRatio[1][0], aHDRatio[1][1], _force);
 	}
 
 private:
 	bool m_useTile[2];
-	fv2Uniform uTexWrap0;
-	fv2Uniform uTexWrap1;
-	fv2Uniform uTexClamp0;
-	fv2Uniform uTexClamp1;
-	fv2Uniform uTexWrapEn0;
-	fv2Uniform uTexWrapEn1;
-	fv2Uniform uTexClampEn0;
-	fv2Uniform uTexClampEn1;
-	fv2Uniform uTexMirrorEn0;
-	fv2Uniform uTexMirrorEn1;
-	fv2Uniform uTexSize0;
-	fv2Uniform uTexSize1;
-
-	fv2Uniform uShiftScale0;
-	fv2Uniform uShiftScale1;
-	fv2Uniform uTexOffset0;
-	fv2Uniform uTexOffset1;
-	fv2Uniform uHDRatio0;
-	fv2Uniform uHDRatio1;
+	fv2Uniform uTexWrap[2];
+	fv2Uniform uTexClamp[2];
+	fv2Uniform uTexWrapEn[2];
+	fv2Uniform uTexClampEn[2];
+	fv2Uniform uTexMirrorEn[2];
+	fv2Uniform uTexSize[2];
+	fv2Uniform uShiftScale[2];
+	fv2Uniform uTexOffset[2];
+	fv2Uniform uHDRatio[2];
 };
 
 class ULights : public UniformGroup
