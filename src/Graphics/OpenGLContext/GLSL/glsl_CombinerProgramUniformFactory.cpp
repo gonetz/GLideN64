@@ -221,7 +221,8 @@ class URasterInfo : public UniformGroup {
 public:
 	URasterInfo(GLuint _program) {
 		LocateUniform(uVertexOffset);
-		LocateUniform(uTexCoordOffset);
+		LocateUniform(uTexCoordOffset[0]);
+		LocateUniform(uTexCoordOffset[1]);
 		LocateUniform(uUseTexCoordBounds);
 		LocateUniform(uTexCoordBounds0);
 		LocateUniform(uTexCoordBounds1);
@@ -245,14 +246,14 @@ public:
 		/* effective. Still, an heuristic is applied to render texture rectangles as correctly as possible  */
 		/* in higher resolutions too. See issue #2324 for details. 											*/
 		const float vertexOffset = isNativeRes ? 0.5f : 0.0f;
-		float texCoordOffset[2] = { 0.0f, 0.0f };
+		float texCoordOffset[2][2] = { 0.0f, 0.0f };
 		if (isTexRect && !isNativeRes) {
-			if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
-				texCoordOffset[0] = -0.5f * gDP.lastTexRectInfo.dsdx;
-				texCoordOffset[1] = -0.5f * gDP.lastTexRectInfo.dtdy;
-			} else {
-				texCoordOffset[0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? -0.5f / scale[0] : -1.0f + 0.5f / scale[0]) * gDP.lastTexRectInfo.dsdx;
-				texCoordOffset[1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy;
+			for (int t = 0; t < 2; t++) {
+				const CachedTexture* _pTexture = textureCache().current[t];
+				if (_pTexture != nullptr) {
+					texCoordOffset[t][0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? -0.5f / scale[0] : -1.0f + 0.5f / scale[0]) * gDP.lastTexRectInfo.dsdx * _pTexture->hdRatioS;
+					texCoordOffset[t][1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy * _pTexture->hdRatioT;
+				}
 			}
 		}
 		float tcbounds[2][4] = {};
@@ -305,7 +306,8 @@ public:
 		}
 
 		uVertexOffset.set(vertexOffset, vertexOffset, _force);
-		uTexCoordOffset.set(texCoordOffset[0], texCoordOffset[1], _force);
+		uTexCoordOffset[0].set(texCoordOffset[0][0], texCoordOffset[0][1], _force);
+		uTexCoordOffset[1].set(texCoordOffset[1][0], texCoordOffset[1][1], _force);
 		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
 		uTexCoordBounds0.set(tcbounds[0], _force);
 		uTexCoordBounds1.set(tcbounds[1], _force);
@@ -313,7 +315,7 @@ public:
 
 private:
 	fv2Uniform uVertexOffset;
-	fv2Uniform uTexCoordOffset;
+	fv2Uniform uTexCoordOffset[2];
 	iUniform uUseTexCoordBounds;
 	fv4Uniform uTexCoordBounds0;
 	fv4Uniform uTexCoordBounds1;
