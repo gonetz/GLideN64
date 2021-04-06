@@ -251,8 +251,12 @@ public:
 			for (int t = 0; t < 2; t++) {
 				const CachedTexture* _pTexture = textureCache().current[t];
 				if (_pTexture != nullptr) {
-					texCoordOffset[t][0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? -0.5f / scale[0] : -1.0f + 0.5f / scale[0]) * gDP.lastTexRectInfo.dsdx * _pTexture->hdRatioS;
-					texCoordOffset[t][1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy * _pTexture->hdRatioT;
+					texCoordOffset[t][0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dsdx * _pTexture->hdRatioS;
+					texCoordOffset[t][1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dtdy * _pTexture->hdRatioT;
+					if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
+						texCoordOffset[t][0] -= 0.5f;
+						texCoordOffset[t][1] -= 0.5f;
+					}
 				}
 			}
 		}
