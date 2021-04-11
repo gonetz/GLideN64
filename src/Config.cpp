@@ -176,6 +176,8 @@ const char* Config::hotkeyIniName(u32 _idx)
 		return "hkHdTexToggle";
 	case Config::HotKey::hkTexCoordBounds:
 		return "hkTexCoordBounds";
+	case Config::HotKey::hkNativeResTexrects:
+		return "hkNativeResTexrects";
 	case Config::HotKey::hkVsync:
 		return "hkVsync";
 	case Config::HotKey::hkFBEmulation:
