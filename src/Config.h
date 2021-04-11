@@ -220,6 +220,7 @@ struct Config
 		hkTexDump = 0,
 		hkHdTexReload,
 		hkHdTexToggle,
+		hkTexCoordBounds,
 		hkVsync,
 		hkFBEmulation,
 		hkN64DepthCompare,
