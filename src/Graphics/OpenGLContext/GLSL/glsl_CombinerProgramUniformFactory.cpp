@@ -232,13 +232,6 @@ public:
 		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
 		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
 		const bool useTexCoordBounds = isTexRect && !isNativeRes && config.graphics2D.enableTexCoordBounds;
-		float scale[2] = { 0.0f, 0.0f };
-		if (config.frameBufferEmulation.nativeResFactor != 0) {
-			scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
-		} else {
-			scale[0] = dwnd().getScaleX();
-			scale[1] = dwnd().getScaleY();
-		}
 		/* At rasterization stage, the N64 places samples on the top left of the fragment while OpenGL		*/
 		/* places them in the fragment center. As a result, a normal approach results in shifted texture	*/
 		/* coordinates. In native resolution, this difference can be negated by shifting vertices by 0.5.	*/
@@ -248,6 +241,16 @@ public:
 		const float vertexOffset = isNativeRes ? 0.5f : 0.0f;
 		float texCoordOffset[2][2] = { 0.0f, 0.0f };
 		if (isTexRect && !isNativeRes) {
+			float scale[2] = { 0.0f, 0.0f };
+			if (config.graphics2D.enableNativeResTexrects != 0) {
+				scale[0] = scale[1] = 1.0f;
+			} else if (config.frameBufferEmulation.nativeResFactor != 0) {
+				scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+			} else {
+				scale[0] = dwnd().getScaleX();
+				scale[1] = dwnd().getScaleY();
+			}
+
 			for (int t = 0; t < 2; t++) {
 				const CachedTexture* _pTexture = textureCache().current[t];
 				if (_pTexture != nullptr) {
