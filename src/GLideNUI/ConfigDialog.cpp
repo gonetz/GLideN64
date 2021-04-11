@@ -82,6 +82,8 @@ QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 		return tr("Toggle HD textures");
 	case Config::HotKey::hkTexCoordBounds:
 		return tr("Toggle texcoords bounds");
+	case Config::HotKey::hkNativeResTexrects:
+		return tr("Toggle 2D texrects in native resolution");
 	case Config::HotKey::hkVsync:
 		return tr("Toggle VSync");
 	case Config::HotKey::hkFBEmulation:

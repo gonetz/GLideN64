@@ -31,6 +31,8 @@ const char* _hotkeyDescription(u32 _idx)
 		return "Hotkey: toggle HD textures";
 	case Config::HotKey::hkTexCoordBounds:
 		return "Hotkey: toggle texcoords bounds";
+	case Config::HotKey::hkNativeResTexrects:
+		return "Hotkey: toggle 2D texrects in native resolution";
 	case Config::HotKey::hkVsync:
 		return "Hotkey: toggle VSync";
 	case Config::HotKey::hkFBEmulation:

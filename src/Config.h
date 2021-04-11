@@ -221,6 +221,7 @@ struct Config
 		hkHdTexReload,
 		hkHdTexToggle,
 		hkTexCoordBounds,
+		hkNativeResTexrects,
 		hkVsync,
 		hkFBEmulation,
 		hkN64DepthCompare,
