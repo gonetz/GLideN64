@@ -130,6 +130,13 @@ static void checkHotkeys()
 			textureCache().toggleDumpTex();
 	}
 
+	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkTexCoordBounds], 0x0001)) {
+		if (config.graphics2D.enableTexCoordBounds == 0)
+			dwnd().getDrawer().showMessage("Bound texrect texture coordinates on\n", Milliseconds(1000));
+		else
+			dwnd().getDrawer().showMessage("Bound texrect texture coordinates off\n", Milliseconds(1000));
+		config.graphics2D.enableTexCoordBounds = !config.graphics2D.enableTexCoordBounds;
+	}
 
 	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkVsync], 0x0001)) {
 		config.video.verticalSync = !config.video.verticalSync;
