@@ -46,8 +46,6 @@ private:
 
 	void _copy(u32 _startAddress, u32 _endAddress, bool _sync);
 
-	u32 _getRealWidth(u32 _viWidth);
-
 	// Convert pixel from video memory to N64 buffer format.
 	static u8 _RGBAtoR8(u8 _c, u32 x, u32 y);
 	static u16 _RGBAtoRGBA16(u32 _c, u32 x, u32 y);

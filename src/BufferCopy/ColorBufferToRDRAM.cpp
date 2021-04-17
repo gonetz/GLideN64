@@ -12,17 +12,6 @@
 #include "Log.h"
 #include "MemoryStatus.h"
 
-/*
-#include "ColorBufferToRDRAM_GL.h"
-#include "ColorBufferToRDRAM_BufferStorageExt.h"
-#elif defined(OS_ANDROID) && defined (GLES2)
-#include "ColorBufferToRDRAM_GL.h"
-#include "ColorBufferToRDRAM_GLES.h"
-#else
-#include "ColorBufferToRDRAMStub.h"
-#endif
-*/
-
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include <Graphics/ColorBufferReader.h>
@@ -165,12 +154,12 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 		return false;
 
 	if(m_pTexture == nullptr ||
-		m_pTexture->width != _getRealWidth(pBuffer->m_width) ||
-		m_pTexture->height != VI_GetMaxBufferHeight(_getRealWidth(pBuffer->m_width)))
+		m_pTexture->width != pBuffer->m_width ||
+		m_pTexture->height != VI_GetMaxBufferHeight(pBuffer->m_width))
 	{
 		_destroyFBTexure();
 
-		m_lastBufferWidth = _getRealWidth(pBuffer->m_width);
+		m_lastBufferWidth = pBuffer->m_width;
 		_initFBTexture();
 	}
 
@@ -339,18 +328,6 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	m_bufferReader->cleanUp();
 
 	gDP.changed |= CHANGED_SCISSOR;
-}
-
-u32 ColorBufferToRDRAM::_getRealWidth(u32 _viWidth)
-{
-	u32 index = 0;
-	const u32 maxIndex = static_cast<u32>(m_allowedRealWidths.size()) - 1;
-	while (index < maxIndex && _viWidth > m_allowedRealWidths[index])
-	{
-		++index;
-	}
-
-	return m_allowedRealWidths[index];
 }
 
 void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
