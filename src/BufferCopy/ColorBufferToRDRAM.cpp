@@ -57,9 +57,6 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 	if (_startAddress < pBuffer->m_startAddress)
 		_startAddress = pBuffer->m_startAddress;
 
-	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
-		return true;
-
 	const u32 numPixels = pBuffer->m_width * pBuffer->m_height;
 	if (numPixels == 0)
 		return false;
@@ -89,7 +86,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 
 	u32 x0 = 0;
 	u32 width;
-	if (config.frameBufferEmulation.nativeResFactor == 0) {
+	if (config.frameBufferEmulation.nativeResFactor == 0 && m_pCurFrameBuffer->m_scale != 1.0f) {
 		const u32 screenWidth = wnd.getWidth();
 		width = screenWidth;
 		if (wnd.isAdjustScreen()) {
