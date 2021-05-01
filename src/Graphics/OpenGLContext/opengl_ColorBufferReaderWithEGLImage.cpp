@@ -20,6 +20,10 @@ ColorBufferReaderWithEGLImage::ColorBufferReaderWithEGLImage(CachedTexture *_pTe
 ColorBufferReaderWithEGLImage::~ColorBufferReaderWithEGLImage()
 {
 	m_hardwareBuffer.release();
+
+	if (m_image != nullptr) {
+		eglDestroyImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), m_image);
+	}
 }
 
 void ColorBufferReaderWithEGLImage::_initBuffers()
