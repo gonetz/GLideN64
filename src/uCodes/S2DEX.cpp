@@ -476,10 +476,10 @@ struct ObjCoordinates
 
 		f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
 		f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
-		f32 imageW = (f32)(_pObjScaleBg->imageW >> 2);
-		f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
-		//		const f32 imageW = (f32)gSP.bgImage.width;
-		//		const f32 imageH = (f32)gSP.bgImage.height;
+		//f32 imageW = (f32)(_pObjScaleBg->imageW >> 2);
+		//f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
+		f32 imageW = (f32)gSP.bgImage.width;
+		f32 imageH = (f32)gSP.bgImage.height;
 
 		if (u32(imageW) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
 			const f32 width = f32(*REG.VI_WIDTH);
@@ -492,23 +492,26 @@ struct ObjCoordinates
 			scaleH = 1.0f;
 		}
 
+		ulx = frameX;
+		uly = frameY;
+		lrx = ulx + std::min(frameW, imageW/scaleW);
+		lry = uly + std::min(frameH, imageH/scaleH);
+
 		uls = imageX;
 		ult = imageY;
-		lrs = uls + std::min(imageW, frameW * scaleW) - 1;
-		lrt = ult + std::min(imageH, frameH * scaleH) - 1;
-
-		gSP.bgImage.clampS = lrs <= (imageW - 1) ? 1 : 0 ;
-		gSP.bgImage.clampT = lrt <= (imageH - 1) ? 1 : 0 ;
+		lrs = uls + (lrx - ulx) * scaleW;
+		lrt = ult + (lry - uly) * scaleH;
 
 		// G_CYC_COPY (BgRectCopyOnePiece()) does not allow texture filtering
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
-			// Correct texture coordinates -0.5f and +0.5 if G_OBJRM_BILERP 
+			// Correct texture coordinates if G_OBJRM_BILERP 
 			// bilinear interpolation is set
-			if (gDP.otherMode.textureFilter == G_TF_BILERP) {
-				uls -= 0.5f;
-				ult -= 0.5f;
-				lrs += 0.5f;
-				lrt += 0.5f;
+			if ((gSP.objRendermode & G_OBJRM_BILERP) != 0) {
+				// No correction gives the best picture, but is this correct?
+				//uls -= 0.5f;
+				//ult -= 0.5f;
+				//lrs -= 0.5f;
+				//lrt -= 0.5f;
 			}
 			// SHRINKSIZE_1 adds a 0.5f perimeter around the image
 			// upper left texture coords += 0.5f; lower left texture coords -= 0.5f
@@ -517,26 +520,15 @@ struct ObjCoordinates
 				ult += 0.5f;
 				lrs -= 0.5f;
 				lrt -= 0.5f;
-				// SHRINKSIZE_2 adds a 1.0f perimeter 
-				// upper left texture coords += 1.0f; lower left texture coords -= 1.0f
 			}
+			// SHRINKSIZE_2 adds a 1.0f perimeter 
+			// upper left texture coords += 1.0f; lower left texture coords -= 1.0f
 			else if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_2) != 0) {
 				uls += 1.0f;
 				ult += 1.0f;
 				lrs -= 1.0f;
 				lrt -= 1.0f;
 			}
-		}
-
-		// Calculate lrx and lry width new ST values
-		ulx = frameX;
-		uly = frameY;
-		lrx = ulx + (lrs - uls) / scaleW;
-		lry = uly + (lrt - ult) / scaleH;
-		if (((gSP.objRendermode&G_OBJRM_BILERP) == 0 && gDP.otherMode.textureFilter != G_TF_BILERP) ||
-			((gSP.objRendermode&G_OBJRM_BILERP) != 0 && gDP.otherMode.textureFilter == G_TF_POINT && (gSP.objRendermode&G_OBJRM_NOTXCLAMP) != 0)) {
-			lrx += 1.0f / scaleW;
-			lry += 1.0f / scaleH;
 		}
 
 		// BgRect1CycOnePiece() and BgRectCopyOnePiece() do only support
