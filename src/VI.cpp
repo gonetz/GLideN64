@@ -256,8 +256,10 @@ void VI_UpdateScreen()
 				 (config.generalEmulation.hacks & hack_RE2) == 0 &&
 				 !pBuffer->isValid(true)) {
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
-			if (config.frameBufferEmulation.copyToRDRAM == 0 && (config.generalEmulation.hacks & hack_subscreen) == 0)
+			if (config.frameBufferEmulation.copyToRDRAM == 0 && (config.generalEmulation.hacks & hack_subscreen) == 0) {
 				pBuffer->copyRdram();
+				pBuffer->m_cleared = false;
+			}
 		}
 
 		const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
