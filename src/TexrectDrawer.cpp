@@ -380,8 +380,13 @@ bool TexrectDrawer::draw()
 	const float t0 = m_lry / (float)m_pTexture->height;// +0.5f / (float)m_pTexture->height;
 	const float s1 = m_lrx / (float)m_pTexture->width;
 	const float t1 = m_uly / (float)m_pTexture->height;
-	const float W = 1024.0f;
-	const float Z = m_Z * 1024.0f;
+	const float W = 1.0f;
+	const float Z = m_Z;
+	constexpr float halfScreenSizeDims = SCREEN_SIZE_DIM * 0.5f;
+	m_ulx = (m_ulx - halfScreenSizeDims) / halfScreenSizeDims;
+	m_uly = (m_uly - halfScreenSizeDims) / halfScreenSizeDims;
+	m_lrx = (m_lrx - halfScreenSizeDims) / halfScreenSizeDims;
+	m_lry = (m_lry - halfScreenSizeDims) / halfScreenSizeDims;
 
 	drawer._updateViewport(m_pBuffer);
 
