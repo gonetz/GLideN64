@@ -28,7 +28,7 @@ void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)
 {
 	PluginInfo->Version = 0x103;
 	PluginInfo->Type = PLUGIN_TYPE_GFX;
-	sprintf(PluginInfo->Name, "%s rev.%s", pluginName, PLUGIN_REVISION);
+	sprintf(PluginInfo->Name, "LINK's %s v4.1", pluginName, PLUGIN_REVISION);
 	PluginInfo->NormalMemory = FALSE;
 	PluginInfo->MemoryBswaped = TRUE;
 }

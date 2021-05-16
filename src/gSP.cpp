@@ -1743,6 +1743,7 @@ void gSPTexture( f32 sc, f32 tc, u32 level, u32 tile, u32 on )
 {
 	gSP.texture.on = on;
 	if (on == 0) {
+		gDPSetCombine(0xffffff, 0xFFFE793C);
 		DebugMsg(DEBUG_NORMAL, "gSPTexture skipped b/c of off\n");
 		return;
 	}
@@ -1896,6 +1897,16 @@ void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data)
 
 void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 {
+	// Typo fixrefix
+	// !!! This is very cheesy fix
+	{
+		const u32 maskH = (((u64)1 << 2) - 1) << 0x14;
+		if (!(gDP.otherMode.h & maskH) && _data == 0xC8113078)
+		{
+			_data = 0x00443078;
+		}
+	}
+
 	const u32 mask = (((u64)1 << _length) - 1) << _shift;
 	gDP.otherMode.l = (gDP.otherMode.l&(~mask)) | _data;
 
