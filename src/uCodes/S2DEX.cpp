@@ -502,9 +502,16 @@ struct ObjCoordinates
 		lrs = uls + (lrx - ulx) * scaleW;
 		lrt = ult + (lry - uly) * scaleH;
 
+		if (config.frameBufferEmulation.nativeResFactor != 1 || config.video.multisampling != 0) {
+			uls -= 0.5f * scaleW;
+			ult -= 0.5f * scaleH;
+			lrs -= 0.5f * scaleW;
+			lrt -= 0.5f * scaleH;
+		}
+
 		// G_CYC_COPY (BgRectCopyOnePiece()) does not allow texture filtering
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
-			// Correct texture coordinates if G_OBJRM_BILERP 
+			// Correct texture coordinates if G_OBJRM_BILERP
 			// bilinear interpolation is set
 			if ((gSP.objRendermode & G_OBJRM_BILERP) != 0) {
 				// No correction gives the best picture, but is this correct?
@@ -521,7 +528,7 @@ struct ObjCoordinates
 				lrs -= 0.5f;
 				lrt -= 0.5f;
 			}
-			// SHRINKSIZE_2 adds a 1.0f perimeter 
+			// SHRINKSIZE_2 adds a 1.0f perimeter
 			// upper left texture coords += 1.0f; lower left texture coords -= 1.0f
 			else if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_2) != 0) {
 				uls += 1.0f;
