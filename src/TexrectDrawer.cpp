@@ -383,10 +383,6 @@ bool TexrectDrawer::draw()
 	const float W = 1.0f;
 	const float Z = m_Z;
 	constexpr float halfScreenSizeDims = SCREEN_SIZE_DIM * 0.5f;
-	m_ulx = (m_ulx - halfScreenSizeDims) / halfScreenSizeDims;
-	m_uly = (m_uly - halfScreenSizeDims) / halfScreenSizeDims;
-	m_lrx = (m_lrx - halfScreenSizeDims) / halfScreenSizeDims;
-	m_lry = (m_lry - halfScreenSizeDims) / halfScreenSizeDims;
 
 	drawer._updateViewport(m_pBuffer);
 
@@ -403,26 +399,31 @@ bool TexrectDrawer::draw()
 	m_programTex->activate();
 	m_programTex->setEnableAlphaTest(enableAlphaTest);
 
-	rect[0].x = m_ulx;
-	rect[0].y = m_lry;
+	float ulx = (m_ulx - halfScreenSizeDims) / halfScreenSizeDims;
+	float uly = (m_uly - halfScreenSizeDims) / halfScreenSizeDims;
+	float lrx = (m_lrx - halfScreenSizeDims) / halfScreenSizeDims;
+	float lry = (m_lry - halfScreenSizeDims) / halfScreenSizeDims;
+
+	rect[0].x = ulx;
+	rect[0].y = lry;
 	rect[0].z = Z;
 	rect[0].w = W;
 	rect[0].s0 = s0;
 	rect[0].t0 = t0;
-	rect[1].x = m_lrx;
-	rect[1].y = m_lry;
+	rect[1].x = lrx;
+	rect[1].y = lry;
 	rect[1].z = Z;
 	rect[1].w = W;
 	rect[1].s0 = s1;
 	rect[1].t0 = t0;
-	rect[2].x = m_ulx;
-	rect[2].y = m_uly;
+	rect[2].x = ulx;
+	rect[2].y = uly;
 	rect[2].z = Z;
 	rect[2].w = W;
 	rect[2].s0 = s0;
 	rect[2].t0 = t1;
-	rect[3].x = m_lrx;
-	rect[3].y = m_uly;
+	rect[3].x = lrx;
+	rect[3].y = uly;
 	rect[3].z = Z;
 	rect[3].w = W;
 	rect[3].s0 = s1;
@@ -441,15 +442,15 @@ bool TexrectDrawer::draw()
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
 	m_programClear->activate();
 
-	const f32 ulx = std::max(0.0f, m_ulx - 1.0f);
-	const f32 lrx = std::min(640.0f, m_lrx + 1.0f);
+	ulx = (std::max(0.0f, m_ulx - 1.0f) - halfScreenSizeDims) / halfScreenSizeDims;
+	lrx = (std::min(640.0f, m_lrx + 1.0f) - halfScreenSizeDims) / halfScreenSizeDims;
 	rect[0].x = ulx;
 	rect[1].x = lrx;
 	rect[2].x = ulx;
 	rect[3].x = lrx;
 
-	const f32 uly = std::max(0.0f, m_uly - 1.0f);
-	const f32 lry = std::min(580.0f, m_lry + 1.0f);
+	uly = (std::max(0.0f, m_uly - 1.0f) - halfScreenSizeDims) / halfScreenSizeDims;
+	lry = (std::min(580.0f, m_lry + 1.0f) - halfScreenSizeDims) / halfScreenSizeDims;
 	rect[0].y = uly;
 	rect[1].y = uly;
 	rect[2].y = lry;
