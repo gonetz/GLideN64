@@ -136,8 +136,28 @@ PoolBufferPointer RingBufferPool::createPoolBuffer(const char* _buffer, size_t _
 			});
 
 			// Resize afterwards, we don't want to lose the validity of pointers
-			// pointing at the old data
+			// pointing at the old data, also wait until the memory pool is empty,
+			// we don't want anyone point to the old allocation.
 			if (m_poolBuffer.size() < realBufferSize) {
+
+				const size_t tempInUseStartLocal = m_inUseStartOffset;
+				const size_t remainingLocal =
+					tempInUseStartLocal > m_inUseEndOffset || m_full ? static_cast<size_t>(
+						tempInUseStartLocal - m_inUseEndOffset) :
+					poolBufferSize - m_inUseEndOffset + tempInUseStartLocal;
+
+				if (remainingLocal != realBufferSize) {
+					m_condition.wait(lock, [this, realBufferSize, poolBufferSize] {
+						const size_t tempInUseStartLocal = m_inUseStartOffset;
+						const size_t remainingLocal =
+							tempInUseStartLocal > m_inUseEndOffset || m_full ? static_cast<size_t>(
+								tempInUseStartLocal - m_inUseEndOffset) :
+							poolBufferSize - m_inUseEndOffset + tempInUseStartLocal;
+
+						return remainingLocal == realBufferSize;
+						});
+				}
+
 				m_poolBuffer.resize(realBufferSize);
 			}
 		}
