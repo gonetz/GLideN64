@@ -1467,7 +1467,6 @@ void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
 
 void GraphicsDrawer::drawText(const char *_pText, float x, float y)
 {
-	m_drawingState = DrawingState::Non;
 	g_textDrawer.drawText(_pText, x, y);
 }
 
