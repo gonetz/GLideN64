@@ -1685,7 +1685,7 @@ bool GraphicsDrawer::isRejected(u32 _v0, u32 _v1, u32 _v2) const
 
 void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 {
-	m_drawingState = DrawingState::TexRect;
+	m_drawingState = DrawingState::TexRectCopy;
 
 	const float scaleX = 1.0f / _params.dstWidth;
 	const float scaleY = 1.0f / _params.dstHeight;

@@ -29,7 +29,8 @@ enum class DrawingState
 	Triangle,
 	ScreenSpaceTriangle,
 	Rect,
-	TexRect
+	TexRect,
+	TexRectCopy
 };
 
 struct RectVertex
