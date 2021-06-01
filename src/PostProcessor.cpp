@@ -95,7 +95,7 @@ PostProcessor & PostProcessor::get()
 
 void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 {
-	if (!m_pResultBuffer || m_pResultBuffer->m_width != _pBuffer->m_width ||
+	if (!m_pResultBuffer || m_pResultBuffer->m_width != _pBuffer->m_width || m_pResultBuffer->m_height != _pBuffer->m_height ||
 		m_pResultBuffer->m_scale != _pBuffer->m_scale)
 		_createResultBuffer(_pBuffer);
 
