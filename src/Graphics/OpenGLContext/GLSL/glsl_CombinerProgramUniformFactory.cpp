@@ -242,7 +242,7 @@ public:
 		float texCoordOffset[2][2] = { 0.0f, 0.0f };
 		if (isTexRect && !isNativeRes) {
 			float scale[2] = { 0.0f, 0.0f };
-			if (config.graphics2D.enableNativeResTexrects != 0) {
+			if (config.graphics2D.enableNativeResTexrects != 0 && gDP.otherMode.textureFilter != G_TF_POINT) {
 				scale[0] = scale[1] = 1.0f;
 			} else {
 				scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
