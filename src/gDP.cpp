@@ -904,6 +904,7 @@ void gDPFullSync()
 	}
 
 	dwnd().getDrawer().flush();
+	dwnd().getDrawer().dropRenderState();
 
 	frameBufferList().updateCurrentBufferEndAddress();
 

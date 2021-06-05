@@ -105,8 +105,7 @@ void DisplayWindow::closeWindow()
 {
 	if (!m_bToggleFullscreen || !m_bFullscreen)
 		return;
-	if (m_drawer.getDrawingState() != DrawingState::Non)
-		m_drawer._destroyData();
+	m_drawer._destroyData();
 	_changeWindow();
 	m_bToggleFullscreen = false;
 }

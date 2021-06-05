@@ -785,6 +785,7 @@ void GraphicsDrawer::drawTriangles()
 
 	triangles.num = 0;
 	triangles.maxElement = 0;
+	dropRenderState();
 }
 
 void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModeParam _mode)
@@ -838,6 +839,7 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 		m_statistics.drawnTris += _numVtx / 3;
 	else if (_mode == graphics::drawmode::TRIANGLE_STRIP)
 		m_statistics.drawnTris += _numVtx - 2;
+	dropRenderState();
 }
 
 void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
@@ -875,6 +877,7 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 	} else {
 		gfxContext.drawTriangles(triParams);
 	}
+	dropRenderState();
 }
 
 void GraphicsDrawer::_drawThickLine(u32 _v0, u32 _v1, float _width)
@@ -983,6 +986,7 @@ void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width)
 
 	SPVertex vertexBuf[2] = { triangles.vertices[_v0], triangles.vertices[_v1] };
 	gfxContext.drawLine(lineWidth, vertexBuf);
+	dropRenderState();
 }
 
 void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
@@ -1051,6 +1055,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	gfxContext.drawRects(rectParams);
 	g_debugger.addRects(rectParams);
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+	dropRenderState();
 }
 
 static
@@ -1439,6 +1444,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	}
 
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+	dropRenderState();
 }
 
 void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
@@ -1686,7 +1692,7 @@ bool GraphicsDrawer::isRejected(u32 _v0, u32 _v1, u32 _v2) const
 
 void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 {
-	m_drawingState = DrawingState::TexRect;
+	m_drawingState = DrawingState::Non;
 
 	const float scaleX = 1.0f / _params.dstWidth;
 	const float scaleY = 1.0f / _params.dstHeight;
