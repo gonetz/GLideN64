@@ -257,6 +257,10 @@ public:
 					} else {
 						texCoordOffset[t][0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dsdx * _pTexture->hdRatioS;
 						texCoordOffset[t][1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dtdy * _pTexture->hdRatioT;
+						if (gDP.otherMode.textureFilter != G_TF_POINT) {
+							texCoordOffset[t][0] -= 0.5f;
+							texCoordOffset[t][1] -= 0.5f;
+						}
 					}
 				}
 			}
