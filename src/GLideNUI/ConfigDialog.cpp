@@ -183,9 +183,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 		config.video.maxMultiSampling = m_maxMSAA;
 	}
 
-	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
-		? std::min(config.video.multisampling, m_maxMSAA)
-		: m_maxMSAA;
+	const unsigned int multisampling = std::min(config.video.multisampling, m_maxMSAA);
 
 	ui->aliasingSlider->blockSignals(true);
 	ui->aliasingSlider->setMaximum(powof(m_maxMSAA));
