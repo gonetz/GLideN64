@@ -166,6 +166,8 @@ bool DisplayWindowWindows::_resizeWindow()
 {
 	RECT windowRect, statusRect, toolRect;
 
+	windowRect = statusRect = toolRect = { 0 };
+
 	if (m_bFullscreen) {
 		m_screenWidth = config.video.fullscreenWidth;
 		m_screenHeight = config.video.fullscreenHeight;
@@ -179,12 +181,12 @@ bool DisplayWindowWindows::_resizeWindow()
 		_setBufferSize();
 
 		GetClientRect( hWnd, &windowRect );
-		GetWindowRect( hStatusBar, &statusRect );
+
+		if (hStatusBar)
+			GetWindowRect( hStatusBar, &statusRect );
 
 		if (hToolBar)
 			GetWindowRect( hToolBar, &toolRect );
-		else
-			toolRect.bottom = toolRect.top = 0;
 
 		m_heightOffset = (statusRect.bottom - statusRect.top);
 		windowRect.right = windowRect.left + config.video.windowedWidth - 1;
