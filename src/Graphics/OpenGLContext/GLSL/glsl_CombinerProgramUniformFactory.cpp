@@ -999,15 +999,7 @@ public:
 	{
 		m_useTile[0] = _useT0;
 		m_useTile[1] = _useT1;
-		LocateUniform(uTexOffset[0]);
-		LocateUniform(uTexOffset[1]);
-		LocateUniform(uCacheShiftScale[0]);
-		LocateUniform(uCacheShiftScale[1]);
-		LocateUniform(uCacheScale[0]);
-		LocateUniform(uCacheScale[1]);
 		LocateUniform(uTexScale);
-		LocateUniform(uTexSize[0]);
-		LocateUniform(uTexSize[1]);
 		LocateUniform(uCacheFrameBuffer);
 	}
 
@@ -1018,36 +1010,8 @@ public:
 		for (u32 t = 0; t < 2; ++t) {
 			if (!m_useTile[t])
 				continue;
-
-			gDPTile * pTile = gSP.textureTile[t];
-			if (pTile != nullptr) {
-				if (pTile->textureMode == TEXTUREMODE_BGIMAGE || pTile->textureMode == TEXTUREMODE_FRAMEBUFFER_BG)
-					uTexOffset[t].set(0.0f, 0.0f, _force);
-				else {
-					float fuls = pTile->fuls;
-					float fult = pTile->fult;
-					if (pTile->frameBufferAddress > 0) {
-						FrameBuffer * pBuffer = frameBufferList().getBuffer(pTile->frameBufferAddress);
-						if (pBuffer != nullptr) {
-							if (pTile->masks > 0 && pTile->clamps == 0)
-								fuls = float(pTile->uls % (1 << pTile->masks));
-							if (pTile->maskt > 0 && pTile->clampt == 0)
-								fult = float(pTile->ult % (1 << pTile->maskt));
-						} else {
-							pTile->frameBufferAddress = 0;
-						}
-					}
-					uTexOffset[t].set(fuls, fult, _force);
-				}
-			}
-
 			CachedTexture *_pTexture = cache.current[t];
 			if (_pTexture != nullptr) {
-				f32 shiftScaleS = 1.0f;
-				f32 shiftScaleT = 1.0f;
-				getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
-				uCacheShiftScale[t].set(shiftScaleS, shiftScaleT, _force);
-				uCacheScale[t].set(_pTexture->hdRatioS, _pTexture->hdRatioT, _force);
 				nFB[t] = _pTexture->frameBufferTexture;
 			}
 		}
@@ -1058,11 +1022,7 @@ public:
 
 private:
 	bool m_useTile[2];
-	fv2Uniform uTexOffset[2];
-	fv2Uniform uCacheShiftScale[2];
-	fv2Uniform uCacheScale[2];
 	fv2Uniform uTexScale;
-	fv2Uniform uTexSize[2];
 	iv2Uniform uCacheFrameBuffer;
 };
 
