@@ -505,6 +505,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 	WriteCustomSetting2(onScreenDisplay, showPercent, percent);
 	WriteCustomSetting2(onScreenDisplay, showInternalResolution, internalResolution);
 	WriteCustomSetting2(onScreenDisplay, showRenderingResolution, renderingResolution);
+	WriteCustomSetting2(onScreenDisplay, showStatistics, statistics);
 	WriteCustomSetting2(onScreenDisplay, osdPos, pos);
 	settings.endGroup();
 
