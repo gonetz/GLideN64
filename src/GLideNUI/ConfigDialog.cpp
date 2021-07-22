@@ -7,7 +7,7 @@
 #include <QAbstractButton>
 #include <QMessageBox>
 #include <QCursor>
-#include <QRegExpValidator>
+#include <QRegularExpression>
 #include <QInputDialog>
 #include <QDirIterator>
 
@@ -149,8 +149,8 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 		);
 
 	// matches w x h where w is 300-7999 and h is 200-3999, spaces around x optional
-	QRegExp windowedRegExp("([3-9][0-9]{2}|[1-7][0-9]{3}) ?x ?([2-9][0-9]{2}|[1-3][0-9]{3})");
-	QValidator *windowedValidator = new QRegExpValidator(windowedRegExp, this);
+	QRegularExpression windowedRegExp("([3-9][0-9]{2}|[1-7][0-9]{3}) ?x ?([2-9][0-9]{2}|[1-3][0-9]{3})");
+	QValidator *windowedValidator = new QRegularExpressionValidator(windowedRegExp, this);
 	ui->windowedResolutionComboBox->setValidator(windowedValidator);
 
 	ui->overscanCheckBox->toggle();
@@ -832,7 +832,7 @@ void ConfigDialog::on_fullScreenResolutionComboBox_currentIndexChanged(int index
 
 void ConfigDialog::on_texPackPathButton_clicked()
 {
-	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
+	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
 	QString directory = QFileDialog::getExistingDirectory(this,
 		"",
 		ui->texPackPathLineEdit->text(),
@@ -843,7 +843,7 @@ void ConfigDialog::on_texPackPathButton_clicked()
 
 void ConfigDialog::on_texCachePathButton_clicked()
 {
-	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
+	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
 	QString directory = QFileDialog::getExistingDirectory(this,
 		"",
 		ui->texCachePathLineEdit->text(),
@@ -854,7 +854,7 @@ void ConfigDialog::on_texCachePathButton_clicked()
 
 void ConfigDialog::on_texDumpPathButton_clicked()
 {
-	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
+	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
 	QString directory = QFileDialog::getExistingDirectory(this,
 		"",
 		ui->texDumpPathLineEdit->text(),
@@ -1006,6 +1006,11 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 
 	ui->n64DepthCompareComboBox->setStyleSheet("");
 	ui->frameBufferCheckBox->setStyleSheet("");
+}
+
+void ConfigDialog::on_anisotropicSlider_valueChanged(int value)
+{
+	this->ui->anisotropicLabelVal->setNum(value);
 }
 
 void ConfigDialog::setTitle()
