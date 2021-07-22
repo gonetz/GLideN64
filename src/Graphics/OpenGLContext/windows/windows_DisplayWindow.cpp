@@ -118,7 +118,7 @@ void DisplayWindowWindows::_changeWindow()
 		fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if (ChangeDisplaySettings( &fullscreenMode, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL) {
-			MessageBox( NULL, L"Failed to change display mode", pluginNameW, MB_ICONERROR | MB_OK );
+			MessageBoxW( NULL, L"Failed to change display mode", pluginNameW, MB_ICONERROR | MB_OK );
 			return;
 		}
 
