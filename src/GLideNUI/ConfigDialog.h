@@ -63,6 +63,8 @@ private slots:
 
 	void on_tabWidget_currentChanged(int tab);
 
+	void on_anisotropicSlider_valueChanged(int value);
+
 	void on_texPackPathButton_clicked();
 
 	void on_texCachePathButton_clicked();
