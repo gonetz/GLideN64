@@ -138,7 +138,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "enableHalosRemoval", config.texture.enableHalosRemoval, "Remove halos around filtered textures.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "MaxAnisotropy", config.texture.maxAnisotropy, "Max level of Anisotropic Filtering, 0 for off");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "anisotropy", config.texture.anisotropy, "Max level of Anisotropic Filtering, 0 for off");
 	assert(res == M64ERR_SUCCESS);
 	//#Emulation Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableDitheringPattern", config.generalEmulation.enableDitheringPattern, "Enable dithering pattern on output image.");
@@ -351,8 +351,8 @@ void Config_LoadCustomConfig()
 			config.video.multisampling = 0;
 	}
 
-	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\maxAnisotropy", value, sizeof(value));
-	if (result == M64ERR_SUCCESS) config.texture.maxAnisotropy = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\anisotropy", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.texture.anisotropy = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\bilinearMode", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.texture.bilinearMode = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\enableHalosRemoval", value, sizeof(value));
@@ -491,7 +491,7 @@ void Config_LoadConfig()
 
 	//#Texture Settings
 	config.texture.bilinearMode = ConfigGetParamBool(g_configVideoGliden64, "bilinearMode");
-	config.texture.maxAnisotropy = ConfigGetParamInt(g_configVideoGliden64, "MaxAnisotropy");
+	config.texture.anisotropy = ConfigGetParamInt(g_configVideoGliden64, "anisotropy");
 	config.texture.enableHalosRemoval = ConfigGetParamBool(g_configVideoGliden64, "enableHalosRemoval");
 	//#Emulation Settings
 	config.generalEmulation.enableDitheringPattern = ConfigGetParamBool(g_configVideoGliden64, "EnableDitheringPattern");

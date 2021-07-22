@@ -37,6 +37,8 @@ public:
 	void setRomName(const char * RomName);
 	void setMSAALevel(uint32_t _maxMSAALevel);
 	uint32_t getMSAALevel() const;
+	void setMaxAnisotropy(uint32_t _maxAnisotropy);
+	uint32_t getMaxAnisotropy() const;
 	bool Saved(void) const { return m_Saved; }
 	void OnCustomSettingsToggled(bool checked);
 	void SetLanguage(const std::string & language);
@@ -65,6 +67,7 @@ protected:
 	std::string m_strIniPath;
 	const char * m_romName;
 	uint32_t m_maxMSAALevel;
+	uint32_t m_maxAnisotropy;
 	bool m_blockReInit;
 	CFrameBufferTab * m_FrameBufferTab;
 	CVideoTab * m_VideoTab;

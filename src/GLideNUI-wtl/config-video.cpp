@@ -449,7 +449,21 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 	CButton(GetDlgItem(IDC_NOAA_RADIO)).SetCheck(config.video.multisampling == 0 && config.video.fxaa == 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_FXAA_RADIO)).SetCheck(config.video.fxaa != 0 && config.video.multisampling == 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_MSAA_RADIO)).SetCheck(config.video.fxaa == 0 && config.video.multisampling != 0 ? BST_CHECKED : BST_UNCHECKED);
-	m_AnisotropicSlider.SetPos(config.texture.maxAnisotropy);
+
+	u32 maxAnisotropy = m_Dlg.getMaxAnisotropy();
+	if (maxAnisotropy == 0 && config.texture.maxAnisotropy == 0) {
+		// default value
+		maxAnisotropy = 16;
+	} else if (maxAnisotropy == 0 && config.texture.maxAnisotropy != 0) {
+		// use cached value
+		maxAnisotropy = config.texture.maxAnisotropy;
+	} else {
+		// assign cached value
+		config.texture.maxAnisotropy = maxAnisotropy;
+	}
+	const u32 anisotropy = min(config.texture.anisotropy, maxAnisotropy);
+	m_AnisotropicSlider.SetRangeMax(maxAnisotropy);
+	m_AnisotropicSlider.SetPos(anisotropy);
 	CWindow(GetDlgItem(IDC_ANISOTROPIC_LABEL)).SetWindowTextW(FormatStrW(L"%dx", m_AnisotropicSlider.GetPos()).c_str());
 
 	CButton(GetDlgItem(IDC_CHK_VERTICAL_SYNC)).SetCheck(config.video.verticalSync != 0 ? BST_CHECKED : BST_UNCHECKED);
@@ -540,7 +554,7 @@ void CVideoTab::SaveSettings()
 		&& CComboBox(m_FrameBufferTab.GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE)).GetCurSel() != 0) {
 		config.video.fxaa = 1;
 	}
-	config.texture.maxAnisotropy = m_AnisotropicSlider.GetPos();
+	config.texture.anisotropy = m_AnisotropicSlider.GetPos();
 
 	if (CButton(GetDlgItem(IDC_BILINEAR_3POINT)).GetCheck() == BST_CHECKED)
 		config.texture.bilinearMode = BILINEAR_3POINT;

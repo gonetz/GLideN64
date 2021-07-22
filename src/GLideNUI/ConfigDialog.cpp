@@ -182,15 +182,27 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 		// assign cached value
 		config.video.maxMultiSampling = m_maxMSAA;
 	}
-
 	const unsigned int multisampling = std::min(config.video.multisampling, m_maxMSAA);
+
+	if (m_maxAnisotropy == 0 && config.texture.maxAnisotropy == 0) {
+		// default value
+		m_maxAnisotropy = 16;
+	} else if (m_maxAnisotropy == 0 && config.texture.maxAnisotropy != 0) {
+		// use cached value
+		m_maxAnisotropy = config.texture.maxAnisotropy;
+	} else {
+		// assign cached value
+		config.texture.maxAnisotropy = m_maxAnisotropy;
+	}
+	const unsigned int anisotropy = std::min(config.texture.anisotropy, m_maxAnisotropy);
 
 	ui->aliasingSlider->blockSignals(true);
 	ui->aliasingSlider->setMaximum(powof(m_maxMSAA));
 	ui->aliasingSlider->setValue(powof(multisampling));
 	ui->aliasingSlider->blockSignals(false);
 	ui->aliasingLabelVal->setText(QString::number(multisampling));
-	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
+	ui->anisotropicSlider->setMaximum(m_maxAnisotropy);
+	ui->anisotropicSlider->setValue(anisotropy);
 	ui->vSyncCheckBox->setChecked(config.video.verticalSync != 0);
 	ui->threadedVideoCheckBox->setChecked(config.video.threadedVideo != 0);
 
@@ -487,13 +499,14 @@ void ConfigDialog::setRomName(const char * _romName)
 	this->on_customSettingsCheckBox_toggled(ui->customSettingsCheckBox->isChecked());
 }
 
-ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f, unsigned int _maxMsaaLevel) :
+ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f, unsigned int _maxMsaaLevel, unsigned int _maxAnisotropy) :
 QDialog(parent, f),
 ui(new Ui::ConfigDialog),
-m_maxMSAA(_maxMsaaLevel),
 m_accepted(false),
 m_fontsInited(false),
-m_blockReInit(false)
+m_blockReInit(false),
+m_maxMSAA(_maxMsaaLevel),
+m_maxAnisotropy(_maxAnisotropy)
 {
 	ui->setupUi(this);
 	_init();
@@ -528,7 +541,7 @@ void ConfigDialog::accept(bool justSave) {
 			|| ui->noaaRadioButton->isChecked()
 		) ? 0
 		: pow2(ui->aliasingSlider->value());
-	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
+	config.texture.anisotropy = ui->anisotropicSlider->value();
 
 	if (ui->blnrStandardRadioButton->isChecked())
 		config.texture.bilinearMode = BILINEAR_STANDARD;

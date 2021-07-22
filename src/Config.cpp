@@ -34,6 +34,7 @@ void Config::resetToDefaults()
 	video.threadedVideo = 0;
 #endif
 
+	texture.anisotropy = 0;
 	texture.maxAnisotropy = 0;
 	texture.bilinearMode = BILINEAR_STANDARD;
 	texture.enableHalosRemoval = 0;

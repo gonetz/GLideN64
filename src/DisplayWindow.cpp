@@ -28,6 +28,10 @@ bool DisplayWindow::start()
 		m_maxMsaa = gfxContext.getMaxMSAALevel();
 	}
 
+	if (m_maxAnisotropy == 0) {
+		m_maxAnisotropy = static_cast<u32>(gfxContext.getMaxAnisotropy());
+	}
+
 	return true;
 }
 
@@ -203,4 +207,9 @@ void DisplayWindow::readScreen2(void * _dest, int * _width, int * _height, int _
 u32 DisplayWindow::maxMSAALevel() const
 {
 	return m_maxMsaa;
+}
+
+u32 DisplayWindow::maxAnisotropy() const
+{
+	return m_maxAnisotropy;
 }

@@ -35,6 +35,7 @@ void _loadSettings(GlSettings & settings)
 	settings.endGroup();
 
 	settings.beginGroup("texture");
+	config.texture.anisotropy = settings.value("anisotropy", config.texture.anisotropy).toInt();
 	config.texture.maxAnisotropy = settings.value("maxAnisotropy", config.texture.maxAnisotropy).toInt();
 	config.texture.bilinearMode = settings.value("bilinearMode", config.texture.bilinearMode).toInt();
 	config.texture.enableHalosRemoval = settings.value("enableHalosRemoval", config.texture.enableHalosRemoval).toInt();
@@ -220,6 +221,7 @@ void writeSettings(const char * _strIniFolder)
 		settings.endGroup();
 
 		settings.beginGroup("texture");
+		settings.setValue("anisotropy", config.texture.anisotropy);
 		settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
 		settings.setValue("bilinearMode", config.texture.bilinearMode);
 		settings.setValue("enableHalosRemoval", config.texture.enableHalosRemoval);
@@ -423,6 +425,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 	settings.endGroup();
 
 	settings.beginGroup("texture");
+	WriteCustomSetting(texture, anisotropy);
 	WriteCustomSetting(texture, maxAnisotropy);
 	WriteCustomSetting(texture, bilinearMode);
 	WriteCustomSetting(texture, enableHalosRemoval);

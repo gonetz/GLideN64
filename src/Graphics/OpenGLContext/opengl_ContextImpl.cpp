@@ -17,6 +17,10 @@
 #include "GLSL/glsl_SpecialShadersFactory.h"
 #include "GLSL/glsl_ShaderStorage.h"
 
+#ifndef GL_EXT_texture_filter_anisotropic
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+#endif
+
 #ifdef OS_ANDROID
 #include <Graphics/OpenGLContext/GraphicBuffer/GraphicBufferWrapper.h>
 #endif
@@ -267,6 +271,13 @@ s32 ContextImpl::getMaxTextureSize() const
 	GLint maxTextureSize;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 	return maxTextureSize;
+}
+
+f32 ContextImpl::getMaxAnisotropy() const
+{
+	GLfloat maxInisotropy = 0.0f;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxInisotropy);
+	return maxInisotropy;
 }
 
 void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)

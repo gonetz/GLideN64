@@ -45,6 +45,16 @@ uint32_t CConfigDlg::getMSAALevel() const {
 	return m_maxMSAALevel;
 }
 
+void CConfigDlg::setMaxAnisotropy(uint32_t _maxAnisotropy)
+{
+	m_maxAnisotropy = _maxAnisotropy;
+}
+
+uint32_t CConfigDlg::getMaxAnisotropy() const
+{
+	return m_maxAnisotropy;
+}
+
 LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	HICON hIcon = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
 	SetIcon(hIcon, TRUE);

@@ -174,6 +174,11 @@ s32 Context::getMaxTextureSize() const
 	return m_impl->getMaxTextureSize();
 }
 
+f32 Context::getMaxAnisotropy() const
+{
+	return m_impl->getMaxAnisotropy();
+}
+
 void Context::bindImageTexture(const BindImageTextureParameters & _params)
 {
 	m_impl->bindImageTexture(_params);

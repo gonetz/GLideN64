@@ -23,6 +23,7 @@ public:
 	void readScreen(void **_pDest, long *_pWidth, long *_pHeight);
 	void readScreen2(void * _dest, int * _width, int * _height, int _front);
 	u32 maxMSAALevel() const;
+	u32 maxAnisotropy() const;
 
 	void updateScale();
 	f32 getScaleX() const { return m_scaleX; }
@@ -63,6 +64,7 @@ protected:
 	u32 m_resizeWidth = 0;
 	u32 m_resizeHeight = 0;
 	u32 m_maxMsaa = 0;
+	u32 m_maxAnisotropy = 0;
 	f32 m_scaleX = 0.0f;
 	f32 m_scaleY = 0.0f;
 	f32 m_adjustScale = 1.0f;

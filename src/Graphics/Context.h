@@ -148,6 +148,8 @@ namespace graphics {
 
 		s32 getMaxTextureSize() const;
 
+		f32 getMaxAnisotropy() const;
+
 		struct BindImageTextureParameters {
 			ImageUnitParam imageUnit;
 			ObjectHandle texture;

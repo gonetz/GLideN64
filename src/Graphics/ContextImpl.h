@@ -36,6 +36,7 @@ namespace graphics {
 		virtual void setTextureUnpackAlignment(s32 _param) = 0;
 		virtual s32 getTextureUnpackAlignment() const = 0;
 		virtual s32 getMaxTextureSize() const = 0;
+		virtual f32 getMaxAnisotropy() const = 0;
 		virtual void bindImageTexture(const Context::BindImageTextureParameters & _params) = 0;
 		virtual u32 convertInternalTextureFormat(u32 _format) const = 0;
 		virtual void textureBarrier() = 0;

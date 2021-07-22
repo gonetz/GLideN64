@@ -20,7 +20,7 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, bool & _accepted)
+int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
@@ -43,7 +43,7 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsign
 	if (translator.load(getTranslationFile(), strIniFileName))
 		pApp->installTranslator(&translator);
 
-	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel);
+	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
 
 	w.setIniPath(strIniFileName);
 	w.setRomName(_romName);
@@ -74,13 +74,13 @@ int openAboutDialog(const wchar_t * _strFileName)
 	return a.exec();
 }
 
-bool runConfigThread(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel) {
+bool runConfigThread(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
 	bool accepted = false;
 #ifdef RUN_DIALOG_IN_THREAD
 	std::thread configThread(openConfigDialog, _strFileName, _maxMSAALevel, std::ref(accepted));
 	configThread.join();
 #else
-	openConfigDialog(_strFileName, _romName, _maxMSAALevel, accepted);
+	openConfigDialog(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy, accepted);
 #endif
 	return accepted;
 
@@ -96,9 +96,9 @@ int runAboutThread(const wchar_t * _strFileName) {
 	return 0;
 }
 
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel)
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
 {
-	return runConfigThread(_strFileName, _romName, _maxMSAALevel);
+	return runConfigThread(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy);
 }
 
 EXPORT int CALL RunAbout(const wchar_t * _strFileName)

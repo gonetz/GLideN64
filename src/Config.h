@@ -33,8 +33,8 @@ struct Config
 
 	struct
 	{
+		u32 anisotropy;
 		u32 maxAnisotropy;
-		f32 maxAnisotropyF;
 		u32 bilinearMode;
 		u32 enableHalosRemoval;
 		u32 screenShotFormat;

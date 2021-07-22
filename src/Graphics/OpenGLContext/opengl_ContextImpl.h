@@ -74,6 +74,8 @@ namespace opengl {
 
 		s32 getMaxTextureSize() const override;
 
+		f32 getMaxAnisotropy() const override;
+
 		void bindImageTexture(const graphics::Context::BindImageTextureParameters & _params) override;
 
 		u32 convertInternalTextureFormat(u32 _format) const override;
