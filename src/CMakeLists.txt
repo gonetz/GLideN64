@@ -135,7 +135,7 @@ set(GLideNUI_SOURCES
   GLideNUI/icon.qrc
 )
 
-if(MUPENPLUSAPI_GLIDENUI)
+if(MUPENPLUSAPI_GLIDENUI OR NOT MUPENPLUSAPI)
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_AUTORCC ON)
   set(CMAKE_AUTOUIC ON)
@@ -144,10 +144,16 @@ if(MUPENPLUSAPI_GLIDENUI)
   set(GLIDENUI_LIBRARIES
       Qt5::Widgets Qt5::Core Qt5::Gui
   )
-  list(APPEND GLideNUI_SOURCES
-    GLideNUI/fullscreenresolutions_mupen64plus.cpp
-  )
-endif(MUPENPLUSAPI_GLIDENUI)
+  if (MUPENPLUSAPI)
+    list(APPEND GLideNUI_SOURCES
+      GLideNUI/fullscreenresolutions_mupen64plus.cpp
+    )
+  else()
+    list(APPEND GLideNUI_SOURCES
+      GLideNUI/fullscreenresolutions_windows.cpp
+    )
+  endif()
+endif()
 
 #check if we're running on Raspberry Pi
 if(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
@@ -208,15 +214,17 @@ else(MUPENPLUSAPI)
   if(UNIX)
     message(FATAL_ERROR "UNIX build requires MUPENPLUSAPI!")
   endif(UNIX)
+  include_directories( . inc )
   set(GLideN64_SOURCES_WIN
 	ZilmarPluginAPI.cpp
 	GLideNUI/Config_GLideNUI.cpp
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
 	windows/MemoryStatus_windows.cpp
-	common/GLFunctions.cpp
 	windows/ZilmarAPIImpl_windows.cpp
 	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
+  Graphics/OpenGLContext/windows/WindowsWGL.cpp
+  ${GLideNUI_SOURCES}
   )
   set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)
@@ -253,6 +261,9 @@ if(MINGW)
   add_definitions(
     -DMINGW
   )
+  if (NOT MUPENPLUSAPI)
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static")
+  endif()
 endif(MINGW)
 
 if(WIN32)
@@ -362,6 +373,11 @@ if(ANDROID)
     set(FREETYPE_LIBRARIES ANDROID_FREETYPE)
 else(ANDROID)
     FIND_PACKAGE( Freetype REQUIRED )
+    # presume a qt build linked to freetype
+    # will be used with mingw
+    if (NOT MUPENPLUSAPI AND MINGW)
+      set(FREETYPE_LIBRARIES "")
+    endif()
 endif(ANDROID)
 
 include_directories( ${FREETYPE_INCLUDE_DIRS} )

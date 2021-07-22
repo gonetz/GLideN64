@@ -67,7 +67,7 @@ EXPORT int CALL osal_is_directory(const wchar_t* _name)
 	namelen = wcslen(DirName);
 	if (namelen > 0 && DirName[namelen - 1] == OSAL_DIR_SEPARATOR_CHAR)
 		DirName[namelen - 1] = L'\0';
-    return (GetFileAttributes(DirName) & FILE_ATTRIBUTE_DIRECTORY);
+    return (GetFileAttributesW(DirName) & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 EXPORT int CALL osal_mkdirp(const wchar_t * dirpath)
@@ -108,7 +108,7 @@ EXPORT int CALL osal_mkdirp(const wchar_t * dirpath)
 
 typedef struct {
     HANDLE hFind;
-    WIN32_FIND_DATA find_data;
+    WIN32_FIND_DATAW find_data;
 } dir_search_info;
 
 EXPORT void * CALL osal_search_dir_open(const wchar_t *pathname)
@@ -128,7 +128,7 @@ EXPORT void * CALL osal_search_dir_open(const wchar_t *pathname)
 		swprintf(SearchString, MAX_PATH, L"%ls%ls*", pathname, OSAL_DIR_SEPARATOR_STR);
     SearchString[MAX_PATH] = 0;
 
-    pInfo->hFind = FindFirstFile(SearchString, &pInfo->find_data);
+    pInfo->hFind = FindFirstFileW(SearchString, &pInfo->find_data);
     return (void *) pInfo;
 }
 
@@ -142,7 +142,7 @@ EXPORT const wchar_t * CALL osal_search_dir_read_next(void * search_info)
 
 	wcscpy(last_filename, pInfo->find_data.cFileName);
 
-    if (FindNextFile(pInfo->hFind, &pInfo->find_data) == 0)
+    if (FindNextFileW(pInfo->hFind, &pInfo->find_data) == 0)
     {
         pInfo->find_data.cFileName[0] = 0;
     }
