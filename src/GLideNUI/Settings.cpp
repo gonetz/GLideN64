@@ -144,6 +144,7 @@ void _loadSettings(QSettings & settings)
 	settings.beginGroup("hotkeys");
 	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
 		config.hotkeys.keys[idx] = settings.value(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]).toInt();
+		config.hotkeys.enabledKeys[idx] = settings.value(Config::enabledHotkeyIniName(idx), config.hotkeys.keys[idx]).toInt();
 	}
 	settings.endGroup();
 
@@ -319,6 +320,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.beginGroup("hotkeys");
 	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
 		settings.setValue(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]);
+		settings.setValue(Config::enabledHotkeyIniName(idx), config.hotkeys.enabledKeys[idx]);
 	}
 	settings.endGroup();
 

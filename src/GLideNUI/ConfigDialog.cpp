@@ -10,6 +10,7 @@
 #include <QRegularExpression>
 #include <QInputDialog>
 #include <QDirIterator>
+#include <qnamespace.h>
 
 #include "../Config.h"
 #include "../DebugDump.h"
@@ -429,7 +430,9 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 			if (config.hotkeys.keys[idx] != 0) {
 				pWgt->setHidCode(config.hotkeys.keys[idx]);
 				pBtn->setText(HIDKeyToName(config.hotkeys.keys[idx]));
-				pItem->setCheckState(Qt::Checked);
+				if (config.hotkeys.enabledKeys[idx] != 0) {
+					pItem->setCheckState(Qt::Checked);
+				}
 			}
 		}
 	}
@@ -692,7 +695,7 @@ void ConfigDialog::accept(bool justSave) {
 	if (!txDumpPath.exists() &&
 		!txDumpPath.mkdir(txDumpPath.absolutePath()) &&
 		config.textureFilter.txHiresEnable != 0 &&
-		config.hotkeys.keys[Config::HotKey::hkTexDump] != 0) {
+		config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) {
 		QMessageBox msgBox;
 		msgBox.setStandardButtons(QMessageBox::Close);
 		msgBox.setWindowTitle("GLideN64");
@@ -743,11 +746,12 @@ void ConfigDialog::accept(bool justSave) {
 	config.onScreenDisplay.statistics = ui->statisticsCheckBox->isChecked() ? 1 : 0;
 
 	for (quint32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
-		config.hotkeys.keys[idx] = 0;
+		config.hotkeys.keys[idx] = config.hotkeys.enabledKeys[idx] = 0;
 		QListWidgetItem * pItem = ui->hotkeyListWidget->item(idx);
+		HotkeyItemWidget* pWgt = (HotkeyItemWidget*)ui->hotkeyListWidget->itemWidget(pItem);
+		config.hotkeys.keys[idx] = pWgt->hidCode();
 		if (pItem->checkState() == Qt::Checked) {
-			HotkeyItemWidget* pWgt = (HotkeyItemWidget*)ui->hotkeyListWidget->itemWidget(pItem);
-			config.hotkeys.keys[idx] = pWgt->hidCode();
+			config.hotkeys.enabledKeys[idx] = pWgt->hidCode();
 		}
 	}
 
