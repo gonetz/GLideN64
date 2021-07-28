@@ -117,7 +117,6 @@ EXPORT void CALL osal_keys_quit()
 
 EXPORT void CALL osal_keys_update_state()
 {
-#ifdef OS_LINUX
 	keyboard_t* keyboard;
 	for (int i = 0; i < l_KeyBoardCount; i++) {
 		keyboard = &l_Keyboards[i];
@@ -127,7 +126,6 @@ EXPORT void CALL osal_keys_update_state()
 		// query keyboard state
 		ioctl(fileno(keyboard->file), EVIOCGKEY(sizeof(keyboard->key_map)), keyboard->key_map);
 	}
-#endif // OS_LINUX
 }
 
 EXPORT unsigned int CALL osal_is_key_pressed(unsigned int _key, unsigned int _mask)
