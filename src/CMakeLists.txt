@@ -131,6 +131,7 @@ set(GLideNUI_SOURCES
   GLideNUI/ScreenShot.cpp
   GLideNUI/Settings.cpp
   GLideNUI/QtKeyToHID.cpp
+  GLideNUI/HIDKeyToName.cpp
   GLideNUI/configDialog.ui
   GLideNUI/icon.qrc
 )

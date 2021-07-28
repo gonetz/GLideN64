@@ -18,8 +18,8 @@
 #include "ConfigDialog.h"
 #include "FullscreenResolutions.h"
 #include "qevent.h"
-#include "osal_keys.h"
 #include "QtKeyToHID.h"
+#include "HIDKeyToName.h"
 
 static
 struct
@@ -428,7 +428,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 
 			if (config.hotkeys.keys[idx] != 0) {
 				pWgt->setHidCode(config.hotkeys.keys[idx]);
-				pBtn->setText(osal_keycode_name(config.hotkeys.keys[idx]));
+				pBtn->setText(HIDKeyToName(config.hotkeys.keys[idx]));
 				pItem->setCheckState(Qt::Checked);
 			}
 		}
@@ -1156,7 +1156,10 @@ void ConfigDialog::on_btn_clicked() {
 			HotkeyMessageBox msgBox(this);
 			msgBox.setInformativeText(QString("Press a key for ") + pLabel->text());
 			msgBox.exec();
-			if (msgBox.m_Key != Qt::Key::Key_unknown) {
+			const unsigned int hidCode = QtKeyToHID(msgBox.m_Key);
+			if (hidCode == 0) {
+				pBtn->setText("Invalid Key");
+			} else {
 				const unsigned int hidCode = QtKeyToHID(msgBox.m_Key);
 				for (quint32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
 					QListWidgetItem * pItem = ui->hotkeyListWidget->item(idx);
@@ -1169,7 +1172,7 @@ void ConfigDialog::on_btn_clicked() {
 						break;
 					}
 				}
-				pBtn->setText(osal_keycode_name(hidCode));
+				pBtn->setText(HIDKeyToName(hidCode));
 				((HotkeyItemWidget*)pBtn->parent())->setHidCode(hidCode);
 			}
 		}
