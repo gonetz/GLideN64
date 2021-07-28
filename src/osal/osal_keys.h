@@ -16,8 +16,6 @@ EXPORT void CALL osal_keys_update_state();
 
 EXPORT unsigned int CALL osal_is_key_pressed(unsigned int _key, unsigned int _mask);
 
-EXPORT const char * CALL osal_keycode_name(unsigned int _hidCode);
-
 #ifdef __cplusplus
 }
 #endif
