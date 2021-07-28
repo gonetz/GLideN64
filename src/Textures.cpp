@@ -804,7 +804,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 
 	if (m_toggleDumpTex &&
 		config.textureFilter.txHiresEnable != 0 &&
-		config.hotkeys.keys[Config::HotKey::hkTexDump] != 0) {
+		config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) {
 		txfilter_dmptx((u8*)pDest, pTexture->width, pTexture->height,
 			pTexture->width, (u16)u32(glInternalFormat),
 			(unsigned short)(pTexture->format << 8 | pTexture->size),
@@ -1216,7 +1216,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 
 		if (m_toggleDumpTex &&
 			config.textureFilter.txHiresEnable != 0 &&
-			config.hotkeys.keys[Config::HotKey::hkTexDump] != 0) {
+			config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) {
 			txfilter_dmptx((u8*)texData.get(), tmptex.width, tmptex.height,
 					tmptex.width, (u16)u32(glInternalFormat),
 					(unsigned short)(_pTexture->format << 8 | _pTexture->size),

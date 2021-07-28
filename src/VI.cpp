@@ -107,7 +107,7 @@ static void checkHotkeys()
 		SwitchDump(config.debug.dumpMode);
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkHdTexToggle], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkHdTexToggle], 0x0001)) {
 		if (config.textureFilter.txHiresEnable == 0)
 			dwnd().getDrawer().showMessage("Enable HD textures\n", Milliseconds(750));
 		else
@@ -118,7 +118,7 @@ static void checkHotkeys()
 
 	if (config.textureFilter.txHiresEnable != 0) {
 		/* Force reload hi-res textures. Useful for texture artists */
-		if (osal_is_key_pressed(config.hotkeys.keys[Config::hkHdTexReload], 0x0001)) {
+		if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkHdTexReload], 0x0001)) {
 			dwnd().getDrawer().showMessage("Reload HD textures\n", Milliseconds(750));
 			if (txfilter_reloadhirestex()) {
 				textureCache().clear();
@@ -126,11 +126,11 @@ static void checkHotkeys()
 		}
 
 		/* Turn on texture dump */
-		if (osal_is_key_pressed(config.hotkeys.keys[Config::hkTexDump], 0x0001))
+		if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkTexDump], 0x0001))
 			textureCache().toggleDumpTex();
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkTexCoordBounds], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkTexCoordBounds], 0x0001)) {
 		if (config.graphics2D.enableTexCoordBounds == 0)
 			dwnd().getDrawer().showMessage("Bound texrect texture coordinates on\n", Milliseconds(1000));
 		else
@@ -138,7 +138,7 @@ static void checkHotkeys()
 		config.graphics2D.enableTexCoordBounds = !config.graphics2D.enableTexCoordBounds;
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkNativeResTexrects], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkNativeResTexrects], 0x0001)) {
 		static u32 s_nativeResTexrects = Config::NativeResTexrectsMode::ntOptimized;
 		if (config.graphics2D.enableNativeResTexrects != Config::NativeResTexrectsMode::ntDisable) {
 			s_nativeResTexrects = config.graphics2D.enableNativeResTexrects;
@@ -152,7 +152,7 @@ static void checkHotkeys()
 			dwnd().getDrawer().showMessage("Enable 2D texrects in native resolution\n", Milliseconds(1000));
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkVsync], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkVsync], 0x0001)) {
 		config.video.verticalSync = !config.video.verticalSync;
 		dwnd().stop();
 		dwnd().start();
@@ -163,7 +163,7 @@ static void checkHotkeys()
 	}
 
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkFBEmulation], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkFBEmulation], 0x0001)) {
 		config.frameBufferEmulation.enable = !config.frameBufferEmulation.enable;
 		dwnd().stop();
 		dwnd().start();
@@ -174,7 +174,7 @@ static void checkHotkeys()
 	}
 
 	if (config.frameBufferEmulation.enable != 0 &&
-		osal_is_key_pressed(config.hotkeys.keys[Config::hkN64DepthCompare], 0x0001)) {
+		osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkN64DepthCompare], 0x0001)) {
 		static u32 N64DepthCompare = Config::N64DepthCompareMode::dcCompatible;
 		if (config.frameBufferEmulation.N64DepthCompare != Config::N64DepthCompareMode::dcDisable) {
 			N64DepthCompare = config.frameBufferEmulation.N64DepthCompare;
@@ -189,27 +189,27 @@ static void checkHotkeys()
 			dwnd().getDrawer().showMessage("Enable N64 depth compare\n", Milliseconds(1000));
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdVis], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkOsdVis], 0x0001)) {
 		config.onScreenDisplay.vis = !config.onScreenDisplay.vis;
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdFps], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkOsdFps], 0x0001)) {
 		config.onScreenDisplay.fps = !config.onScreenDisplay.fps;
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdPercent], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkOsdPercent], 0x0001)) {
 		config.onScreenDisplay.percent = !config.onScreenDisplay.percent;
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdInternalResolution], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkOsdInternalResolution], 0x0001)) {
 		config.onScreenDisplay.internalResolution = !config.onScreenDisplay.internalResolution;
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkOsdRenderingResolution], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkOsdRenderingResolution], 0x0001)) {
 		config.onScreenDisplay.renderingResolution = !config.onScreenDisplay.renderingResolution;
 	}
 
-	if (osal_is_key_pressed(config.hotkeys.keys[Config::hkForceGammaCorrection], 0x0001)) {
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkForceGammaCorrection], 0x0001)) {
 		if (config.gammaCorrection.force == 0)
 			dwnd().getDrawer().showMessage("Force gamma correction on\n", Milliseconds(750));
 		else
