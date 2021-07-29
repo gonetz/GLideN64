@@ -12,6 +12,7 @@
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
+Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
 #endif
 
 //#define RUN_DIALOG_IN_THREAD
