@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 version: 1.0.{build}
 pull_requests:
@@ -8,9 +8,9 @@ environment:
   BUILD_PATH: $(APPVEYOR_BUILD_FOLDER)\build
   QTDIR_x86: C:\Static_Qt_x86
   QTDIR_x64: C:\Static_Qt_x64
-  QT_BUILD_BASE_URL: https://github.com/gonetz/GLideN64/releases/download/qt_build/
-  QT_BUILD_x86: qt-5_7_1-x86-msvc2017-static
-  QT_BUILD_x64: qt-5_7_1-x64-msvc2017-static
+  QT_BUILD_BASE_URL: https://github.com/Rosalie241/GLideN64/releases/download/qt_build/
+  QT_BUILD_x86: qt-5_15-x86-msvc2017-static
+  QT_BUILD_x64: qt-5_15-x64-msvc2017-static
   # Builds
   PJ64PluginsDirQT: $(BUILD_PATH)\QT_for_Project64\
   PJ64PluginsDirQT_x64: $(BUILD_PATH)\QT_for_Project64_x64\
