@@ -29,12 +29,6 @@
 
 #include <Graphics/Parameters.h>
 
-#ifdef WIN32
-#define KBHIT(key) ((GetAsyncKeyState(key) & 0x8001) == 0x8001)
-#else
-#define KBHIT(key) (0)
-#endif
-
 typedef graphics::InternalColorFormatParam ColorFormat;
 
 /* in-memory zlib texture compression */

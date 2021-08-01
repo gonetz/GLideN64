@@ -126,7 +126,9 @@
     <ClCompile Include="..\..\src\GLideNHQ\TxDbg.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxFilter.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxFilterExport.cpp" />
+    <ClCompile Include="..\..\src\GLideNHQ\TxHiResLoader.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxHiResCache.cpp" />
+    <ClCompile Include="..\..\src\GLideNHQ\TxHiResNoCache.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxImage.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxQuantize.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxReSample.cpp" />

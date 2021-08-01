@@ -103,6 +103,7 @@ void _loadSettings(QSettings & settings)
 	config.textureFilter.txSaveCache = settings.value("txSaveCache", config.textureFilter.txSaveCache).toInt();
 	config.textureFilter.txEnhancedTextureFileStorage = settings.value("txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage).toInt();
 	config.textureFilter.txHiresTextureFileStorage = settings.value("txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage).toInt();
+	config.textureFilter.txNoTextureFileStorage = settings.value("txNoTextureFileStorage", config.textureFilter.txNoTextureFileStorage).toInt();
 	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
 	config.textureFilter.txPath[settings.value("txPath", txPath).toString().toWCharArray(config.textureFilter.txPath)] = L'\0';
 	QString txCachePath = QString::fromWCharArray(config.textureFilter.txCachePath);
@@ -291,6 +292,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
 	settings.setValue("txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage);
 	settings.setValue("txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage);
+	settings.setValue("txNoTextureFileStorage", config.textureFilter.txNoTextureFileStorage);
 	settings.setValue("txPath", QString::fromWCharArray(config.textureFilter.txPath));
 	settings.setValue("txCachePath", QString::fromWCharArray(config.textureFilter.txCachePath));
 	settings.setValue("txDumpPath", QString::fromWCharArray(config.textureFilter.txDumpPath));
@@ -487,6 +489,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(textureFilter, txCacheSize);
 	WriteCustomSetting(textureFilter, txEnhancedTextureFileStorage);
 	WriteCustomSetting(textureFilter, txHiresTextureFileStorage);
+	WriteCustomSetting(textureFilter, txNoTextureFileStorage);
 	WriteCustomSetting(textureFilter, txHiresEnable);
 	WriteCustomSetting(textureFilter, txHiresFullAlphaChannel);
 	WriteCustomSetting(textureFilter, txHresAltCRC);

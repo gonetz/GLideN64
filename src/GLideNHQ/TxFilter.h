@@ -27,6 +27,8 @@
 #include "TxInternal.h"
 #include "TxQuantize.h"
 #include "TxHiResCache.h"
+#include "TxHiResNoCache.h"
+#include "TxHiResLoader.h"
 #include "TxTexCache.h"
 #include "TxUtil.h"
 #include "TxImage.h"
@@ -47,7 +49,7 @@ private:
   tx_wstring _dumpPath;
   TxQuantize *_txQuantize;
   TxTexCache *_txTexCache;
-  TxHiResCache *_txHiResCache;
+  TxHiResLoader *_txHiResLoader;
   TxImage *_txImage;
   boolean _initialized;
   void clear();

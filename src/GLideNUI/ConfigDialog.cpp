@@ -349,6 +349,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
 	ui->enhancedTexFileStorageCheckBox->setChecked(config.textureFilter.txEnhancedTextureFileStorage != 0);
 	ui->hiresTexFileStorageCheckBox->setChecked(config.textureFilter.txHiresTextureFileStorage != 0);
+	ui->noTexFileStorageCheckBox->setChecked(config.textureFilter.txNoTextureFileStorage != 0);
 
 	ui->texPackPathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txPath));
 	ui->texCachePathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txCachePath));
@@ -658,6 +659,7 @@ void ConfigDialog::accept(bool justSave) {
 	config.textureFilter.txSaveCache = ui->saveTextureCacheCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txEnhancedTextureFileStorage = ui->enhancedTexFileStorageCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHiresTextureFileStorage = ui->hiresTexFileStorageCheckBox->isChecked() ? 1 : 0;
+	config.textureFilter.txNoTextureFileStorage = ui->noTexFileStorageCheckBox->isChecked() ? 1 : 0;
 
 	QDir txPath(ui->texPackPathLineEdit->text());
 	if (!txPath.exists() &&
@@ -865,6 +867,11 @@ void ConfigDialog::on_texDumpPathButton_clicked()
 		options);
 	if (!directory.isEmpty())
 		ui->texDumpPathLineEdit->setText(directory);
+}
+
+void ConfigDialog::on_noTexFileStorageCheckBox_toggled(bool checked)
+{
+	ui->hiresTexFileStorageCheckBox->setEnabled(!checked);
 }
 
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
