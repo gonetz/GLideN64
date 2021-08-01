@@ -22,7 +22,13 @@
     <ClCompile Include="..\..\src\GLideNHQ\TxFilterExport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNHQ\TxHiResLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\GLideNHQ\TxHiResCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GLideNHQ\TxHiResNoCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GLideNHQ\TxImage.cpp">

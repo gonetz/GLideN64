@@ -74,6 +74,8 @@ private slots:
 
 	void on_texDumpPathButton_clicked();
 
+	void on_noTexFileStorageCheckBox_toggled(bool checked);
+
 	void on_profilesComboBox_currentIndexChanged(const QString &arg1);
 
 	void on_settingsDestProfileRadioButton_toggled(bool checked);

@@ -198,6 +198,8 @@ void PluginAPI::RomClosed()
 
 int PluginAPI::RomOpen()
 {
+	osal_keys_init();
+
 	LOG(LOG_APIFUNC, "RomOpen");
 #ifdef RSPTHREAD
 	m_pluginThreadMtx.lock();
@@ -212,7 +214,6 @@ int PluginAPI::RomOpen()
 	if (!dwnd().start())
 		return 0;
 #endif
-	osal_keys_init();
 
 	m_bRomOpen = true;
 

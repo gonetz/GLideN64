@@ -63,6 +63,8 @@ u32 TextureFilterHandler::_getConfigOptions() const
 		options |= FILE_TEXCACHE;
 	if (config.textureFilter.txHiresTextureFileStorage)
 		options |= FILE_HIRESTEXCACHE;
+	if (config.textureFilter.txNoTextureFileStorage)
+		options |= FILE_NOTEXCACHE;
 	return options;
 }
 

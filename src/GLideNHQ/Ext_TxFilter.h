@@ -93,6 +93,7 @@ typedef unsigned char boolean;
 #define JABO_HIRESTEXTURES  0x00030000
 
 #define FILE_CACHE_MASK     0x00300000
+#define FILE_NOTEXCACHE     0x08500000
 #define FILE_TEXCACHE       0x00100000
 #define FILE_HIRESTEXCACHE  0x00200000
 #define GZ_TEXCACHE         0x00400000
