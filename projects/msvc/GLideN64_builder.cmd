@@ -83,7 +83,7 @@ if "%ARCH%"=="x86" set TARCH=Win32
 
 if %NOQT%==1 goto noqt
 if defined QTDIR_%ARCH% goto nodl
-set "QTVER=qt-5_7_1-%ARCH%-msvc2017-static"
+set "QTVER=qt-5_15-%ARCH%-msvc2017-static"
 if exist "..\Qt\%QTVER%\include\QtCore" goto nodl
 
 set MSG=Path to Qt %ARCH% was not specified or detected
