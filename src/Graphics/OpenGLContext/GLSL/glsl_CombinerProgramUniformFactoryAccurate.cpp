@@ -72,16 +72,10 @@ public:
 		}
 		float tcbounds[4] = {};
 		if (useTexCoordBounds) {
-			f32 S = _FIXED2FLOAT(gDP.lastTexRectInfo.s, 5);
-			f32 T = _FIXED2FLOAT(gDP.lastTexRectInfo.t, 5);
-			f32 uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx;
-			f32 lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx;
-			f32 ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy;
-			f32 lrt = T + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy;
-			tcbounds[0] = fmin(uls, lrs);
-			tcbounds[1] = fmin(ult, lrt);
-			tcbounds[2] = fmax(uls, lrs);
-			tcbounds[3] = fmax(ult, lrt);
+			tcbounds[0] = gDP.m_texCoordBounds.uls;
+			tcbounds[1] = gDP.m_texCoordBounds.ult;
+			tcbounds[2] = gDP.m_texCoordBounds.lrs;
+			tcbounds[3] = gDP.m_texCoordBounds.lrt;
 		}
 
 		uVertexOffset.set(vertexOffset, vertexOffset, _force);

@@ -129,6 +129,11 @@ struct gDPTexrectInfo
 	f32 dsdx, dtdy;
 };
 
+struct texCoordBounds {
+	bool valid;
+	f32 uls, lrs, ult, lrt;
+};
+
 struct gDPInfo
 {
 	struct OtherMode
@@ -264,6 +269,7 @@ struct gDPInfo
 
 	gDPLoadTileInfo loadInfo[512];
 	gDPTexrectInfo lastTexRectInfo;
+	texCoordBounds m_texCoordBounds;
 };
 
 extern gDPInfo gDP;
