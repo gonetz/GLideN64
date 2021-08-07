@@ -20,29 +20,21 @@ Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
 inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
+static std::unique_ptr<QApplication> s_pQApp;
+static QCoreApplication* s_pAppInstance;
+
 static
 int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
 {
-	cleanMyResource();
-	initMyResource();
 	QString strIniFileName = QString::fromWCharArray(_strFileName);
 	loadSettings(strIniFileName);
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
 		loadCustomRomSettings(strIniFileName, _romName);
 
-	std::unique_ptr<QApplication> pQApp;
-	QCoreApplication* pApp = QCoreApplication::instance();
-
-	if (pApp == nullptr) {
-		int argc = 0;
-		char * argv = 0;
-		pQApp.reset(new QApplication(argc, &argv));
-		pApp = pQApp.get();
-	}
-
 	QTranslator translator;
-	if (translator.load(getTranslationFile(), strIniFileName))
-		pApp->installTranslator(&translator);
+	if (translator.load(getTranslationFile(), strIniFileName)) {
+		s_pAppInstance->installTranslator(&translator);
+	}
 
 	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
 
@@ -51,7 +43,7 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsign
 	w.setTitle();
 	w.show();
 
-	int res = pQApp ? pQApp->exec() : w.exec();
+	int res = s_pQApp ? s_pQApp->exec() : w.exec();
 	_accepted = w.isAccepted();
 	return res;
 }
@@ -59,20 +51,13 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsign
 static
 int openAboutDialog(const wchar_t * _strFileName)
 {
-	cleanMyResource();
-	initMyResource();
-
-	int argc = 0;
-	char * argv = 0;
-	QApplication a(argc, &argv);
-
 	QTranslator translator;
 	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))
-		a.installTranslator(&translator);
+		s_pAppInstance->installTranslator(&translator);
 
 	AboutDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
 	w.show();
-	return a.exec();
+	return s_pQApp ? s_pQApp->exec() : w.exec();
 }
 
 bool runConfigThread(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
@@ -95,6 +80,26 @@ int runAboutThread(const wchar_t * _strFileName) {
 	openAboutDialog(_strFileName);
 #endif
 	return 0;
+}
+
+EXPORT void CALL ConfigInit(void * hinst)
+{
+	initMyResource();
+
+	s_pAppInstance = QCoreApplication::instance();
+
+	if (s_pAppInstance == nullptr) {
+		int argc = 0;
+		char * argv = 0;
+		s_pQApp.reset(new QApplication(argc, &argv));
+		s_pAppInstance = s_pQApp.get();
+	}
+}
+
+EXPORT void CALL ConfigCleanup(void)
+{
+	cleanMyResource();
+	s_pQApp.release();
 }
 
 EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
