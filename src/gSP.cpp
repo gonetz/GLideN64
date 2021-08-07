@@ -1872,6 +1872,11 @@ void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data)
 		strRes.append((gDP.otherMode.h & 0x00010000) ? "yes | " : "no | ");
 	}
 
+	if (mask & 0x00060000) {
+		strRes.append(TextureDetailText[gDP.otherMode.textureDetail]);
+		strRes.append(" | ");
+	}
+
 	if (mask & 0x00080000) {
 		strRes.append("Persp_en : ");
 		strRes.append((gDP.otherMode.h & 0x00080000) ? "yes" : "no");
