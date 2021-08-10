@@ -1,7 +1,6 @@
-#include "GLideNUI.h"
-#include "../Config.h"
-#include "util/util.h"
 #include <Windows.h>
+
+#include "Config.h"
 #include "../GLideNHQ/inc/png.h"
 
 void write_png_file(const wchar_t * file_name, int width, int height, const uint8_t *buffer)
@@ -77,7 +76,7 @@ void write_png_file(const wchar_t * file_name, int width, int height, const uint
 	fclose(fp);
 }
 
-EXPORT void CALL SaveScreenshot(const wchar_t * _folder, const char * _name, int _width, int _height, const unsigned char * _data)
+void SaveScreenshot(const wchar_t * _folder, const char * _name, int _width, int _height, const unsigned char * _data)
 {
 	const wchar_t * fileExt = L"png";
 
@@ -96,7 +95,9 @@ EXPORT void CALL SaveScreenshot(const wchar_t * _folder, const char * _name, int
 	if ((FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
 		return;
 
-	std::wstring romName = ToUTF16(_name);
+	wchar_t wbuf[MAX_PATH];
+	mbstowcs(wbuf, _name, MAX_PATH);
+	std::wstring romName = std::wstring(wbuf);
 	for (size_t i = 0, n = romName.size(); i < n; i++) {
 		if (romName[i] == L' ') romName[i] = L'_';
 		if (romName[i] == L':') romName[i] = L';';

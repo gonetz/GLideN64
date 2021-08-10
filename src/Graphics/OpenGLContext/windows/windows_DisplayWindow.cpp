@@ -8,6 +8,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
+#include <windows/ScreenShot.h>
 #include <Graphics/OpenGLContext/ThreadedOpenGl/opengl_Wrapper.h>
 
 using namespace opengl;

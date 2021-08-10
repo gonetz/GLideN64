@@ -128,7 +128,6 @@ set(GLideNUI_SOURCES
   GLideNUI/ConfigDialog.cpp
   GLideNUI/Config_GLideNUI.cpp
   GLideNUI/GLideNUI.cpp
-  GLideNUI/ScreenShot.cpp
   GLideNUI/Settings.cpp
   GLideNUI/QtKeyToHID.cpp
   GLideNUI/HIDKeyToName.cpp
@@ -223,6 +222,7 @@ else(MUPENPLUSAPI)
 	windows/GLideN64_windows.cpp
 	windows/MemoryStatus_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
+  windows/ScreenShot.cpp
 	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
   Graphics/OpenGLContext/windows/WindowsWGL.cpp
   ${GLideNUI_SOURCES}

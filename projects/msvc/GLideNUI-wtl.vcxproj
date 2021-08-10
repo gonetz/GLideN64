@@ -107,7 +107,6 @@
     <ClCompile Include="..\..\src\GLideNUI-wtl\IniFileClass.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\InputDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\Language.cpp" />
-    <ClCompile Include="..\..\src\GLideNUI-wtl\ScreenShot.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\Settings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\util\StdString.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\util\util.cpp" />

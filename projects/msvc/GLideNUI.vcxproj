@@ -127,7 +127,6 @@
     <ClCompile Include="Release\moc_ConfigDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\src\GLideNUI\ScreenShot.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
