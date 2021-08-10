@@ -69,9 +69,6 @@
     <ClCompile Include="..\..\src\GLideNUI\GLideNUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\GLideNUI\ScreenShot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
