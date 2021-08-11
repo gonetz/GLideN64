@@ -513,6 +513,19 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting2(onScreenDisplay, osdPos, pos);
 	settings.endGroup();
 
+	settings.beginGroup("hotkeys");
+	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
+		if (origConfig.hotkeys.keys[idx] != config.hotkeys.keys[idx] || 
+			origConfig.hotkeys.keys[idx] != settings.value(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]).toInt()) {
+			settings.setValue(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]);
+		}
+		if (origConfig.hotkeys.enabledKeys[idx] != config.hotkeys.enabledKeys[idx] || 
+			origConfig.hotkeys.enabledKeys[idx] != settings.value(Config::enabledHotkeyIniName(idx), config.hotkeys.enabledKeys[idx]).toInt()) {
+			settings.setValue(Config::enabledHotkeyIniName(idx), config.hotkeys.enabledKeys[idx]);
+		}
+	}
+	settings.endGroup();
+
 	settings.endGroup();
 }
 
