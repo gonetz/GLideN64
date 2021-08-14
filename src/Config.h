@@ -37,7 +37,6 @@ struct Config
 		u32 maxAnisotropy;
 		u32 bilinearMode;
 		u32 enableHalosRemoval;
-		u32 screenShotFormat;
 	} texture;
 
 	enum TexrectCorrectionMode {

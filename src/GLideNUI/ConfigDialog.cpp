@@ -221,15 +221,6 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->hiresNoiseDitheringCheckBox->setChecked(config.generalEmulation.enableHiresNoiseDithering);
 	ui->ditheringPatternCheckBox->setChecked(config.generalEmulation.enableDitheringPattern);
 
-	switch (config.texture.screenShotFormat) {
-	case 0:
-		ui->pngRadioButton->setChecked(true);
-		break;
-	case 1:
-		ui->jpegRadioButton->setChecked(true);
-		break;
-	}
-
 	// Emulation settings
 	ui->emulateLodCheckBox->setChecked(config.generalEmulation.enableLOD != 0);
 	ui->enableHWLightingCheckBox->setChecked(config.generalEmulation.enableHWLighting != 0);
@@ -555,11 +546,6 @@ void ConfigDialog::accept(bool justSave) {
 	config.generalEmulation.enableDitheringQuantization = ui->ditheringQuantizationCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableHiresNoiseDithering = ui->hiresNoiseDitheringCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableDitheringPattern = ui->ditheringPatternCheckBox->isChecked() ? 1 : 0;
-
-	if (ui->pngRadioButton->isChecked())
-		config.texture.screenShotFormat = 0;
-	else if (ui->jpegRadioButton->isChecked())
-		config.texture.screenShotFormat = 1;
 
 	const int lanuageIndex = ui->translationsComboBox->currentIndex();
 	if (lanuageIndex == 0) // English

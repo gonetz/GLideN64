@@ -357,8 +357,6 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.texture.bilinearMode = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\enableHalosRemoval", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.texture.enableHalosRemoval = atoi(value);
-	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\screenShotFormat", value, sizeof(value));
-	if (result == M64ERR_SUCCESS) config.texture.screenShotFormat = atoi(value);
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableDitheringPattern", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableDitheringPattern = atoi(value);
