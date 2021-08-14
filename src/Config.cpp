@@ -38,7 +38,6 @@ void Config::resetToDefaults()
 	texture.maxAnisotropy = 0;
 	texture.bilinearMode = BILINEAR_STANDARD;
 	texture.enableHalosRemoval = 0;
-	texture.screenShotFormat = 0;
 
 	generalEmulation.enableLOD = 1;
 	generalEmulation.enableHiresNoiseDithering = 0;
