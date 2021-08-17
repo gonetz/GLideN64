@@ -151,7 +151,7 @@ bool TxHiResCache::_load(boolean replace) /* 0 : reload, 1 : replace partial */
 
 bool TxHiResCache::reload()
 {
-	return _load(0) && !TxCache::empty();
+	return _load(0) && !TxCache::empty() && TxCache::save();
 }
 
 TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_path, boolean replace)
