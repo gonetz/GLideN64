@@ -72,7 +72,7 @@ TxHiResCache::TxHiResCache(int maxwidth,
 
 	/* read in hires textures */
 	if (!_cacheDumped) {
-		if (TxHiResCache::load(0) && (getOptions() & HIRES_DUMP_ENABLED) != 0)
+		if (_load(0) && (getOptions() & HIRES_DUMP_ENABLED) != 0)
 			_cacheDumped = TxCache::save();
 	}
 }
