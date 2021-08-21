@@ -1106,27 +1106,14 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	if (_loadHiresTexture(_tile, _pTexture, ricecrc))
 		return;
 
-	s32 mipLevel = 0;
 	bool force32bitFormat = false;
 	_pTexture->max_level = 0;
 
-	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1) {
-		if (_tile == 0) {
-			_pTexture->max_level = 0;
-		} else {
-			_pTexture->max_level = static_cast<u8>(gSP.texture.level - 1);
-			const u16 dim = std::max(_pTexture->width, _pTexture->height);
-			while (dim <  static_cast<u16>(1 << _pTexture->max_level))
-				--_pTexture->max_level;
-
-			auto texFormat = gDP.tiles[gSP.texture.tile + 1].format;
-			auto texSize = gDP.tiles[gSP.texture.tile + 1].size;
-			u32 tileMipLevel = gSP.texture.tile + 2;
-			while (!force32bitFormat && (tileMipLevel < gSP.texture.tile + gSP.texture.level)) {
-				gDPTile const& mipTile = gDP.tiles[tileMipLevel++];
-				force32bitFormat = texFormat != mipTile.format || texSize != mipTile.size;
-			}
-		}
+	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1 && _tile > 0) {
+		_pTexture->max_level = gDP.otherMode.textureDetail == G_TD_DETAIL ?
+			static_cast<u8>(gSP.texture.level) :
+			static_cast<u8>(gSP.texture.level - 1);
+		force32bitFormat = _pTexture->max_level > 0;
 	}
 
 	u32 sizeShift = 1;
@@ -1158,7 +1145,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		}
 	private:
 		u32 *pData = NULL;
-	} texData(_pTexture->textureBytes);
+	} texData((_pTexture->textureBytes + 8*sizeof(u32)) * (_pTexture->max_level + 1));
 
 	GetTexelFunc GetTexel;
 	InternalColorFormatParam glInternalFormat;
@@ -1183,31 +1170,70 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	CachedTexture tmptex = *_pTexture;
 	u16 line = tmptex.line;
 
-	while (true) {
-		getLoadParams(tmptex.format, tmptex.size);
+	if (_pTexture->max_level > 0)
+	{
+		u32 mipLevel = 0;
+		u32 texDataOffset = 8; // number of gDP.tiles
+
+		// Load all tiles into one 1D texture atlas.
+		while (true)
 		{
+			const u32 tileSizePacked = texDataOffset | (tmptex.width << 16) | (tmptex.height << 24);
+			texData.get()[mipLevel] = tileSizePacked;
+
+			getLoadParams(tmptex.format, tmptex.size);
+			_getTextureDestData(tmptex, texData.get() + texDataOffset, glInternalFormat, GetTexel, &line);
+
+			if (m_toggleDumpTex &&
+				config.textureFilter.txHiresEnable != 0 &&
+				config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) {
+				txfilter_dmptx((u8*)texData.get() + texDataOffset, tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					(unsigned short)(_pTexture->format << 8 | _pTexture->size),
+					ricecrc);
+			}
+
+			texDataOffset += tmptex.width * tmptex.height;
+			if (mipLevel == _pTexture->max_level)
+				break;
+			++mipLevel;
 			const u32 tileMipLevel = gSP.texture.tile + mipLevel + 1;
 			gDPTile & mipTile = gDP.tiles[tileMipLevel];
-			if (tmptex.max_level > 1 &&
-				tmptex.width == (mipTile.lrs - mipTile.uls + 1) * 2 &&
-				tmptex.height == (mipTile.lrt - mipTile.ult + 1) * 2)
-			{
-				// Special case for Southern Swamp grass texture, Zelda MM. See #2315
-				const u16 texWidth = tmptex.width;
-				const u16 texHeight = tmptex.height;
-				tmptex.width = mipTile.lrs - mipTile.uls + 1;
-				tmptex.height = mipTile.lrt - mipTile.ult + 1;
-				_getTextureDestData(tmptex, texData.get(), glInternalFormat, GetTexel, &line);
-				if (sizeShift == 2)
-					doubleTexture<u32>(texData.get(), tmptex.width, tmptex.height);
-				else
-					doubleTexture<u16>((u16*)texData.get(), tmptex.width, tmptex.height);
-				tmptex.width = texWidth;
-				tmptex.height = texHeight;
-			} else {
-				_getTextureDestData(tmptex, texData.get(), glInternalFormat, GetTexel, &line);
-			}
+			gDPTile & prevMipTile = gDP.tiles[tileMipLevel - 1];
+			line = mipTile.line;
+			tmptex.tMem = mipTile.tmem;
+			tmptex.palette = mipTile.palette;
+			tmptex.maskS = mipTile.masks;
+			tmptex.maskT = mipTile.maskt;
+			tmptex.format = mipTile.format;
+			tmptex.size = mipTile.size;
+			TileSizes sizes;
+			_calcTileSizes(tileMipLevel, sizes, nullptr);
+			tmptex.width = sizes.width;
+			tmptex.height = sizes.height;
+			tmptex.clampWidth = sizes.clampWidth;
+			tmptex.clampHeight = sizes.clampHeight;
+			_pTexture->textureBytes += (tmptex.width * tmptex.height) << sizeShift;
 		}
+
+		Context::InitTextureParams params;
+		params.handle = _pTexture->name;
+		params.textureUnitIndex = textureIndices::Tex[_tile];
+		params.mipMapLevel = 0;
+		params.mipMapLevels =1;
+		params.msaaLevel = 0;
+		params.width = texDataOffset;
+		params.height = 1;
+		params.internalFormat = gfxContext.convertInternalTextureFormat(u32(glInternalFormat));
+		params.format = colorFormat::RGBA;
+		params.dataType = glType;
+		params.data = texData.get();
+		gfxContext.init2DTexture(params);
+	}
+	else
+	{
+		getLoadParams(tmptex.format, tmptex.size);
+		_getTextureDestData(tmptex, texData.get(), glInternalFormat, GetTexel, &line);
 
 		if ((config.generalEmulation.hacks&hack_LoadDepthTextures) != 0 && gDP.colorImage.address == gDP.depthImageAddress) {
 			_loadDepthTexture(_pTexture, (u16*)texData.get());
@@ -1276,8 +1302,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			Context::InitTextureParams params;
 			params.handle = _pTexture->name;
 			params.textureUnitIndex = textureIndices::Tex[_tile];
-			params.mipMapLevel = mipLevel;
-			params.mipMapLevels = _pTexture->max_level + 1;
+			params.mipMapLevel = 0;
+			params.mipMapLevels = 1;
 			params.msaaLevel = 0;
 			params.width = tmptex.width;
 			params.height = tmptex.height;
@@ -1287,28 +1313,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			params.data = texData.get();
 			gfxContext.init2DTexture(params);
 		}
-		if (mipLevel == _pTexture->max_level)
-			break;
-		++mipLevel;
-		const u32 tileMipLevel = gSP.texture.tile + mipLevel + 1;
-		gDPTile & mipTile = gDP.tiles[tileMipLevel];
-		line = mipTile.line;
-		tmptex.tMem = mipTile.tmem;
-		tmptex.palette = mipTile.palette;
-		tmptex.maskS = mipTile.masks;
-		tmptex.maskT = mipTile.maskt;
-		tmptex.format = mipTile.format;
-		tmptex.size = mipTile.size;
-		TileSizes sizes;
-		_calcTileSizes(tileMipLevel, sizes, nullptr);
-		tmptex.clampWidth = sizes.clampWidth;
-		tmptex.clampHeight = sizes.clampHeight;
-		// Insure mip-map levels size consistency.
-		if (tmptex.width > 1)
-			tmptex.width >>= 1;
-		if (tmptex.height > 1)
-			tmptex.height >>= 1;
-		_pTexture->textureBytes += (tmptex.width * tmptex.height) << sizeShift;
 	}
 	if (m_curUnpackAlignment > 1)
 		gfxContext.setTextureUnpackAlignment(m_curUnpackAlignment);
