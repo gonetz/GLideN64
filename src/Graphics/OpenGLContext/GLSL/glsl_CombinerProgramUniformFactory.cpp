@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <Config.h>
 #include "glsl_CombinerProgramUniformFactory.h"
@@ -14,6 +15,10 @@
 #include <gSP.h>
 #include <gDP.h>
 #include <VI.h>
+
+#ifdef min
+#undef min
+#endif
 
 namespace glsl {
 
@@ -588,7 +593,11 @@ public:
 	void update(bool _force) override
 	{
 		uMinLod.set(gDP.primColor.m, _force);
-		uMaxTile.set(gSP.texture.level, _force);
+		const CachedTexture * _pTexture = textureCache().current[1];
+		if (_pTexture == nullptr)
+			uMaxTile.set(gSP.texture.level, _force);
+		else
+			uMaxTile.set(_pTexture->max_level > 0 ? gSP.texture.level : std::min(gSP.texture.level, 1u), _force);
 	}
 
 private:
