@@ -1562,14 +1562,6 @@ void TextureCache::update(u32 _t)
 		return;
 	}
 
-	if (_t == 1 && needReplaceTex1ByTex0()) {
-		current[1] = current[0];
-		if (current[1] != nullptr) {
-			activateTexture(1, current[1]);
-			return;
-		}
-	}
-
 	if (gSP.texture.tile == 7 &&
 		_t == 0 &&
 		gSP.textureTile[0] == gDP.loadTile &&
@@ -1691,9 +1683,4 @@ void getTextureShiftScale(u32 t, const TextureCache & cache, f32 & shiftScaleS, 
 		shiftScaleT = (f32)(1 << (16 - gSP.textureTile[t]->shiftt));
 	else if (gSP.textureTile[t]->shiftt > 0)
 		shiftScaleT /= (f32)(1 << gSP.textureTile[t]->shiftt);
-}
-
-bool needReplaceTex1ByTex0()
-{
-	return gSP.texture.level == 0 && gDP.otherMode.textureLOD == G_TL_LOD && gDP.otherMode.textureDetail == G_TD_CLAMP;
 }

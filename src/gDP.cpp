@@ -858,7 +858,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 	textureTileOrg[0] = gSP.textureTile[0];
 	textureTileOrg[1] = gSP.textureTile[1];
 	gSP.textureTile[0] = &gDP.tiles[tile];
-	gSP.textureTile[1] = needReplaceTex1ByTex0() ? &gDP.tiles[tile] : &gDP.tiles[(tile + 1) & 7];
+	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 
 	// HACK ALERT!
 	if (s == 0x4000 && (gDP.colorImage.width + gSP.textureTile[0]->uls < 512))
@@ -973,7 +973,7 @@ void LLETriangle::start(u32 _tile)
 	m_textureScaleOrg[1] = gSP.texture.scalet;
 	gSP.texture.tile = _tile;
 	gSP.textureTile[0] = &gDP.tiles[_tile];
-	gSP.textureTile[1] = needReplaceTex1ByTex0() ? &gDP.tiles[_tile] : &gDP.tiles[(_tile + 1) & 7];
+	gSP.textureTile[1] = &gDP.tiles[(_tile + 1) & 7];
 	gSP.texture.scales = 1.0f;
 	gSP.texture.scalet = 1.0f;
 	m_flushed = false;

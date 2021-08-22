@@ -1084,14 +1084,12 @@ public:
 		uBilinearOffset.set(bilinearOffset, bilinearOffset, _force);
 
 		TextureCache & cache = textureCache();
-		const bool replaceTex1ByTex0 = needReplaceTex1ByTex0();
 		for (u32 t = 0; t < 2; ++t) {
 			if (!m_useTile[t])
 				continue;
 
-			const u32 tile = replaceTex1ByTex0 ? 0 : t;
-			const gDPTile * pTile = gSP.textureTile[tile];
-			CachedTexture * pTexture = cache.current[tile];
+			const gDPTile * pTile = gSP.textureTile[t];
+			CachedTexture * pTexture = cache.current[t];
 			if (pTile == nullptr || pTexture == nullptr)
 				continue;
 
