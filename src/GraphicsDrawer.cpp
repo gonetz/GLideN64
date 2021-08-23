@@ -253,10 +253,10 @@ void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scal
 	} else {
 		scaleX = scaleY = scale;
 	}
-	X = 0;
-	Y = 0;
-	WIDTH = roundup(SCREEN_SIZE_DIM, scaleX);
-	HEIGHT = roundup(SCREEN_SIZE_DIM, scaleY);
+	X = -SCREEN_SIZE_DIM;
+	Y = -SCREEN_SIZE_DIM;
+	WIDTH = roundup(2*SCREEN_SIZE_DIM, scaleX);
+	HEIGHT = roundup(2*SCREEN_SIZE_DIM, scaleY);
 	gfxContext.setViewport(X, Y, WIDTH, HEIGHT);
 	gSP.changed |= CHANGED_VIEWPORT;
 }

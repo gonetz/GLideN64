@@ -505,8 +505,7 @@ public:
 		}
 		m_part +=
 			" gl_Position.xy += uVertexOffset * vec2(gl_Position.w);		\n"
-			" gl_Position.xy -= vec2(0.5*screenSizeDims) * gl_Position.ww;	\n"
-			" gl_Position.xy /= vec2(0.5*screenSizeDims);					\n"
+			" gl_Position.xy /= vec2(screenSizeDims);						\n"
 			"} \n"
 			;
 	}
