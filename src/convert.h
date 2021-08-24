@@ -265,7 +265,7 @@ inline u32 IA31_RGBA8888( u8 color )
 #else // WIN32_ASM
 	u8 i = Three2Eight[color >> 1];
 	u8 a = One2Eight[color & 0x01];
-	return (i << 24) | (i << 16) | (i << 8) | a;
+	return (a << 24) | (i << 16) | (i << 8) | i;
 #endif // WIN32_ASM
 }
 
