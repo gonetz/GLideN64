@@ -2190,66 +2190,60 @@ public:
 				"  name = c0 + tcData[4].t * (c1-c0);															\\\n"
 				"}																								\n"
 				;
-			if (config.generalEmulation.enableLOD == 0) {
-				// Fake mipmap
-				m_part +=
-					"uniform lowp int uMaxTile;			\n"
-					"uniform mediump float uMinLod;		\n"
-					"														\n"
-					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  READ_TEX0_MIPMAP(readtex0, uTex0, tcData0);				\n"
-					"  READ_TEX0_MIPMAP(readtex1, uTex1, tcData1);				\n"
-					"  if (uMaxTile == 0) return 1.0;							\n"
-					"  return uMinLod;											\n"
-					"}															\n"
+
+			m_part +=
+				"uniform lowp int uEnableLod;		\n"
+				"uniform mediump float uMinLod;		\n"
+				"uniform lowp int uMaxTile;			\n"
+				"uniform lowp int uTextureDetail;	\n"
+				"																		\n"
+				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
 				;
+			if (config.generalEmulation.enableLOD == 0) {
+				m_part +=
+					"  mediump float lod = 1.0;												\n"
+					;
 			} else {
 				m_part +=
-					"uniform lowp int uEnableLod;		\n"
-					"uniform mediump float uMinLod;		\n"
-					"uniform lowp int uMaxTile;			\n"
-					"uniform lowp int uTextureDetail;	\n"
-					"																		\n"
-					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"																		\n"
 					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
 					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
 					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));			\n"
-					"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);		\n"
-					"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;			\n"
-					"  mediump float max_lod = pow(2.0, float(max_tile)) - 1.0 / 32.0;		\n"
-					"  mediump float lod_clamp = min(max(lod, min_lod), max_lod);			\n"
-					"  lowp int lod_tile = clamp(int(log2(lod_clamp)), 0 , max_tile);		\n"
-					"  lowp int tile0 = 0;													\n"
-					"  lowp int tile1 = 1;													\n"
-					"  if (uEnableLod != 0) {												\n"
-					"    if (lod_clamp < 1.0 && uTextureDetail == 0) {						\n"
-					"      tile0 = 0;														\n"
-					"      tile1 = 0;														\n"
-					"    } else if (lod_clamp >= 1.0 && uTextureDetail == 2) {				\n"
-					"      tile0 = lod_tile + 1;											\n"
-					"      tile1 = lod_tile + 2;											\n"
-					"    } else {															\n"
-					"      tile0 = lod_tile;												\n"
-					"      tile1 = lod_tile + 1;											\n"
-					"    }																	\n"
-					"  }																	\n"
-					"  mediump float lod_frac = lod_clamp / pow(2.0, float(lod_tile));		\n"
-					"  if (uTextureDetail == 1 || lod_clamp >= 1.0) {						\n"
-					"    lod_frac = clamp(lod_frac - 1.0, -1.0, 1.0);						\n"
-					"  }																	\n"
-					"																		\n"
-					"  if(tile0 == 0) {READ_TEX0_MIPMAP(readtex0, uTex0, tcData0);}			\n"
-					"  else if (uEnableLod == 0 || uMaxTile == 1) {READ_TEX0_MIPMAP(readtex0, uTex1, tcData1);}\n"
-					"  else {READ_TEX1_MIPMAP(readtex0, uTex1, tcData1, tile0 - 1);}		\n"
-					"  if(tile1 == 0) {READ_TEX0_MIPMAP(readtex1, uTex0, tcData0);}			\n"
-					"  else if (uEnableLod == 0 || uMaxTile == 1) {READ_TEX0_MIPMAP(readtex1, uTex1, tcData1);}\n"
-					"  else {READ_TEX1_MIPMAP(readtex1, uTex1, tcData1, tile1 - 1);}		\n"
-					"  return lod_frac;														\n"
-					"} \n"
-
-				;
+					;
 			}
+			m_part +=
+				"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);		\n"
+				"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;			\n"
+				"  mediump float max_lod = pow(2.0, float(max_tile)) - 1.0 / 32.0;		\n"
+				"  mediump float lod_clamp = min(max(lod, min_lod), max_lod);			\n"
+				"  lowp int lod_tile = clamp(int(log2(lod_clamp)), 0 , max_tile);		\n"
+				"  lowp int tile0 = 0;													\n"
+				"  lowp int tile1 = 1;													\n"
+				"  if (uEnableLod != 0) {												\n"
+				"    if (lod_clamp < 1.0 && uTextureDetail == 0) {						\n"
+				"      tile0 = 0;														\n"
+				"      tile1 = 0;														\n"
+				"    } else if (lod_clamp >= 1.0 && uTextureDetail == 2) {				\n"
+				"      tile0 = lod_tile + 1;											\n"
+				"      tile1 = lod_tile + 2;											\n"
+				"    } else {															\n"
+				"      tile0 = lod_tile;												\n"
+				"      tile1 = lod_tile + 1;											\n"
+				"    }																	\n"
+				"  }																	\n"
+				"  mediump float lod_frac = lod_clamp / pow(2.0, float(lod_tile));		\n"
+				"  if (uTextureDetail == 1 || lod_clamp >= 1.0) {						\n"
+				"    lod_frac = clamp(lod_frac - 1.0, -1.0, 1.0);						\n"
+				"  }																	\n"
+				"																		\n"
+				"  if(tile0 == 0) {READ_TEX0_MIPMAP(readtex0, uTex0, tcData0);}			\n"
+				"  else if (uEnableLod == 0 || uMaxTile == 1) {READ_TEX0_MIPMAP(readtex0, uTex1, tcData1);}\n"
+				"  else {READ_TEX1_MIPMAP(readtex0, uTex1, tcData1, tile0 - 1);}		\n"
+				"  if(tile1 == 0) {READ_TEX0_MIPMAP(readtex1, uTex0, tcData0);}			\n"
+				"  else if (uEnableLod == 0 || uMaxTile == 1) {READ_TEX0_MIPMAP(readtex1, uTex1, tcData1);}\n"
+				"  else {READ_TEX1_MIPMAP(readtex1, uTex1, tcData1, tile1 - 1);}		\n"
+				"  return lod_frac;														\n"
+				"}																		\n"
+				;
 		}
 	}
 };

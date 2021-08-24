@@ -582,12 +582,14 @@ private:
 	fv2Uniform uScreenScale;
 };
 
-class UMipmap1 : public UniformGroup
+class UMipmap : public UniformGroup
 {
 public:
-	UMipmap1(GLuint _program) {
+	UMipmap(GLuint _program) {
 		LocateUniform(uMinLod);
 		LocateUniform(uMaxTile);
+		LocateUniform(uEnableLod);
+		LocateUniform(uTextureDetail);
 	}
 
 	void update(bool _force) override
@@ -598,29 +600,14 @@ public:
 			uMaxTile.set(gSP.texture.level, _force);
 		else
 			uMaxTile.set(_pTexture->max_level > 0 ? gSP.texture.level : std::min(gSP.texture.level, 1u), _force);
-	}
-
-private:
-	fUniform uMinLod;
-	iUniform uMaxTile;
-};
-
-class UMipmap2 : public UniformGroup
-{
-public:
-	UMipmap2(GLuint _program) {
-		LocateUniform(uEnableLod);
-		LocateUniform(uTextureDetail);
-	}
-
-	void update(bool _force) override
-	{
 		const int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		uEnableLod.set(uCalcLOD, _force);
 		uTextureDetail.set(gDP.otherMode.textureDetail, _force);
 	}
 
 private:
+	fUniform uMinLod;
+	iUniform uMaxTile;
 	iUniform uEnableLod;
 	iUniform uTextureDetail;
 };
@@ -1223,9 +1210,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new UFrameBufferInfo(_program));
 
 		if (_inputs.usesLOD()) {
-			_uniforms.emplace_back(new UMipmap1(_program));
-			if (config.generalEmulation.enableLOD != 0)
-				_uniforms.emplace_back(new UMipmap2(_program));
+			_uniforms.emplace_back(new UMipmap(_program));
 		} else if (_key.getCycleType() < G_CYC_COPY) {
 			_uniforms.emplace_back(new UTextureFetchMode(_program));
 		}
