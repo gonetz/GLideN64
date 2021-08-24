@@ -11,10 +11,6 @@
 #define DLSYM(a, b) dlsym(a, b)
 #endif // OS_WINDOWS
 
-#ifdef M64P_GLIDENUI
-#include "GLideNUI/GLideNUI.h"
-#endif
-
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = nullptr;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = nullptr;
 ptr_ConfigGetUserDataPath ConfigGetUserDataPath = nullptr;
@@ -107,8 +103,6 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 			Config_SetDefault();
 		}
 	}
-#else
-	ConfigInit(nullptr);
 #endif // M64P_GLIDENUI
 
 	return M64ERR_SUCCESS;
@@ -128,9 +122,6 @@ m64p_error PluginAPI::PluginShutdown()
 	_callAPICommand(acRomClosed);
 	delete m_pRspThread;
 	m_pRspThread = nullptr;
-#endif
-#ifdef M64P_GLIDENUI
-	ConfigCleanup();
 #endif
 	return M64ERR_SUCCESS;
 }
