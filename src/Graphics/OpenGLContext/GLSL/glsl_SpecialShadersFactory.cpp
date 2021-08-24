@@ -30,6 +30,9 @@ namespace glsl {
 				"void main()                                                    \n"
 				"{                                                              \n"
 				"  gl_Position = aRectPosition;									\n"
+				"  gl_Position.xy += uVertexOffset * vec2(gl_Position.w);		\n"
+				"  gl_Position.xy -= vec2(0.5*screenSizeDims) * gl_Position.ww;	\n"
+				"  gl_Position.xy /= vec2(0.5*screenSizeDims);					\n"
 				"}                                                              \n"
 				;
 		}
@@ -637,6 +640,8 @@ namespace glsl {
 			m_locZlut = glGetUniformLocation(GLuint(m_program), "uZlutImage");
 			m_locTlut = glGetUniformLocation(GLuint(m_program), "uTlutImage");
 			m_locDepthImage = glGetUniformLocation(GLuint(m_program), "uDepthImage");
+			m_locVertexOffset = glGetUniformLocation(GLuint(m_program), "uVertexOffset");
+
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
@@ -647,6 +652,9 @@ namespace glsl {
 			glUniform1i(m_locTlut, int(graphics::textureIndices::PaletteTex));
 			glUniform1i(m_locDepthImage, 0);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
+			const float vertexOffset = isNativeRes ? 0.5f : 0.0f;
+			glUniform2f(m_locVertexOffset, vertexOffset, vertexOffset);
 			g_paletteTexture.update();
 		}
 
@@ -655,6 +663,7 @@ namespace glsl {
 		int m_locZlut;
 		int m_locTlut;
 		int m_locDepthImage;
+		int m_locVertexOffset;
 	};
 
 	/*---------------FXAAShader-------------*/
