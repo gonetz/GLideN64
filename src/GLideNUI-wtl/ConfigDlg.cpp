@@ -438,16 +438,13 @@ public:
 
 GlideN64WtlModule * WtlModule = NULL;
 
-extern "C"
-{
-EXPORT void  CALL ConfigInit(void * hinst) {
+void ConfigInit(void * hinst) {
 	WtlModule = new GlideN64WtlModule((HINSTANCE)hinst);
 }
 
-EXPORT void CALL ConfigCleanup(void) {
+void ConfigCleanup(void) {
 	if (WtlModule) {
 		delete WtlModule;
 		WtlModule = NULL;
 	}
-}
 }

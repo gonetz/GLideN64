@@ -76,3 +76,8 @@ protected:
 	uint32_t m_TabLeft, m_ProfileLeft;
 	bool m_Saved;
 };
+
+#ifdef _WIN32
+void ConfigInit(void * hinst);
+void ConfigCleanup(void);
+#endif

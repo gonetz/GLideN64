@@ -13,8 +13,6 @@ extern "C" {
 #define CALL
 #endif
 
-EXPORT void CALL ConfigInit(void * hinst);
-EXPORT void CALL ConfigCleanup(void);
 EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy);
 EXPORT int CALL RunAbout(const wchar_t * _strFileName);
 EXPORT void CALL LoadConfig(const wchar_t * _strFileName);
