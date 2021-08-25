@@ -1109,7 +1109,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	bool force32bitFormat = false;
 	_pTexture->max_level = 0;
 
-	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1 && _tile > 0) {
+	if (config.generalEmulation.enableLOD != 0 && currentCombiner()->usesLOD() && gSP.texture.level > 1 && _tile > 0) {
 		_pTexture->max_level = gDP.otherMode.textureDetail == G_TD_DETAIL ?
 			static_cast<u8>(gSP.texture.level) :
 			static_cast<u8>(gSP.texture.level - 1);
