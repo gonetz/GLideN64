@@ -1145,7 +1145,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		}
 	private:
 		u32 *pData = NULL;
-	} texData((_pTexture->textureBytes + 8*sizeof(u32)) * (_pTexture->max_level + 1));
+	} texData(std::max((_pTexture->textureBytes + 8*sizeof(u32)), MIPMAP_TILE_WIDTH * sizeof(u32))
+		* (_pTexture->max_level + 1));
 
 	GetTexelFunc GetTexel;
 	InternalColorFormatParam glInternalFormat;
@@ -1231,8 +1232,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		params.mipMapLevel = 0;
 		params.mipMapLevels =1;
 		params.msaaLevel = 0;
-		params.width = texDataOffset;
-		params.height = 1;
+		params.width = std::min(texDataOffset, MIPMAP_TILE_WIDTH);
+		params.height = (texDataOffset / MIPMAP_TILE_WIDTH) + ((texDataOffset % MIPMAP_TILE_WIDTH) ? 1 : 0);
 		params.internalFormat = gfxContext.convertInternalTextureFormat(u32(glInternalFormat));
 		params.format = colorFormat::RGBA;
 		params.dataType = glType;
