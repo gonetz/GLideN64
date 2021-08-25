@@ -588,6 +588,9 @@ public:
 			// Return the vector of the standard basis of R^4 with a 1 at position <pos> and 0 otherwise.
 			"  #define STVEC(pos) (step(float(pos), vec4(0.5,1.5,2.5,3.5)) - step(float(pos), vec4(-0.5,0.5,1.5,2.5))) \n";
 
+		std::stringstream ss;
+		ss << "const mediump int mipmapTileWidth = " << MIPMAP_TILE_WIDTH << ";" << std::endl;
+		m_part += ss.str();
 	}
 };
 
@@ -2120,77 +2123,66 @@ public:
 			}
 		}
 		else {
-			if (config.texture.bilinearMode == BILINEAR_3POINT)
-				m_part =
-				"#define READ_TEX0_MIPMAP(name, tex, tcData)													\\\n"
-				"{																								\\\n"
-				"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);							\\\n"
-				"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);										\\\n"
-				"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);										\\\n"
-				"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);										\\\n"
-				"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);										\\\n"
-				"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);							\\\n"
-				"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11);				\\\n"
-				"  name = c0 + bottomRightTri * (c1-c0);														\\\n"
-				"}																								\n"
-				"#define READ_TEX1_MIPMAP(name, tex, tcData, tile)												\\\n"
-				"{																								\\\n"
+			static const std::string strReadTex0 =
+				"#define READ_TEX0_MIPMAP(name, tex, tcData)											\\\n"
+				"{																						\\\n"
+				"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);								\\\n"
+				"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);								\\\n"
+				"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);								\\\n"
+				"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);								\\\n"
+				;
+			static const std::string strReadTex1 =
+				"#define READ_TEX1_MIPMAP(name, tex, tcData, tile)										\\\n"
+				"{																						\\\n"
 				// Fetch from texture atlas
 				// First 8 texels contain info about tile size and offset, 1 texel per tile
-				"  mediump vec4 texWdthAndOff0 = 255.0 * texelFetch(tex, ivec2(0, 0), 0);						\\\n"
-				"  mediump vec4 texWdthAndOff = 255.0 * texelFetch(tex, ivec2(int(tile), 0), 0);				\\\n"
-				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;								\\\n"
-				"  mediump int offset = int(texWdthAndOff.r) + int(texWdthAndOff.g) * 256;						\\\n"
-				"  mediump int width = int(texWdthAndOff.b);													\\\n"
-				"  mediump ivec2 iCoords00 = ivec2(tcData[0] * lod_scale);										\\\n"
-				"  lowp vec4 c00 = texelFetch(tex, ivec2(offset + width * iCoords00.t + iCoords00.s, 0), 0);	\\\n"
-				"  mediump ivec2 iCoords01 = ivec2(tcData[1] * lod_scale);										\\\n"
-				"  lowp vec4 c01 = texelFetch(tex, ivec2(offset + width * iCoords01.t + iCoords01.s, 0), 0);	\\\n"
-				"  mediump ivec2 iCoords10 = ivec2(tcData[2] * lod_scale);										\\\n"
-				"  lowp vec4 c10 = texelFetch(tex, ivec2(offset + width * iCoords10.t + iCoords10.s, 0), 0);	\\\n"
-				"  mediump ivec2 iCoords11 = ivec2(tcData[3] * lod_scale);										\\\n"
-				"  lowp vec4 c11 = texelFetch(tex, ivec2(offset + width * iCoords11.t + iCoords11.s, 0), 0);	\\\n"
-				"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);							\\\n"
-				"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11);				\\\n"
-				"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);							\\\n"
-				"  name = c0 + bottomRightTri * (c1-c0);														\\\n"
-				"}																								\n"
+				"  mediump vec4 texWdthAndOff0 = 255.0 * texelFetch(tex, ivec2(0, 0), 0);				\\\n"
+				"  mediump vec4 texWdthAndOff = 255.0 * texelFetch(tex, ivec2(int(tile), 0), 0);		\\\n"
+				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;						\\\n"
+				"  mediump int offset = int(texWdthAndOff.r) + int(texWdthAndOff.g) * 256;				\\\n"
+				"  mediump int width = int(texWdthAndOff.b);											\\\n"
+				"  mediump ivec2 iCoords00 = ivec2(tcData[0] * lod_scale);								\\\n"
+				"  mediump int offset00 = offset + width * iCoords00.t + iCoords00.s;					\\\n"
+				"  mediump int Y00 = offset00/mipmapTileWidth;											\\\n"
+				"  lowp vec4 c00 = texelFetch(tex, ivec2(offset00 - mipmapTileWidth * Y00, Y00), 0);	\\\n"
+				"  mediump ivec2 iCoords01 = ivec2(tcData[1] * lod_scale);								\\\n"
+				"  mediump int offset01 = offset + width * iCoords01.t + iCoords01.s;					\\\n"
+				"  mediump int Y01 = offset01/mipmapTileWidth;											\\\n"
+				"  lowp vec4 c01 = texelFetch(tex, ivec2(offset01 - mipmapTileWidth * Y01, Y01), 0);	\\\n"
+				"  mediump ivec2 iCoords10 = ivec2(tcData[2] * lod_scale);								\\\n"
+				"  mediump int offset10 = offset + width * iCoords10.t + iCoords10.s;					\\\n"
+				"  mediump int Y10 = offset10/mipmapTileWidth;											\\\n"
+				"  lowp vec4 c10 = texelFetch(tex, ivec2(offset10 - mipmapTileWidth * Y10, Y10), 0);	\\\n"
+				"  mediump ivec2 iCoords11 = ivec2(tcData[3] * lod_scale);								\\\n"
+				"  mediump int offset11 = offset + width * iCoords11.t + iCoords11.s;					\\\n"
+				"  mediump int Y11 = offset11/mipmapTileWidth;											\\\n"
+				"  lowp vec4 c11 = texelFetch(tex, ivec2(offset11 - mipmapTileWidth * Y11, Y11), 0);	\\\n"
 				;
-			else
-				m_part =
-				"#define READ_TEX0_MIPMAP(name, tex, tcData)													\\\n"
-				"{																								\\\n"
-				"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);										\\\n"
-				"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);										\\\n"
-				"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);										\\\n"
-				"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);										\\\n"
-				"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);												\\\n"
-				"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);												\\\n"
-				"  name = c0 + tcData[4].t * (c1-c0);															\\\n"
-				"}																								\n"
-				"#define READ_TEX1_MIPMAP(name, tex, tcData, tile)												\\\n"
-				"{																								\\\n"
-				// Fetch from texture atlas
-				// First 8 texels contain info about tile size and offset, 1 texel per tile
-				"  mediump vec4 texWdthAndOff0 = 255.0 * texelFetch(tex, ivec2(0, 0), 0);						\\\n"
-				"  mediump vec4 texWdthAndOff = 255.0 * texelFetch(tex, ivec2(int(tile), 0), 0);				\\\n"
-				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;								\\\n"
-				"  mediump int offset = int(texWdthAndOff.r) + int(texWdthAndOff.g) * 256;						\\\n"
-				"  mediump int width = int(texWdthAndOff.b);													\\\n"
-				"  mediump ivec2 iCoords00 = ivec2(tcData[0] * lod_scale);										\\\n"
-				"  lowp vec4 c00 = texelFetch(tex, ivec2(offset + width * iCoords00.t + iCoords00.s, 0), 0);	\\\n"
-				"  mediump ivec2 iCoords01 = ivec2(tcData[1] * lod_scale);										\\\n"
-				"  lowp vec4 c01 = texelFetch(tex, ivec2(offset + width * iCoords01.t + iCoords01.s, 0), 0);	\\\n"
-				"  mediump ivec2 iCoords10 = ivec2(tcData[2] * lod_scale);										\\\n"
-				"  lowp vec4 c10 = texelFetch(tex, ivec2(offset + width * iCoords10.t + iCoords10.s, 0), 0);	\\\n"
-				"  mediump ivec2 iCoords11 = ivec2(tcData[3] * lod_scale);										\\\n"
-				"  lowp vec4 c11 = texelFetch(tex, ivec2(offset + width * iCoords11.t + iCoords11.s, 0), 0);	\\\n"
-				"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);												\\\n"
-				"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);												\\\n"
-				"  name = c0 + tcData[4].t * (c1-c0);															\\\n"
-				"}																								\n"
+			static const std::string strBillinear3PointEnd =
+				"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);					\\\n"
+				"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11);		\\\n"
+				"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
+				"  name = c0 + bottomRightTri * (c1-c0);												\\\n"
+				"}																						\n"
 				;
-
+			static const std::string strBillinearStandardEnd =
+				"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);										\\\n"
+				"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);										\\\n"
+				"  name = c0 + tcData[4].t * (c1-c0);													\\\n"
+				"}																						\n"
+				;
+			if (config.texture.bilinearMode == BILINEAR_3POINT) {
+				m_part = strReadTex0;
+				m_part += strBillinear3PointEnd;
+				m_part += strReadTex1;
+				m_part += strBillinear3PointEnd;
+			}
+			else {
+				m_part = strReadTex0;
+				m_part += strBillinearStandardEnd;
+				m_part += strReadTex1;
+				m_part += strBillinearStandardEnd;
+			}
 			m_part +=
 				"uniform lowp int uEnableLod;		\n"
 				"uniform mediump float uMinLod;		\n"

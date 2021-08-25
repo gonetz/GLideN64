@@ -21,6 +21,7 @@ struct FrameBuffer;
 #define ELEMBUFF_SIZE 1024U
 
 constexpr f32 SCREEN_SIZE_DIM = 640.0f;
+constexpr u32 MIPMAP_TILE_WIDTH = 256u;
 
 enum class DrawingState
 {
