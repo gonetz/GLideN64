@@ -599,6 +599,7 @@ void Config_LoadConfig()
 	//#Hotkey settings
 	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
 		config.hotkeys.keys[idx] = ASCIItoHID(ConfigGetParamString(g_configVideoGliden64, Config::hotkeyIniName(idx)));
+		config.hotkeys.enabledKeys[idx] = config.hotkeys.keys[idx];
 	}
 
 #ifdef DEBUG_DUMP
