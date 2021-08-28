@@ -589,7 +589,10 @@ public:
 			"  #define STVEC(pos) (step(float(pos), vec4(0.5,1.5,2.5,3.5)) - step(float(pos), vec4(-0.5,0.5,1.5,2.5))) \n";
 
 		std::stringstream ss;
-		ss << "const mediump int mipmapTileWidth = " << MIPMAP_TILE_WIDTH << ";" << std::endl;
+		if (_glinfo.isGLES2)
+			ss << "const mediump float mipmapTileWidth = " << std::setprecision(1) << std::fixed << f32(MIPMAP_TILE_WIDTH) << ";" << std::endl;
+		else
+			ss << "const mediump int mipmapTileWidth = " << MIPMAP_TILE_WIDTH << ";" << std::endl;
 		m_part += ss.str();
 	}
 };
@@ -1055,6 +1058,11 @@ public:
 				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
 				;
 		}
+
+		if (_glinfo.isGLES2)
+			m_part +=
+			"uniform mediump vec2 uTextureSize[2];	\n"
+			;
 	}
 };
 
@@ -2025,102 +2033,129 @@ public:
 	ShaderMipmap(const opengl::GLInfo & _glinfo)
 	{
 		if (_glinfo.isGLES2) {
-			m_part =
-				"uniform mediump vec2 uTextureSize[2];										\n"
-				"lowp vec4 TextureMipMap(in sampler2D tex, in highp vec2 tcData[5], in lowp float lod)	\n"
-				"{																					\n"
-				"  mediump vec2 texSize;															\n"
-				"  if (nCurrentTile == 0)															\n"
-				"    texSize = uTextureSize[0];														\n"
-				"  else																				\n"
-				"    texSize = uTextureSize[1];														\n"
-				"  lowp vec4 c00 = texture2DLodEXT(tex, (tcData[0] + 0.5)/texSize, lod);			\n"
-				"  lowp vec4 c01 = texture2DLodEXT(tex, (tcData[1] + 0.5)/texSize, lod);			\n"
-				"  lowp vec4 c10 = texture2DLodEXT(tex, (tcData[2] + 0.5)/texSize, lod);			\n"
-				"  lowp vec4 c11 = texture2DLodEXT(tex, (tcData[3] + 0.5)/texSize, lod);			\n"
-				"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);									\n"
-				"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);									\n"
-				"  return c0 + tcData[4].t * (c1-c0);												\n"
-				"  }																				\n"
+			static const std::string strReadTex0 =
+				"lowp vec4 TextureMipMap0(in sampler2D tex, in highp vec2 tcData[5])							\n"
+				"{																								\n"
+				"  mediump vec2 texSize = uTextureSize[0];														\n"
+				"  lowp vec4 c00 = texture2D(tex, (tcData[0] + 0.5)/texSize);									\n"
+				"  lowp vec4 c01 = texture2D(tex, (tcData[1] + 0.5)/texSize);									\n"
+				"  lowp vec4 c10 = texture2D(tex, (tcData[2] + 0.5)/texSize);									\n"
+				"  lowp vec4 c11 = texture2D(tex, (tcData[3] + 0.5)/texSize);									\n"
 				;
+			static const std::string strReadTex1 =
+				"lowp vec4 TextureMipMap1(in sampler2D tex, in highp vec2 tcData[5], in lowp float lod)			\n"
+				"{																								\n"
+				// Fetch from texture atlas
+				// First 8 texels contain info about tile size and offset, 1 texel per tile
+				"  mediump vec2 texSize = uTextureSize[1];														\n"
+				"  mediump vec4 texWdthAndOff0 = 255.0 * texture(tex, vec2(0.5, 0.5)/texSize);					\n"
+				"  mediump vec4 texWdthAndOff = 255.0 * texture(tex, vec2(lod + 0.5, 0.5)/texSize);				\n"
+				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;								\n"
+				"  mediump float offset = texWdthAndOff.r + texWdthAndOff.g * 256.0;							\n"
+				"  mediump float width = texWdthAndOff.b;														\n"
+				"  mediump vec2 Coords00 = floor(tcData[0] * lod_scale);										\n"
+				"  mediump float offset00 = offset + width * Coords00.t + Coords00.s;							\n"
+				"  mediump float Y00 = floor(offset00 / mipmapTileWidth);										\n"
+				"  lowp vec4 c00 = texture2D(tex, (vec2(offset00 - mipmapTileWidth * Y00, Y00) + 0.5)/texSize);	\n"
+				"  mediump vec2 Coords01 = floor(tcData[1] * lod_scale);										\n"
+				"  mediump float offset01 = offset + width * Coords01.t + Coords01.s;							\n"
+				"  mediump float Y01 = floor(offset01 / mipmapTileWidth);										\n"
+				"  lowp vec4 c01 = texture2D(tex, (vec2(offset01 - mipmapTileWidth * Y01, Y01) + 0.5)/texSize);	\n"
+				"  mediump vec2 Coords10 = floor(tcData[2] * lod_scale);										\n"
+				"  mediump float offset10 = offset + width * Coords10.t + Coords10.s;							\n"
+				"  mediump float Y10 = floor(offset10 / mipmapTileWidth);										\n"
+				"  lowp vec4 c10 = texture2D(tex, (vec2(offset10 - mipmapTileWidth * Y10, Y10) + 0.5)/texSize);	\n"
+				"  mediump vec2 Coords11 = floor(tcData[3] * lod_scale);										\n"
+				"  mediump float offset11 = offset + width * Coords11.t + Coords11.s;							\n"
+				"  mediump float Y11 = floor(offset11 / mipmapTileWidth);										\n"
+				"  lowp vec4 c11 = texture2D(tex, (vec2(offset11 - mipmapTileWidth * Y11, Y11) + 0.5)/texSize);	\n"
+				;
+			static const std::string strBillinear3PointEndGles2 =
+				"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);							\n"
+				"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11);				\n"
+				"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);							\n"
+				"  return c0 + bottomRightTri * (c1-c0);														\n"
+				"  return c00;																					\n"
+				"}																								\n"
+				;
+			static const std::string strBillinearStandardEndGles2 =
+				"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);												\n"
+				"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);												\n"
+				"  return c0 + tcData[4].t * (c1-c0);															\n"
+				"  return c00;																					\n"
+				"}																								\n"
+				;
+
+			if (config.texture.bilinearMode == BILINEAR_3POINT) {
+				m_part = strReadTex0;
+				m_part += strBillinear3PointEndGles2;
+				m_part += strReadTex1;
+				m_part += strBillinear3PointEndGles2;
+			} else {
+				m_part = strReadTex0;
+				m_part += strBillinearStandardEndGles2;
+				m_part += strReadTex1;
+				m_part += strBillinearStandardEndGles2;
+			}
+
+			m_part +=
+				"uniform lowp int uEnableLod;												\n"
+				"uniform mediump float uMinLod;												\n"
+				"uniform lowp int uMaxTile;													\n"
+				"uniform lowp int uTextureDetail;											\n"
+				"																			\n"
+				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {		\n"
+				;
+
 			if (config.generalEmulation.enableLOD == 0) {
-				// Fake mipmap
 				m_part +=
-					"uniform lowp int uMaxTile;			\n"
-					"uniform mediump float uMinLod;		\n"
-					"														\n"
-					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = TextureMipMap(uTex0, tcData0, 0.0);				\n"
-					"  readtex1 = TextureMipMap(uTex1, tcData1, 0.0);				\n"
-					"  if (uMaxTile == 0) return 1.0;						\n"
-					"  return uMinLod;										\n"
-					"}														\n"
-				;
+					"  mediump float lod = 1.0;												\n"
+					;
 			} else {
 				m_part +=
-					"uniform lowp int uEnableLod;		\n"
-					"uniform mediump float uMinLod;		\n"
-					"uniform lowp int uMaxTile;			\n"
-					"uniform lowp int uTextureDetail;	\n"
-					"														\n"
-					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = TextureMipMap(uTex0, tcData0, 0.0);		\n"
-					"  readtex1 = TextureMipMap(uTex1, tcData1, 0.0);		\n"
-					"														\n"
-					"  mediump float fMaxTile = float(uMaxTile);			\n"
-					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;	\n"
-					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;	\n"
-					"  mediump float lod = max(dx.x + dx.y, dy.x + dy.y);	\n" /*LINEAR*/
-					"  bool magnify = lod < 1.0;							\n"
-					"  mediump float lod_tile = magnify ? 0.0 : floor(log2(floor(lod))); \n"
-					"  bool distant = lod > 128.0 || lod_tile >= fMaxTile;	\n"
-					"  mediump float lod_frac = fract(lod/pow(2.0, lod_tile));	\n"
-					"  if (magnify) lod_frac = max(lod_frac, uMinLod);		\n"
-					"  if (uTextureDetail == 0)	{							\n"
-					"    if (distant) lod_frac = 1.0;						\n"
-					"    else if (magnify) lod_frac = 0.0;					\n"
-					"  }													\n"
-					"  if (magnify && (uTextureDetail == 1 || uTextureDetail == 3))			\n"
-					"      lod_frac = 1.0 - lod_frac;						\n"
-					"  if (uMaxTile == 0) {									\n"
-					"    if (uEnableLod != 0) {								\n"
-					"      if (uTextureDetail < 2)	readtex1 = readtex0;	\n"
-					"      else if (!magnify) readtex0 = readtex1;			\n"
-					"    }													\n"
-					"    return lod_frac;									\n"
-					"  }													\n"
-					"  if (uEnableLod == 0) return lod_frac;				\n"
-					"														\n"
-					"  lod_tile = min(lod_tile, fMaxTile);					\n"
-					"  lowp float lod_tile_m1 = max(0.0, lod_tile - 1.0);	\n"
-					"  lowp float lod_tile_p1 = min(fMaxTile - 1.0, lod_tile + 1.0);	\n"
-					"  lowp vec4 lodT = TextureMipMap(uTex1, tcData1, lod_tile);	\n"
-					"  lowp vec4 lodT_m1 = TextureMipMap(uTex1, tcData1, lod_tile_m1);	\n"
-					"  lowp vec4 lodT_p1 = TextureMipMap(uTex1, tcData1, lod_tile_p1);	\n"
-					"  if (lod_tile < 1.0) {								\n"
-					"    if (magnify) {									\n"
-					//     !sharpen && !detail
-					"      if (uTextureDetail == 0) readtex1 = readtex0;	\n"
-					"    } else {											\n"
-					//     detail
-					"      if (uTextureDetail > 1) {						\n"
-					"        readtex0 = lodT;								\n"
-					"        readtex1 = lodT_p1;							\n"
-					"      }												\n"
-					"    }													\n"
-					"  } else {												\n"
-					"    if (uTextureDetail > 1) {							\n"
-					"      readtex0 = lodT;									\n"
-					"      readtex1 = lodT_p1;								\n"
-					"    } else {											\n"
-					"      readtex0 = lodT_m1;								\n"
-					"      readtex1 = lodT;									\n"
-					"    }													\n"
-					"  }													\n"
-					"  return lod_frac;										\n"
-					"}														\n"
-				;
+					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
+					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
+					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));			\n"
+					;
 			}
+			m_part +=
+				"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);			\n"
+				"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;				\n"
+				"  mediump float max_lod = pow(2.0, float(max_tile)) - 1.0 / 32.0;			\n"
+				"  mediump float lod_clamp = min(max(lod, min_lod), max_lod);				\n"
+				"  lowp int lod_tile = clamp(int(log2(lod_clamp)), 0 , max_tile);			\n"
+				"  lowp int tile0 = 0;														\n"
+				"  lowp int tile1 = 1;														\n"
+				"  if (uEnableLod != 0) {													\n"
+				"    if (lod_clamp < 1.0 && uTextureDetail == 0) {							\n"
+				"      tile0 = 0;															\n"
+				"      tile1 = 0;															\n"
+				"    } else if (lod_clamp >= 1.0 && uTextureDetail == 2) {					\n"
+				"      tile0 = lod_tile + 1;												\n"
+				"      tile1 = lod_tile + 2;												\n"
+				"    } else {																\n"
+				"      tile0 = lod_tile;													\n"
+				"      tile1 = lod_tile + 1;												\n"
+				"    }																		\n"
+				"  }																		\n"
+				"  mediump float lod_frac = lod_clamp / pow(2.0, float(lod_tile));			\n"
+				"  if (uTextureDetail == 1 || lod_clamp >= 1.0) {							\n"
+				"    lod_frac = clamp(lod_frac - 1.0, -1.0, 1.0);							\n"
+				"  }																		\n"
+				"																			\n"
+				"  if (tile0 == 0)															\n"
+				"    readtex0 = TextureMipMap0(uTex0, tcData0);								\n"
+				"  else if (uEnableLod == 0 || uMaxTile == 1)								\n"
+				"    readtex0 = TextureMipMap0(uTex1, tcData1);								\n"
+				"  else readtex0 = TextureMipMap1(uTex1, tcData1, float(tile0 - 1));		\n"
+				"  if (tile1 == 0)															\n"
+				"    readtex1 = TextureMipMap0(uTex0, tcData0);								\n"
+				"  else if (uEnableLod == 0 || uMaxTile == 1)								\n"
+				"    readtex1 = TextureMipMap0(uTex1, tcData1);								\n"
+				"  else readtex1 = TextureMipMap1(uTex1, tcData1, float(tile1 - 1));		\n"
+				"  return lod_frac;															\n"
+				"}																			\n"
+				;
 		}
 		else {
 			static const std::string strReadTex0 =
@@ -2176,30 +2211,29 @@ public:
 				m_part += strBillinear3PointEnd;
 				m_part += strReadTex1;
 				m_part += strBillinear3PointEnd;
-			}
-			else {
+			} else {
 				m_part = strReadTex0;
 				m_part += strBillinearStandardEnd;
 				m_part += strReadTex1;
 				m_part += strBillinearStandardEnd;
 			}
 			m_part +=
-				"uniform lowp int uEnableLod;		\n"
-				"uniform mediump float uMinLod;		\n"
-				"uniform lowp int uMaxTile;			\n"
-				"uniform lowp int uTextureDetail;	\n"
+				"uniform lowp int uEnableLod;											\n"
+				"uniform mediump float uMinLod;											\n"
+				"uniform lowp int uMaxTile;												\n"
+				"uniform lowp int uTextureDetail;										\n"
 				"																		\n"
 				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
 				;
 			if (config.generalEmulation.enableLOD == 0) {
 				m_part +=
-					"  mediump float lod = 1.0;												\n"
+					"  mediump float lod = 1.0;											\n"
 					;
 			} else {
 				m_part +=
-					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
-					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
-					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));			\n"
+					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;		\n"
+					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;		\n"
+					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));		\n"
 					;
 			}
 			m_part +=
@@ -2278,7 +2312,6 @@ public:
 
 		if (m_glinfo.isGLES2) {
 			shaderPart +=
-				"uniform mediump vec2 uTextureSize[2];										\n"
 				"lowp vec4 TextureNearest(in sampler2D tex, in highp vec2 tcData[5])		\n"
 				"{																					\n"
 				"  mediump vec2 texSize;															\n"
@@ -2310,7 +2343,6 @@ public:
 			if (g_textureConvert.useTextureFiltering()) {
 				if (config.texture.bilinearMode == BILINEAR_3POINT) {
 					shaderPart +=
-						// "uniform mediump vec2 uTextureSize[2];										\n" NOT NEEDED HERE?
 						// 3 point texture filtering.
 						// Original author: ArthurCarvalho
 						// GLSL implementation: twinaphex, mupen64plus-libretro project.
@@ -2334,7 +2366,6 @@ public:
 				} else {
 					shaderPart +=
 						// bilinear filtering.
-						//"uniform mediump vec2 uTextureSize[2];										\n" NOT NEEDED HERE?
 						"lowp vec4 TextureFilter(in sampler2D tex, in highp vec2 tcData[5])		\n"
 						"{																					\n"
 						"  mediump vec2 texSize;															\n"
@@ -2415,7 +2446,6 @@ public:
 	{
 		if (_glinfo.isGLES2) {
 			m_part =
-				"uniform mediump vec2 uTextureSize[2];										\n"
 				"lowp vec4 TextureNearest(in sampler2D tex, in highp vec2 tcData[5])		\n"
 				"{																					\n"
 				"  mediump vec2 texSize;															\n"

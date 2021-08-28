@@ -1230,6 +1230,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		params.dataType = glType;
 		params.data = texData.get();
 		gfxContext.init2DTexture(params);
+		_pTexture->mipmapAtlasWidth = params.width;
+		_pTexture->mipmapAtlasHeight = params.height;
 	}
 	else
 	{
