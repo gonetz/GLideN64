@@ -40,6 +40,8 @@ struct CachedTexture
 
 	u32		address;
 	u8		max_level;
+	u16		mipmapAtlasWidth{ 0 };
+	u16		mipmapAtlasHeight{ 0 };
 	enum {
 		fbNone = 0,
 		fbOneSample = 1,
@@ -47,7 +49,6 @@ struct CachedTexture
 	} frameBufferTexture;
 	bool bHDTexture;
 };
-
 
 struct TextureCache
 {

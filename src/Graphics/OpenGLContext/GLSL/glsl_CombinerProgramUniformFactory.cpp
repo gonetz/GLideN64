@@ -976,10 +976,18 @@ public:
 	void update(bool _force) override
 	{
 		TextureCache & cache = textureCache();
-		if (m_useT0 && cache.current[0] != NULL)
-			uTextureSize[0].set((float)cache.current[0]->width, (float)cache.current[0]->height, _force);
-		if (m_useT1 && cache.current[1] != NULL)
-			uTextureSize[1].set((float)cache.current[1]->width, (float)cache.current[1]->height, _force);
+		if (m_useT0 && cache.current[0] != nullptr)
+			uTextureSize[0].set(static_cast<float>(cache.current[0]->width),
+				static_cast<float>(cache.current[0]->height), _force);
+		if (m_useT1 && cache.current[1] != nullptr) {
+			CachedTexture * pTexture = cache.current[1];
+			if (pTexture->max_level == 0)
+				uTextureSize[1].set(static_cast<float>(pTexture->width),
+					static_cast<float>(pTexture->height), _force);
+			else
+				uTextureSize[1].set(static_cast<float>(pTexture->mipmapAtlasWidth),
+					static_cast<float>(pTexture->mipmapAtlasHeight), _force);
+		}
 	}
 
 private:
