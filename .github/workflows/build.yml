@@ -12,6 +12,9 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get -y upgrade
           sudo apt-get -y install build-essential libgl1-mesa-dev qt5-default
+      - name: Prepare Environment
+        run: |
+          echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Build GLideN64 (x64 Mupen64Plus-CLI)
         run: |
           mkdir -p build/linux-mupen64plus-cli
@@ -34,14 +37,14 @@ jobs:
       - name: Upload GLideN64 (x64 Mupen64Plus-CLI)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Linux-Mupen64Plus-CLI-x64
+          name: GLideN64-${{ env.GIT_REVISION }}-Linux-Mupen64Plus-CLI-x64
           path: |
             build/linux-mupen64plus-cli/*.so
             build/linux-mupen64plus-cli/GLideN64.custom.ini
       - name: Upload GLideN64 (x64 Mupen64Plus-Qt)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Linux-Mupen64Plus-Qt-x64
+          name: GLideN64-${{ env.GIT_REVISION }}-Linux-Mupen64Plus-Qt-x64
           path: |
             build/linux-mupen64plus-qt/*.so
             build/linux-mupen64plus-qt/GLideN64.custom.ini
@@ -49,8 +52,8 @@ jobs:
   Windows:
     runs-on: windows-latest
     env:
-      QTDIR_x86: D:\Static_Qt_x86
-      QTDIR_x64: D:\Static_Qt_x64
+      QTDIR_x86: C:\Static_Qt_x86
+      QTDIR_x64: C:\Static_Qt_x64
       QT_BUILD_BASE_URL: https://github.com/gonetz/GLideN64/releases/download/qt_build/
       QT_BUILD_x86: qt-5_15-x86-msvc2017-static
       QT_BUILD_x64: qt-5_15-x64-msvc2017-static
@@ -70,12 +73,14 @@ jobs:
             git
       - name: Prepare Environment
         run: |
+          $env:revision = git rev-parse --short HEAD
           echo "PJ64PluginsDirQT=$pwd\build\windows-project64-qt\" >> $env:GITHUB_ENV
           echo "PJ64PluginsDirQT_x64=$pwd\build\windows-project64-qt-x64\" >> $env:GITHUB_ENV
           echo "PJ64PluginsDirWTL=$pwd\build\windows-project64-wtl\" >> $env:GITHUB_ENV
           echo "PJ64PluginsDirWTL_x64=$pwd\build\windows-project64-wtl-x64\" >> $env:GITHUB_ENV
           echo "Mupen64PluginsDir=$pwd\build\windows-mupen64plus-cli\" >> $env:GITHUB_ENV
           echo "Mupen64PluginsDir_x64=$pwd\build\windows-mupen64plus-cli-x64\" >> $env:GITHUB_ENV
+          echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
       - name: Prepare Qt Builds
         run: |
@@ -139,7 +144,7 @@ jobs:
       - name: Upload GLideN64 (x64 Project64-Qt)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Project64-Qt-x64
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-Qt-x64
           path: |
             build\windows-project64-qt-x64\*.dll
             build\windows-project64-qt-x64\GLideN64.custom.ini
@@ -147,7 +152,7 @@ jobs:
       - name: Upload GLideN64 (x86 Project64-Qt)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Project64-Qt-x86
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-Qt-x86
           path: |
             build\windows-project64-qt\*.dll
             build\windows-project64-qt\GLideN64.custom.ini
@@ -155,7 +160,7 @@ jobs:
       - name: Upload GLideN64 (x64 Project64-WTL)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Project64-WTL-x64
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-WTL-x64
           path: |
             build\windows-project64-wtl-x64\*.dll
             build\windows-project64-wtl-x64\GLideN64.custom.ini
@@ -163,7 +168,7 @@ jobs:
       - name: Upload GLideN64 (x86 Project64-WTL)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Project64-WTL-x86
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-WTL-x86
           path: |
             build\windows-project64-wtl\*.dll
             build\windows-project64-wtl\GLideN64.custom.ini
@@ -171,21 +176,21 @@ jobs:
       - name: Upload GLideN64 (x64 Mupen64Plus-CLI)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Mupen64Plus-CLI-x64
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Mupen64Plus-CLI-x64
           path: |
             build\windows-mupen64plus-cli-x64\*.dll
             build\windows-mupen64plus-cli-x64\GLideN64.custom.ini
       - name: Upload GLideN64 (x86 Mupen64Plus-CLI)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Mupen64Plus-CLI-x86
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Mupen64Plus-CLI-x86
           path: |
             build\windows-mupen64plus-cli\*.dll
             build\windows-mupen64plus-cli\GLideN64.custom.ini
       - name: Upload GLideN64 (x64 Mupen64Plus-Qt)
         uses: actions/upload-artifact@v2
         with:
-          name: GLideN64-Windows-Mupen64Plus-Qt-x64
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-Mupen64Plus-Qt-x64
           path: |
             build\windows-mupen64plus-qt\*.dll
             build\windows-mupen64plus-qt\GLideN64.custom.ini
@@ -217,9 +222,11 @@ jobs:
           git tag -f github-actions
           git push -f origin github-actions
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: Rosalie241/release-action@v1.8.10
         with:
           prerelease: true
           allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: false
           tag: github-actions
           artifacts: "artifacts/*.zip"
