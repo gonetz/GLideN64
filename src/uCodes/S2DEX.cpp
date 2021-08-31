@@ -481,7 +481,7 @@ struct ObjCoordinates
 		f32 imageW = (f32)gSP.bgImage.width;
 		f32 imageH = (f32)gSP.bgImage.height;
 
-		if (u32(imageW) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
+		if (u32(imageW) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0u) {
 			const f32 width = f32(*REG.VI_WIDTH);
 			const f32 scale = imageW / width;
 			imageW = width;
@@ -502,7 +502,7 @@ struct ObjCoordinates
 		lrs = uls + (lrx - ulx) * scaleW;
 		lrt = ult + (lry - uly) * scaleH;
 
-		if (config.frameBufferEmulation.nativeResFactor != 1 || config.video.multisampling != 0) {
+		if (config.frameBufferEmulation.nativeResFactor != 1u || config.video.multisampling != 0u) {
 			uls -= 0.5f * scaleW;
 			ult -= 0.5f * scaleH;
 			lrs -= 0.5f * scaleW;
@@ -513,7 +513,7 @@ struct ObjCoordinates
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			// Correct texture coordinates if G_OBJRM_BILERP
 			// bilinear interpolation is set
-			if ((gSP.objRendermode & G_OBJRM_BILERP) != 0) {
+			if ((gSP.objRendermode & G_OBJRM_BILERP) != 0u) {
 				// No correction gives the best picture, but is this correct?
 				//uls -= 0.5f;
 				//ult -= 0.5f;
@@ -522,7 +522,7 @@ struct ObjCoordinates
 			}
 			// SHRINKSIZE_1 adds a 0.5f perimeter around the image
 			// upper left texture coords += 0.5f; lower left texture coords -= 0.5f
-			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0) {
+			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0u) {
 				uls += 0.5f;
 				ult += 0.5f;
 				lrs -= 0.5f;
@@ -530,7 +530,7 @@ struct ObjCoordinates
 			}
 			// SHRINKSIZE_2 adds a 1.0f perimeter
 			// upper left texture coords += 1.0f; lower left texture coords -= 1.0f
-			else if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_2) != 0) {
+			else if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_2) != 0u) {
 				uls += 1.0f;
 				ult += 1.0f;
 				lrs -= 1.0f;
@@ -538,9 +538,15 @@ struct ObjCoordinates
 			}
 		}
 
+		gDP.m_texCoordBounds.valid = true;
+		gDP.m_texCoordBounds.uls = uls;
+		gDP.m_texCoordBounds.lrs = lrs - 1.0f;
+		gDP.m_texCoordBounds.ult = ult;
+		gDP.m_texCoordBounds.lrt = lrt - 1.0f;
+
 		// BgRect1CycOnePiece() and BgRectCopyOnePiece() do only support
 		// imageFlip in horizontal direction
-		if ((_pObjScaleBg->imageFlip & G_BG_FLAG_FLIPS) != 0) {
+		if ((_pObjScaleBg->imageFlip & G_BG_FLAG_FLIPS) != 0u) {
 			std::swap(ulx, lrx);
 		}
 
