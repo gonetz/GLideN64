@@ -1,5 +1,6 @@
 #include <QSettings>
 #include <QColor>
+#include <QFile>
 
 #ifdef OS_WINDOWS
 #include <windows.h>
@@ -12,6 +13,7 @@
 #include "Settings.h"
 
 static const char * strIniFileName = "GLideN64.ini";
+static const char * strDefaultIniFileName = "GLideN64.default.ini";
 static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
 static QString strUserProfile("User");
 
@@ -153,54 +155,11 @@ void _loadSettings(QSettings & settings)
 	settings.endGroup();
 }
 
-void loadSettings(const QString & _strIniFolder)
-{
-	bool rewriteSettings = false;
-	{
-		const u32 hacks = config.generalEmulation.hacks;
-		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
-		const u32 configVersion = settings.value("version", 0).toInt();
-		QString configTranslationFile = settings.value("translation", config.translationFile.c_str()).toString();
-		config.resetToDefaults();
-		config.generalEmulation.hacks = hacks;
-		config.translationFile = configTranslationFile.toLocal8Bit().constData();
-		if (configVersion < CONFIG_WITH_PROFILES) {
-			_loadSettings(settings);
-			config.version = CONFIG_VERSION_CURRENT;
-			settings.clear();
-			settings.setValue("version", CONFIG_VERSION_CURRENT);
-			settings.setValue("profile", strUserProfile);
-			settings.setValue("translation", config.translationFile.c_str());
-			settings.beginGroup(strUserProfile);
-			writeSettings(_strIniFolder);
-			settings.endGroup();
-		}
-		QString profile = settings.value("profile", strUserProfile).toString();
-		if (settings.childGroups().indexOf(profile) >= 0) {
-			settings.beginGroup(profile);
-			_loadSettings(settings);
-			settings.endGroup();
-		} else
-			rewriteSettings = true;
-		if (config.version != CONFIG_VERSION_CURRENT)
-			rewriteSettings = true;
-	}
-	if (rewriteSettings) {
-		// Keep settings up-to-date
-		{
-			QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
-			QString profile = settings.value("profile", strUserProfile).toString();
-			settings.remove(profile);
-		}
-		config.version = CONFIG_VERSION_CURRENT;
-		writeSettings(_strIniFolder);
-	}
-}
-
-void writeSettings(const QString & _strIniFolder)
+static
+void _writeSettingsToFile(const QString & filename)
 {
 //	QSettings settings("Emulation", "GLideN64");
-	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+	QSettings settings(filename, QSettings::IniFormat);
 	settings.setValue("version", config.version);
 	settings.setValue("translation", config.translationFile.c_str());
 	QString profile = settings.value("profile", strUserProfile).toString();
@@ -329,6 +288,72 @@ void writeSettings(const QString & _strIniFolder)
 	settings.endGroup();
 
 	settings.endGroup();
+}
+
+static
+void _loadSettingsFromFile(const QString & filename)
+{
+	bool rewriteSettings = false;
+	{
+		const u32 hacks = config.generalEmulation.hacks;
+		QSettings settings(filename, QSettings::IniFormat);
+		const u32 configVersion = settings.value("version", 0).toInt();
+		QString configTranslationFile = settings.value("translation", config.translationFile.c_str()).toString();
+		config.resetToDefaults();
+		config.generalEmulation.hacks = hacks;
+		config.translationFile = configTranslationFile.toLocal8Bit().constData();
+		if (configVersion < CONFIG_WITH_PROFILES) {
+			_loadSettings(settings);
+			config.version = CONFIG_VERSION_CURRENT;
+			settings.clear();
+			settings.setValue("version", CONFIG_VERSION_CURRENT);
+			settings.setValue("profile", strUserProfile);
+			settings.setValue("translation", config.translationFile.c_str());
+			settings.beginGroup(strUserProfile);
+			_writeSettingsToFile(filename);
+			settings.endGroup();
+		}
+		QString profile = settings.value("profile", strUserProfile).toString();
+		if (settings.childGroups().indexOf(profile) >= 0) {
+			settings.beginGroup(profile);
+			_loadSettings(settings);
+			settings.endGroup();
+		} else
+			rewriteSettings = true;
+		if (config.version != CONFIG_VERSION_CURRENT)
+			rewriteSettings = true;
+	}
+	if (rewriteSettings) {
+		// Keep settings up-to-date
+		{
+			QSettings settings(filename, QSettings::IniFormat);
+			QString profile = settings.value("profile", strUserProfile).toString();
+			settings.remove(profile);
+		}
+		config.version = CONFIG_VERSION_CURRENT;
+		_writeSettingsToFile(filename);
+	}
+}
+
+void loadSettings(const QString & _strIniFolder)
+{
+	_loadSettingsFromFile(_strIniFolder + "/" + strIniFileName);
+}
+
+void writeSettings(const QString & _strIniFolder)
+{
+	_writeSettingsToFile(_strIniFolder + "/" + strIniFileName);
+}
+
+void resetSettings(const QString & _strIniFolder)
+{
+	QString defaultSettingsFilename = _strIniFolder + "/" + strDefaultIniFileName;
+	QFile defaultFile(defaultSettingsFilename);
+	if (defaultFile.exists()) {
+		_loadSettingsFromFile(defaultSettingsFilename);
+	} else {
+		config.resetToDefaults();
+	}
 }
 
 static

@@ -799,7 +799,7 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 		msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
 		if (msgBox.exec() == QMessageBox::RestoreDefaults) {
 			const u32 enableCustomSettings = config.generalEmulation.enableCustomSettings;
-			config.resetToDefaults();
+			resetSettings(m_strIniPath);
 			config.generalEmulation.enableCustomSettings = enableCustomSettings;
 			setTitle();
 			setRomName(m_romName);
