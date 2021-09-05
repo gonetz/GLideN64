@@ -130,9 +130,6 @@ namespace glsl {
 				"  fragColor = vec4(uFogColor.rgb, get_alpha());			\n"
 				"}															\n"
 				;
-
-			if (config.frameBufferEmulation.N64DepthCompare == Config::dcDisable && _glinfo.fetch_depth)
-				 m_part = "#extension GL_ARM_shader_framebuffer_fetch_depth_stencil : enable	\n" + m_part;
 		}
 	};
 
