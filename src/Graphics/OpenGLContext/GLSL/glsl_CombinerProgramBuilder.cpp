@@ -553,7 +553,9 @@ public:
 					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
 						<< "layout(pixel_interlock_ordered) in;" << std::endl;
 				}
-			}
+			} else if (_glinfo.fetch_depth)
+				ss << "#extension GL_ARM_shader_framebuffer_fetch_depth_stencil : enable" << std::endl;
+
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
@@ -579,6 +581,7 @@ public:
 						ss << "#extension GL_INTEL_fragment_shader_ordering : enable" << std::endl;
 				}
 			}
+
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
@@ -2048,8 +2051,8 @@ public:
 				// Fetch from texture atlas
 				// First 8 texels contain info about tile size and offset, 1 texel per tile
 				"  mediump vec2 texSize = uTextureSize[1];														\n"
-				"  mediump vec4 texWdthAndOff0 = 255.0 * texture(tex, vec2(0.5, 0.5)/texSize);					\n"
-				"  mediump vec4 texWdthAndOff = 255.0 * texture(tex, vec2(lod + 0.5, 0.5)/texSize);				\n"
+				"  mediump vec4 texWdthAndOff0 = 255.0 * texture2D(tex, vec2(0.5, 0.5)/texSize);					\n"
+				"  mediump vec4 texWdthAndOff = 255.0 * texture2D(tex, vec2(lod + 0.5, 0.5)/texSize);				\n"
 				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;								\n"
 				"  mediump float offset = texWdthAndOff.r + texWdthAndOff.g * 256.0;							\n"
 				"  mediump float width = texWdthAndOff.b;														\n"
@@ -2119,11 +2122,17 @@ public:
 					;
 			}
 			m_part +=
-				"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);			\n"
+				"#define MIN(x, y) y < x ? y : x											\n"
+				"#define MAX(x, y) x < y ? y : x											\n"
+				"  lowp int lod_max_tile = uTextureDetail != 2 ? 7 : 6; 					\n"
+				"  lowp int max_tile = MIN(lod_max_tile, uMaxTile); 						\n"
 				"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;				\n"
 				"  mediump float max_lod = pow(2.0, float(max_tile)) - 1.0 / 32.0;			\n"
 				"  mediump float lod_clamp = min(max(lod, min_lod), max_lod);				\n"
-				"  lowp int lod_tile = clamp(int(log2(lod_clamp)), 0 , max_tile);			\n"
+	            // Simulate clamp function, needed for GLES 2.0 and integer types
+				"  mediump int lod_clamp_int = int(log2(lod_clamp));						\n"
+				"  mediump int lod_clamp_max = MAX(lod_clamp_int, 0);						\n"
+				"  lowp int lod_tile = MIN(lod_clamp_max, max_tile);						\n"
 				"  lowp int tile0 = 0;														\n"
 				"  lowp int tile1 = 1;														\n"
 				"  if (uEnableLod != 0) {													\n"
