@@ -34,7 +34,6 @@
 #include "TxFilter.h"
 #include "TextureFilters.h"
 #include "TxDbg.h"
-#include "bldno.h"
 
 void TxFilter::clear()
 {
@@ -88,11 +87,7 @@ TxFilter::TxFilter(int maxwidth,
 	/* shamelessness :P this first call to the debug output message creates
    * a file in the executable directory. */
 	INFO(0, wst("------------------------------------------------------------------\n"));
-#ifdef GHQCHK
-	INFO(0, wst(" GLideNHQ Hires Texture Checker 1.02.00.%d\n"), BUILD_NUMBER);
-#else
-	INFO(0, wst(" GLideNHQ version 1.00.00.%d\n"), BUILD_NUMBER);
-#endif
+	INFO(0, wst(" GLideNHQ\n"));
 	INFO(0, wst(" Copyright (C) 2010  Hiroshi Morii   All Rights Reserved\n"));
 	INFO(0, wst("    email   : koolsmoky(at)users.sourceforge.net\n"));
 	INFO(0, wst("    website : http://www.3dfxzone.it/koolsmoky\n"));
