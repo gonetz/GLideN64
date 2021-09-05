@@ -155,58 +155,6 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #endif
 #endif // OS_WINDOWS
 
-#ifdef TXFILTER_DLL
-typedef unsigned char  uint8;
-typedef unsigned short uint16;
-typedef unsigned long  uint32;
-
-boolean ext_ghq_init(int maxwidth, /* maximum texture width supported by hardware */
-					 int maxheight,/* maximum texture height supported by hardware */
-					 int maxbpp,   /* maximum texture bpp supported by hardware */
-					 int options,  /* options */
-					 int cachesize,/* cache textures to system memory */
-					 const wchar_t *path,   /* plugin directory. must be smaller than MAX_PATH */
-					 const wchar_t *ident,  /* name of ROM. must be no longer than 64 in character. */
-					 dispInfoFuncExt callback /* callback function to display info */
-					 );
-
-void ext_ghq_shutdown(void);
-
-boolean ext_ghq_txfilter(unsigned char *src,        /* input texture */
-						 int srcwidth,              /* width of input texture */
-						 int srcheight,             /* height of input texture */
-						 unsigned short srcformat,  /* format of input texture */
-						 uint64 g64crc,             /* glide64 crc */
-						 GHQTexInfo *info           /* output */
-						 );
-
-boolean ext_ghq_hirestex(uint64 g64crc,             /* glide64 crc */
-						 uint64 r_crc64,            /* checksum hi:palette low:texture */
-						 unsigned short *palette,   /* palette for CI textures */
-						 GHQTexInfo *info           /* output */
-						 );
-
-uint64 ext_ghq_checksum(unsigned char *src, /* input texture */
-						int width,          /* width of texture */
-						int height,         /* height of texture */
-						int size,           /* type of texture pixel */
-						int rowStride,      /* row stride in bytes */
-						unsigned char *palette /* palette */
-						);
-
-boolean ext_ghq_dmptx(unsigned char *src,   /* input texture (must be in 3Dfx Glide format) */
-					  int width,            /* width of texture */
-					  int height,           /* height of texture */
-					  int rowStridePixel,   /* row stride of input texture in pixels */
-					  unsigned short gfmt,  /* glide format of input texture */
-					  unsigned short n64fmt,/* N64 format hi:format low:size */
-					  uint64 r_crc64        /* checksum hi:palette low:texture */
-					  );
-
-boolean ext_ghq_reloadhirestex();
-
-#else
-
 typedef unsigned char  uint8;
 typedef unsigned short uint16;
 typedef unsigned int  uint32;
@@ -245,7 +193,5 @@ txfilter_dumpcache(void);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* TXFILTER_DLL */
 
 #endif /* __EXT_TXFILTER_H__ */
