@@ -44,17 +44,12 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 	bool hasWildcard = false;
 	const char supported_ends[][20] = {
 		"all.png",
-		"all.dds",
 #ifdef OS_WINDOWS
 		"allcibyrgba.png",
-		"allcibyrgba.dds",
 		"cibyrgba.png",
-		"cibyrgba.dds",
 #else
 		"allciByRGBA.png",
-		"allciByRGBA.dds",
 		"ciByRGBA.png",
-		"ciByRGBA.dds",
 #endif
 		"rgb.png",
 		"rgb.bmp",
@@ -65,13 +60,12 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 	pfilename = filename + strlen(filename) - 4;
 	
 	if (strcmp(pfilename, ".png") &&
-		strcmp(pfilename, ".bmp") &&
-		strcmp(pfilename, ".dds")) {
+		strcmp(pfilename, ".bmp")) {
 #if !DEBUG
 		INFO(80, wst("-----\n"));
 		INFO(80, wst("file: %s\n"), filename);
 #endif
-		INFO(80, wst("Error: not png or bmp or dds!\n"));
+		INFO(80, wst("Error: not png or bmp!\n"));
 		return 0;
 	}
 	
@@ -308,21 +302,16 @@ uint8_t* TxHiResLoader::loadFileInfoTex(char* fname,
 	}
 	else
 		/*
-		 * read in _all.png, _all.dds, _allciByRGBA.png, _allciByRGBA.dds
-		 * _ciByRGBA.png, _ciByRGBA.dds, _ci.bmp
+		 * read in _all.png, _allciByRGBA.png,
+		 * _ciByRGBA.png, _ci.bmp
 		 */
 		if (strstr(fname, "_all.png") ||
-				strstr(fname, "_all.dds") ||
 #ifdef OS_WINDOWS
 				strstr(fname, "_allcibyrgba.png") ||
-				strstr(fname, "_allcibyrgba.dds") ||
 				strstr(fname, "_cibyrgba.png") ||
-				strstr(fname, "_cibyrgba.dds") ||
 #else
 				strstr(fname, "_allciByRGBA.png") ||
-				strstr(fname, "_allciByRGBA.dds") ||
 				strstr(fname, "_ciByRGBA.png") ||
-				strstr(fname, "_ciByRGBA.dds") ||
 #endif
 				strstr(fname, "_ci.bmp")) {
 
