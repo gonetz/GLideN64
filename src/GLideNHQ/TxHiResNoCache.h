@@ -2,13 +2,16 @@
 #define TXHIRESNOCACHE_H
 
 #include "TxHiResLoader.h"
+#include <unordered_map>
 
 class TxHiResNoCache : public TxHiResLoader
 {
 	private:
 		bool _createFileIndex(bool update);
 		bool _createFileIndexInDir(tx_wstring directory, bool update);
+		void _freeOldestTexture(u64 currentNum);
 		void _clear();
+		u64 _getCounterNum();
 
 		struct fileIndexEntry_t
 		{
@@ -18,12 +21,20 @@ class TxHiResNoCache : public TxHiResLoader
 			uint32 fmt;
 		};
 
+		struct loadedTexture_t
+		{
+			u64 counterNum;
+			GHQTexInfo info;
+		};
+
 		tx_wstring _fullTexPath;
 		tx_wstring _ident;
 		char _identc[MAX_PATH];
-		std::map<uint64, fileIndexEntry_t> _filesIndex;
-		std::map<uint64, GHQTexInfo> _loadedTex;
+		std::unordered_map<uint64, fileIndexEntry_t> _filesIndex;
+		std::unordered_map<uint64, loadedTexture_t> _loadedTex;
 		dispInfoFuncExt _callback;
+		u64 _loadedTexSize = 0;
+
 	public:
 		~TxHiResNoCache();
   		TxHiResNoCache(int maxwidth,
