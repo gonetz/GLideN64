@@ -222,7 +222,7 @@ jobs:
           git tag -f github-actions
           git push -f origin github-actions
       - name: Create Release
-        uses: Rosalie241/release-action@v1.8.10
+        uses: ncipollo/release-action@v1
         with:
           prerelease: true
           allowUpdates: true
