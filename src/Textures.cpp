@@ -519,10 +519,29 @@ void TextureCache::destroy()
 void TextureCache::_checkCacheSize()
 {
 	if (m_textures.size() >= m_maxCacheSize) {
-		CachedTexture& clsTex = m_textures.back();
-		gfxContext.deleteTexture(clsTex.name);
-		m_lruTextureLocations.erase(clsTex.crc);
-		m_textures.pop_back();
+    	u64 oldestNum = 0;
+    	CachedTexture* oldestTex = nullptr;
+    	Textures::iterator oldestTexIt;
+    	for (auto it = m_textures.begin(); it != m_textures.end(); it++) {
+    	  if (oldestNum == 0 || it->counterNum < oldestNum) {
+    	    oldestNum = it->counterNum;
+    	    oldestTex = &(*it);
+    	    oldestTexIt = it;
+    	  }
+    	}
+
+    	// remove oldest texture when something was found
+    	if (oldestTex != nullptr) {
+    	  gfxContext.deleteTexture(oldestTex->name);
+    	  m_lruTextureLocations.erase(oldestTex->crc);
+    	  m_textures.erase(oldestTexIt);
+    	} else {
+    	  // fallback to old method when nothing was found
+    	  CachedTexture& clsTex = m_textures.back();
+    	  gfxContext.deleteTexture(clsTex.name);
+    	  m_lruTextureLocations.erase(clsTex.crc);
+    	  m_textures.pop_back();
+    	}
 	}
 }
 
@@ -679,6 +698,18 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, u1
 	_pTexture->hdRatioT = (f32)(_info.height) / (f32)(_pTexture->height);
 
 	_pTexture->bHDTexture = true;
+}
+
+u64 TextureCache::_getCounterNum()
+{
+  static u64 num = 1;
+
+  // prevent overflow
+  if (num == UINT64_MAX) {
+  	num = 0;
+  }
+
+  return num++;
 }
 
 bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture, u64 & _ricecrc)
@@ -1417,6 +1448,19 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	}
 
 	gfxContext.setTextureParameters(params);
+
+	// update counter num
+	_pTexture->counterNum = _getCounterNum();
+
+	// prevent overflow
+	if (_pTexture->counterNum == 0) {
+		// re-set counterNum for all textures
+		for (auto it = m_textures.begin(); it != m_textures.end(); it++) {
+			it->counterNum = _getCounterNum();
+		}
+
+		_pTexture->counterNum = _getCounterNum();
+	}
 
 	current[_t] = _pTexture;
 }

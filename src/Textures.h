@@ -46,6 +46,8 @@ struct CachedTexture
 		fbMultiSample = 2
 	} frameBufferTexture;
 	bool bHDTexture;
+
+	u64  counterNum;
 };
 
 
@@ -91,6 +93,7 @@ private:
 	void _updateBackground();
 	void _initDummyTexture(CachedTexture * _pDummy);
 	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, graphics::Parameter glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
+	u64 _getCounterNum();
 
 	typedef std::list<CachedTexture> Textures;
 	typedef std::unordered_map<u64, Textures::iterator> Texture_Locations;
