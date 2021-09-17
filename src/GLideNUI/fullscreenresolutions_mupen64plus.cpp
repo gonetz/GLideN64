@@ -57,7 +57,7 @@ static void _fillFullscreenRefreshRateList(QStringList &_listRefreshRates, int &
 	free(rates);
 }
 
-void fillFullscreenResolutionsList(QStringList &_listResolutions, int &_resolutionIdx, QStringList &_listRefreshRates, int &_rateIdx)
+void fillFullscreenResolutionsList(int _monitorIdx, QStringList &_listResolutions, int &_resolutionIdx, QStringList &_listRefreshRates, int &_rateIdx)
 {
 	fullscreen.selected.width = config.video.fullscreenWidth;
 	fullscreen.selected.height = config.video.fullscreenHeight;
@@ -97,7 +97,7 @@ void fillFullscreenResolutionsList(QStringList &_listResolutions, int &_resoluti
 	free(resolutions);
 }
 
-void fillFullscreenRefreshRateList(int _resolutionIdx, QStringList &_listRefreshRates, int &_rateIdx)
+void fillFullscreenRefreshRateList(int _monitorIdx, int _resolutionIdx, QStringList &_listRefreshRates, int &_rateIdx)
 {
 	fullscreen.selected.width = fullscreen.resolution[_resolutionIdx].width;
 	fullscreen.selected.height = fullscreen.resolution[_resolutionIdx].height;
@@ -105,13 +105,18 @@ void fillFullscreenRefreshRateList(int _resolutionIdx, QStringList &_listRefresh
 	_rateIdx = fullscreen.numRefreshRates - 1;
 }
 
-void getFullscreenResolutions(int _idx, unsigned int &_width, unsigned int &_height)
+void fillFullscreenMonitorList(int & _monitorIdx, QStringList & _monitors)
+{
+	_monitors.append(QString::number(1));
+}
+
+void getFullscreenResolutions(int _monitorIdx, int _idx, unsigned int &_width, unsigned int &_height)
 {
 	_width = fullscreen.resolution[_idx].width;
 	_height = fullscreen.resolution[_idx].height;
 }
 
-void getFullscreenRefreshRate(int _idx, unsigned int &_rate)
+void getFullscreenRefreshRate(int _monitorIdx, int _idx, unsigned int &_rate)
 {
 	_rate = fullscreen.refreshRate[_idx];
 }

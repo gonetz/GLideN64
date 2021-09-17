@@ -28,6 +28,7 @@ void _loadSettings(QSettings & settings)
 	config.video.windowedWidth = settings.value("windowedWidth", config.video.windowedWidth).toInt();
 	config.video.windowedHeight = settings.value("windowedHeight", config.video.windowedHeight).toInt();
 	config.video.fullscreenRefresh = settings.value("fullscreenRefresh", config.video.fullscreenRefresh).toInt();
+	config.video.fullscreenMonitor = settings.value("fullscreenMonitor", config.video.fullscreenMonitor).toInt();
 	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
 	config.video.maxMultiSampling = settings.value("maxMultiSampling", config.video.maxMultiSampling).toInt();
 	config.video.fxaa= settings.value("fxaa", config.video.fxaa).toInt();
@@ -173,6 +174,7 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("windowedWidth", config.video.windowedWidth);
 	settings.setValue("windowedHeight", config.video.windowedHeight);
 	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
+	settings.setValue("fullscreenMonitor", config.video.fullscreenMonitor);
 	settings.setValue("multisampling", config.video.multisampling);
 	settings.setValue("maxMultiSampling", config.video.maxMultiSampling);
 	settings.setValue("fxaa", config.video.fxaa);
@@ -447,6 +449,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(video, windowedWidth);
 	WriteCustomSetting(video, windowedHeight);
 	WriteCustomSetting(video, fullscreenRefresh);
+	WriteCustomSetting(video, fullscreenMonitor);
 	WriteCustomSetting(video, multisampling);
 	WriteCustomSetting(video, fxaa);
 	WriteCustomSetting(video, verticalSync);

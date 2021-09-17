@@ -102,6 +102,20 @@
                  </item>
                 </layout>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_28">
+                 <item>
+                  <widget class="QLabel" name="fullscreenMonitorLabel">
+                   <property name="text">
+                    <string>Monitor:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="fullscreenMonitorComboBox"/>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </item>

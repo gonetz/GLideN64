@@ -165,9 +165,16 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->overscanPalTopSpinBox->setValue(config.frameBufferEmulation.overscanPAL.top);
 	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
 
+	QStringList fullscreenMonitorList;
+	int fullscreenMonitor;
+	fillFullscreenMonitorList(fullscreenMonitor, fullscreenMonitorList);
+	ui->fullscreenMonitorComboBox->clear();
+	ui->fullscreenMonitorComboBox->insertItems(0, fullscreenMonitorList);
+	ui->fullscreenMonitorComboBox->setCurrentIndex(fullscreenMonitor);
+
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
-	fillFullscreenResolutionsList(fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
+	fillFullscreenResolutionsList(fullscreenMonitor, fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
 	ui->fullScreenResolutionComboBox->clear();
 	ui->fullScreenResolutionComboBox->insertItems(0, fullscreenModesList);
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
@@ -526,8 +533,9 @@ void ConfigDialog::accept(bool justSave) {
 		config.video.windowedHeight = windowedResolutionDimensions[1].trimmed().toInt();
 	}
 
-	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
-	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
+	config.video.fullscreenMonitor = ui->fullscreenMonitorComboBox->currentIndex();
+	getFullscreenResolutions(ui->fullscreenMonitorComboBox->currentIndex(), ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
+	getFullscreenRefreshRate(ui->fullscreenMonitorComboBox->currentIndex(), ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
 
 	config.video.fxaa = ui->fxaaRadioButton->isChecked() ? 1 : 0;
 	config.video.multisampling =
@@ -816,7 +824,20 @@ void ConfigDialog::on_fullScreenResolutionComboBox_currentIndexChanged(int index
 {
 	QStringList fullscreenRatesList;
 	int fullscreenRate;
-	fillFullscreenRefreshRateList(index, fullscreenRatesList, fullscreenRate);
+	fillFullscreenRefreshRateList(ui->fullscreenMonitorComboBox->currentIndex(), index, fullscreenRatesList, fullscreenRate);
+	ui->fullScreenRefreshRateComboBox->clear();
+	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
+	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
+}
+
+void ConfigDialog::on_fullscreenMonitorComboBox_currentIndexChanged(int index)
+{
+	QStringList fullscreenModesList, fullscreenRatesList;
+	int fullscreenMode, fullscreenRate;
+	fillFullscreenResolutionsList(index, fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
+	ui->fullScreenResolutionComboBox->clear();
+	ui->fullScreenResolutionComboBox->insertItems(0, fullscreenModesList);
+	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
 	ui->fullScreenRefreshRateComboBox->clear();
 	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);

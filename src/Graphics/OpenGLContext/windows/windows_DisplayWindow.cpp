@@ -19,6 +19,7 @@ public:
 	DisplayWindowWindows() = default;
 
 private:
+	MONITORINFOEXA m_monitorInfo;
 	bool _start() override;
 	void _stop() override;
 	void _restart() override;
@@ -30,6 +31,7 @@ private:
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override;
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override {}
 	graphics::ObjectHandle _getDefaultFramebuffer() override;
+	bool _getMonitorInfo(MONITORINFOEXA* info);
 };
 
 DisplayWindow & DisplayWindow::get()
@@ -108,17 +110,27 @@ void DisplayWindowWindows::_changeWindow()
 	static RECT		windowedRect;
 	static HMENU	windowedMenu;
 
+	/* retrieve information about
+	 * the currently set fullscreen monitor
+	 */
+	MONITORINFOEXA monitorInfo;
+	if (!_getMonitorInfo(&monitorInfo)) {
+		MessageBoxW( NULL, L"Failed to retrieve information of the monitor", pluginNameW, MB_ICONERROR | MB_OK );
+		return;
+	}
+	m_monitorInfo = monitorInfo;
+
 	if (!m_bFullscreen) {
-		DEVMODE fullscreenMode;
-		memset( &fullscreenMode, 0, sizeof(DEVMODE) );
-		fullscreenMode.dmSize = sizeof(DEVMODE);
+		DEVMODEA fullscreenMode;
+		memset( &fullscreenMode, 0, sizeof(DEVMODEA) );
+		fullscreenMode.dmSize = sizeof(DEVMODEA);
 		fullscreenMode.dmPelsWidth = config.video.fullscreenWidth;
 		fullscreenMode.dmPelsHeight = config.video.fullscreenHeight;
 		fullscreenMode.dmBitsPerPel = 32;
 		fullscreenMode.dmDisplayFrequency = config.video.fullscreenRefresh;
 		fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
-		if (ChangeDisplaySettings( &fullscreenMode, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL) {
+		if (ChangeDisplaySettingsExA(monitorInfo.szDevice, &fullscreenMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL) {
 			MessageBoxW( NULL, L"Failed to change display mode", pluginNameW, MB_ICONERROR | MB_OK );
 			return;
 		}
@@ -144,7 +156,7 @@ void DisplayWindowWindows::_changeWindow()
 		m_bFullscreen = true;
 		_resizeWindow();
 	} else {
-		ChangeDisplaySettings( NULL, 0 );
+		ChangeDisplaySettingsExA(monitorInfo.szDevice, 0, NULL, 0, NULL);
 
 		ShowCursor( TRUE );
 
@@ -175,7 +187,7 @@ bool DisplayWindowWindows::_resizeWindow()
 		m_heightOffset = 0;
 		_setBufferSize();
 
-		return (SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
+		return (SetWindowPos(hWnd, NULL, m_monitorInfo.rcWork.left, m_monitorInfo.rcWork.top, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
 	} else {
 		m_screenWidth = m_width = config.video.windowedWidth;
 		m_screenHeight = config.video.windowedHeight;
@@ -229,4 +241,38 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 graphics::ObjectHandle DisplayWindowWindows::_getDefaultFramebuffer()
 {
 	return graphics::ObjectHandle::null;
+}
+
+static int s_callbackCount;
+static bool s_callbackFoundMonitorInfo;
+static BOOL CALLBACK Monitorenumproc(HMONITOR monitorHandle, HDC deviceHandle, LPRECT monitorRect, LPARAM data)
+{
+	UNREFERENCED_PARAMETER(deviceHandle);
+	UNREFERENCED_PARAMETER(monitorRect);
+
+	MONITORINFOEXA* info = (MONITORINFOEXA*)data;
+
+	/* make sure we have the correct monitor */
+	if (s_callbackCount != config.video.fullscreenMonitor) {
+		s_callbackCount++;
+		return true;
+	}
+
+	/* attempt to retrieve monitor info */
+	MONITORINFOEXA monitorInfo;
+	monitorInfo.cbSize = sizeof(MONITORINFOEXA);
+	if (GetMonitorInfoA(monitorHandle, &monitorInfo)) {
+		*info = monitorInfo;
+		s_callbackFoundMonitorInfo = true;
+		return true;
+	}
+
+	return false;
+}
+
+bool DisplayWindowWindows::_getMonitorInfo(MONITORINFOEXA* info)
+{
+	s_callbackCount = 0;
+	s_callbackFoundMonitorInfo = false;
+	return EnumDisplayMonitors(NULL, NULL, Monitorenumproc, (LPARAM)info) && s_callbackFoundMonitorInfo;
 }
