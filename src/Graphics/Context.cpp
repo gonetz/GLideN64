@@ -7,7 +7,6 @@ Context gfxContext;
 
 bool Context::Multisampling = false;
 bool Context::BlitFramebuffer = false;
-bool Context::WeakBlitFramebuffer = false;
 bool Context::DepthFramebufferTextures = false;
 bool Context::ShaderProgramBinary = false;
 bool Context::ImageTextures = false;
@@ -33,7 +32,6 @@ void Context::init()
 	m_fbTexFormats.reset(m_impl->getFramebufferTextureFormats());
 	Multisampling = m_impl->isSupported(SpecialFeatures::Multisampling);
 	BlitFramebuffer = m_impl->isSupported(SpecialFeatures::BlitFramebuffer);
-	WeakBlitFramebuffer = m_impl->isSupported(SpecialFeatures::WeakBlitFramebuffer);
 	DepthFramebufferTextures = m_impl->isSupported(SpecialFeatures::DepthFramebufferTextures);
 	ShaderProgramBinary = m_impl->isSupported(SpecialFeatures::ShaderProgramBinary);
 	ImageTextures = m_impl->isSupported(SpecialFeatures::ImageTextures);

@@ -510,8 +510,6 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	switch (_feature) {
 	case graphics::SpecialFeatures::BlitFramebuffer:
 		return !m_glInfo.isGLES2;
-	case graphics::SpecialFeatures::WeakBlitFramebuffer:
-		return m_glInfo.isGLESX;
 	case graphics::SpecialFeatures::Multisampling:
 		return m_glInfo.msaa;
 	case graphics::SpecialFeatures::ImageTextures:
