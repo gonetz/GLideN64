@@ -104,6 +104,11 @@ void GLInfo::init() {
 		config.generalEmulation.enableHybridFilter = 0;
 	}
 
+	// Force software vertex clipping to enabled for GLES
+	if (isGLESX) {
+		config.generalEmulation.enableClipping = 1;
+	}
+
 	drawElementsBaseVertex = !isGLESX ||
 		(Utils::isExtensionSupported(*this, "GL_EXT_draw_elements_base_vertex") || numericVersion >= 32);
 #ifdef EGL
