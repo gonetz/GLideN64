@@ -95,15 +95,6 @@ void GraphicsDrawer::addTriangle(u32 _v0, u32 _v1, u32 _v2)
 			vtx.z = gDP.primDepth.z * vtx.w;
 		}
 	}
-
-	if (!Context::ClipControl) {
-		if (GBI.isNoN() && gDP.otherMode.depthCompare == 0 && gDP.otherMode.depthUpdate == 0) {
-			for (u32 i = firstIndex; i < triangles.num; ++i) {
-				SPVertex & vtx = triangles.vertices[triangles.elements[i]];
-				vtx.z = 0.0f;
-			}
-		}
-	}
 }
 
 void GraphicsDrawer::_updateCullFace() const

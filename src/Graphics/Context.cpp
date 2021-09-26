@@ -12,7 +12,6 @@ bool Context::DepthFramebufferTextures = false;
 bool Context::ShaderProgramBinary = false;
 bool Context::ImageTextures = false;
 bool Context::IntegerTextures = false;
-bool Context::ClipControl = false;
 bool Context::FramebufferFetchDepth = false;
 bool Context::FramebufferFetchColor = false;
 bool Context::TextureBarrier = false;
@@ -39,7 +38,6 @@ void Context::init()
 	ShaderProgramBinary = m_impl->isSupported(SpecialFeatures::ShaderProgramBinary);
 	ImageTextures = m_impl->isSupported(SpecialFeatures::ImageTextures);
 	IntegerTextures = m_impl->isSupported(SpecialFeatures::IntegerTextures);
-	ClipControl = m_impl->isSupported(SpecialFeatures::ClipControl);
 	FramebufferFetchDepth = m_impl->isSupported(SpecialFeatures::N64DepthWithFbFetchDepth);
 	FramebufferFetchColor = m_impl->isSupported(SpecialFeatures::FramebufferFetchColor);
 	TextureBarrier = m_impl->isSupported(SpecialFeatures::TextureBarrier);

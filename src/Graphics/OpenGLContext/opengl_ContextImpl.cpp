@@ -522,8 +522,6 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.depthTexture;
 	case graphics::SpecialFeatures::IntegerTextures:
 		return !m_glInfo.isGLES2;
-	case graphics::SpecialFeatures::ClipControl:
-		return !m_glInfo.isGLESX;
 	case graphics::SpecialFeatures::N64DepthWithFbFetchDepth:
 		return m_glInfo.n64DepthWithFbFetch;
 	case graphics::SpecialFeatures::FramebufferFetchColor:
