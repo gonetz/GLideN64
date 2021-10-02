@@ -111,6 +111,8 @@ void DepthBuffer::_initDepthBufferTexture(const FrameBuffer * _pBuffer, CachedTe
 		_pTexture->address = _pBuffer->m_startAddress;
 		_pTexture->clampWidth = static_cast<u16>(_pBuffer->m_width);
 		_pTexture->clampHeight = VI_GetMaxBufferHeight(static_cast<u16>(_pBuffer->m_width));
+		_pTexture->hdRatioS = _pBuffer->m_scale;
+		_pTexture->hdRatioT = _pBuffer->m_scale;
 	} else {
 		const u16 maxHeight = VI_GetMaxBufferHeight(static_cast<u16>(VI.width));
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
