@@ -298,7 +298,7 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"VIGILANTE 8") != nullptr)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != nullptr)
-		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
+		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD | hack_fbTextureOffset;
 	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
 	else if (strstr(RSP.romname, (const char *)"GOLDENEYE") != nullptr)
@@ -345,6 +345,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_TonyHawk;
 	else if (strstr(RSP.romname, (const char *)"NITRO64") != nullptr)
 		config.generalEmulation.hacks |= hack_WCWNitro;
+	else if (strstr(RSP.romname, (const char *)"MarioTennis") != nullptr)
+		config.generalEmulation.hacks |= hack_fbTextureOffset;
 
 	api().FindPluginPath(RSP.pluginpath);
 
