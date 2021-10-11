@@ -5,6 +5,7 @@
 #include <list>
 #include <map>
 #include <unordered_map>
+#include <vector>
 #include <stddef.h> // for size_t
 
 #include "CRC.h"
@@ -84,7 +85,8 @@ private:
 
 	void _checkCacheSize();
 	CachedTexture * _addTexture(u64 _crc64);
-	void _load(u32 _tile, CachedTexture *_pTexture);
+	void _loadFast(u32 _tile, CachedTexture *_pTexture);
+	void _loadAccurate(u32 _tile, CachedTexture *_pTexture);
 	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc);
 	void _loadBackground(CachedTexture *pTexture);
 	bool _loadHiresBackground(CachedTexture *_pTexture, u64 & _ricecrc);
@@ -104,6 +106,7 @@ private:
 	u32 m_hits, m_misses;
 	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
+	std::vector<u32> m_tempTextureHolder;
 #ifdef VC
 	const size_t m_maxCacheSize = 1500;
 #else
@@ -112,6 +115,9 @@ private:
 };
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
+
+// Check for situation when Tex0 is used instead of Tex1
+bool needReplaceTex1ByTex0();
 
 inline TextureCache & textureCache()
 {

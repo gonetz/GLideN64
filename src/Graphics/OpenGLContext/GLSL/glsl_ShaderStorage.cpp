@@ -14,10 +14,12 @@
 #include <Combiner.h>
 #include <DisplayLoadProgress.h>
 #include <osal_files.h>
+#include <Config.h>
 #include "glsl_Utils.h"
 #include "glsl_ShaderStorage.h"
 #include "glsl_CombinerProgramImpl.h"
-#include "glsl_CombinerProgramUniformFactory.h"
+#include "glsl_CombinerProgramUniformFactoryAccurate.h"
+#include "glsl_CombinerProgramUniformFactoryFast.h"
 
 using namespace glsl;
 
@@ -203,7 +205,7 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 static
 CombinerProgramImpl * _readCombinerProgramFromStream(std::istream & _is,
 	CombinerKey& _cmbKey,
-	CombinerProgramUniformFactory & _uniformFactory,
+	std::unique_ptr<CombinerProgramUniformFactory> & _uniformFactory,
 	opengl::CachedUseProgram * _useProgram)
 {
 	int inputs;
@@ -226,7 +228,7 @@ CombinerProgramImpl * _readCombinerProgramFromStream(std::istream & _is,
 	}
 
 	UniformGroups uniforms;
-	_uniformFactory.buildUniforms(program, cmbInputs, _cmbKey, uniforms);
+	_uniformFactory->buildUniforms(program, cmbInputs, _cmbKey, uniforms);
 
 	return new CombinerProgramImpl(_cmbKey, program, _useProgram, cmbInputs, std::move(uniforms));
 }
@@ -336,7 +338,14 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 			return _loadFromCombinerKeys(_combiners);
 
 		displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
-		CombinerProgramUniformFactory uniformFactory(m_glinfo);
+
+		std::unique_ptr<CombinerProgramUniformFactory> uniformFactory;
+
+		if (config.generalEmulation.enableInaccurateTextureCoordinates) {
+			uniformFactory = std::make_unique<CombinerProgramUniformFactoryFast>(m_glinfo);
+		} else {
+			uniformFactory = std::make_unique<CombinerProgramUniformFactoryAccurate>(m_glinfo);
+		}
 
 		fin.read((char*)&len, sizeof(len));
 		const f32 percent = len / 100.0f;

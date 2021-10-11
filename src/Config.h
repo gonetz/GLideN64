@@ -65,6 +65,7 @@ struct Config
 		u32 enableShadersStorage;
 		u32 enableLegacyBlending;
 		u32 enableHybridFilter;
+		u32 enableInaccurateTextureCoordinates;
 		u32 enableFragmentDepthWrite;
 		u32 hacks;
 #if defined(OS_ANDROID) || defined(OS_IOS)

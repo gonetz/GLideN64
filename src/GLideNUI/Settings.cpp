@@ -48,6 +48,7 @@ void _loadSettings(QSettings & settings)
 	config.generalEmulation.enableHiresNoiseDithering = settings.value("enableHiresNoiseDithering", config.generalEmulation.enableHiresNoiseDithering).toInt();
 	config.generalEmulation.rdramImageDitheringMode = settings.value("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
+	config.generalEmulation.enableInaccurateTextureCoordinates = settings.value("enableFastInaccurateShaders", config.generalEmulation.enableInaccurateTextureCoordinates).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
 	config.generalEmulation.enableCoverage = settings.value("enableCoverage", config.generalEmulation.enableCoverage).toInt();
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
@@ -193,6 +194,7 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("enableHiresNoiseDithering", config.generalEmulation.enableHiresNoiseDithering);
 	settings.setValue("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
+	settings.setValue("enableFastInaccurateShaders", config.generalEmulation.enableInaccurateTextureCoordinates);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
 	settings.setValue("enableCoverage", config.generalEmulation.enableCoverage);
 	settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
@@ -359,8 +361,8 @@ void resetSettings(const QString & _strIniFolder)
 static
 u32 Adler32(u32 crc, const void *buffer, u32 count)
 {
-	register u32 s1 = crc & 0xFFFF;
-	register u32 s2 = (crc >> 16) & 0xFFFF;
+	u32 s1 = crc & 0xFFFF;
+	u32 s2 = (crc >> 16) & 0xFFFF;
 	int k;
 	const u8 *Buffer = (const u8*)buffer;
 
@@ -465,6 +467,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(generalEmulation, enableHiresNoiseDithering);
 	WriteCustomSetting(generalEmulation, rdramImageDitheringMode);
 	WriteCustomSetting(generalEmulation, enableLOD);
+	WriteCustomSetting(generalEmulation, enableInaccurateTextureCoordinates);
 	WriteCustomSetting(generalEmulation, enableHWLighting);
 	WriteCustomSetting(generalEmulation, enableCoverage);
 	WriteCustomSetting(generalEmulation, enableShadersStorage);
@@ -540,11 +543,11 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 
 	settings.beginGroup("hotkeys");
 	for (u32 idx = 0; idx < Config::HotKey::hkTotal; ++idx) {
-		if (origConfig.hotkeys.keys[idx] != config.hotkeys.keys[idx] || 
+		if (origConfig.hotkeys.keys[idx] != config.hotkeys.keys[idx] ||
 			origConfig.hotkeys.keys[idx] != settings.value(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]).toInt()) {
 			settings.setValue(Config::hotkeyIniName(idx), config.hotkeys.keys[idx]);
 		}
-		if (origConfig.hotkeys.enabledKeys[idx] != config.hotkeys.enabledKeys[idx] || 
+		if (origConfig.hotkeys.enabledKeys[idx] != config.hotkeys.enabledKeys[idx] ||
 			origConfig.hotkeys.enabledKeys[idx] != settings.value(Config::enabledHotkeyIniName(idx), config.hotkeys.enabledKeys[idx]).toInt()) {
 			settings.setValue(Config::enabledHotkeyIniName(idx), config.hotkeys.enabledKeys[idx]);
 		}

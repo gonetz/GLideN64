@@ -51,6 +51,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableShadersStorage = 1;
 	generalEmulation.enableLegacyBlending = 0;
 	generalEmulation.enableHybridFilter = 1;
+	generalEmulation.enableInaccurateTextureCoordinates = 0;
 	generalEmulation.hacks = 0;
 #if defined(OS_ANDROID) || defined(OS_IOS)
 	generalEmulation.enableFragmentDepthWrite = 0;

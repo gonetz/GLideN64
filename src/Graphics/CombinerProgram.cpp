@@ -21,6 +21,7 @@ namespace graphics {
 		vecOptions.push_back(config.frameBufferEmulation.N64DepthCompare == Config::dcCompatible ? 1 : 0);
 		vecOptions.push_back(config.generalEmulation.enableLegacyBlending);
 		vecOptions.push_back(config.generalEmulation.enableFragmentDepthWrite);
+		vecOptions.push_back(config.generalEmulation.enableInaccurateTextureCoordinates);
 		u32 optionsSet = 0;
 		for (u32 i = 0; i < vecOptions.size(); ++i)
 			optionsSet |= vecOptions[i] << i;

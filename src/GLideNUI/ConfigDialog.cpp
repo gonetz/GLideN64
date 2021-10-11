@@ -223,6 +223,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 
 	// Emulation settings
 	ui->emulateLodCheckBox->setChecked(config.generalEmulation.enableLOD != 0);
+	ui->enableInaccurateTextureCoordinatesCheckBox->setChecked(config.generalEmulation.enableInaccurateTextureCoordinates != 0);
 	ui->enableHWLightingCheckBox->setChecked(config.generalEmulation.enableHWLighting != 0);
 	ui->enableCoverageCheckBox->setChecked(config.generalEmulation.enableCoverage != 0);
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
@@ -562,6 +563,7 @@ void ConfigDialog::accept(bool justSave) {
 
 	// Emulation settings
 	config.generalEmulation.enableLOD = ui->emulateLodCheckBox->isChecked() ? 1 : 0;
+	config.generalEmulation.enableInaccurateTextureCoordinates = ui->enableInaccurateTextureCoordinatesCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableHWLighting = ui->enableHWLightingCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCoverage = ui->enableCoverageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
