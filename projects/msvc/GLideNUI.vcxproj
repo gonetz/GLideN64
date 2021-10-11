@@ -78,6 +78,10 @@
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>qtpcre2d.lib;qtmaind.lib;qwindowsd.lib;qicod.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;UxTheme.lib;qwindowsvistastyled.lib;Qt5WindowsUiAutomationSupportd.lib;Qt5FontDatabaseSupportd.lib;Qt5EventDispatcherSupportd.lib;Qt5FontDatabaseSupportd.lib;Qt5ThemeSupportd.lib;qtharfbuzzd.lib;Ws2_32.lib;Netapi32.lib;Userenv.lib;Ws2_32.lib;Wtsapi32.lib;Imm32.lib;WinMM.lib;Version.lib;Netapi32.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -93,6 +97,10 @@
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>qtpcre2.lib;qtmain.lib;qwindows.lib;qico.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;UxTheme.lib;qwindowsvistastyle.lib;Qt5WindowsUiAutomationSupport.lib;Qt5FontDatabaseSupport.lib;Qt5EventDispatcherSupport.lib;Qt5FontDatabaseSupport.lib;Qt5ThemeSupport.lib;qtharfbuzz.lib;Ws2_32.lib;Netapi32.lib;Userenv.lib;Ws2_32.lib;Wtsapi32.lib;Imm32.lib;WinMM.lib;Version.lib;Netapi32.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>

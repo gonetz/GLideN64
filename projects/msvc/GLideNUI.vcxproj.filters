@@ -90,6 +90,9 @@
     <ClCompile Include="..\..\src\GLideNUI\QtKeyToHID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\SRC\GLideNUI\HIDKeyToName.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.h">
