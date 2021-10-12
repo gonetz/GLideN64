@@ -48,7 +48,7 @@ void _loadSettings(QSettings & settings)
 	config.generalEmulation.enableHiresNoiseDithering = settings.value("enableHiresNoiseDithering", config.generalEmulation.enableHiresNoiseDithering).toInt();
 	config.generalEmulation.rdramImageDitheringMode = settings.value("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
-	config.generalEmulation.enableInaccurateTextureCoordinates = settings.value("enableFastInaccurateShaders", config.generalEmulation.enableInaccurateTextureCoordinates).toInt();
+	config.generalEmulation.enableInaccurateTextureCoordinates = settings.value("enableInaccurateTextureCoordinates", config.generalEmulation.enableInaccurateTextureCoordinates).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
 	config.generalEmulation.enableCoverage = settings.value("enableCoverage", config.generalEmulation.enableCoverage).toInt();
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
@@ -194,7 +194,7 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("enableHiresNoiseDithering", config.generalEmulation.enableHiresNoiseDithering);
 	settings.setValue("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
-	settings.setValue("enableFastInaccurateShaders", config.generalEmulation.enableInaccurateTextureCoordinates);
+	settings.setValue("enableInaccurateTextureCoordinates", config.generalEmulation.enableInaccurateTextureCoordinates);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
 	settings.setValue("enableCoverage", config.generalEmulation.enableCoverage);
 	settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);

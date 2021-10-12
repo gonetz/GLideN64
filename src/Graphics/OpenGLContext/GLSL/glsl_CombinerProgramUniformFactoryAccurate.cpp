@@ -1,26 +1,18 @@
-#include <algorithm>
-#include <cmath>
-#include <Config.h>
 #include "glsl_CombinerProgramUniformFactoryAccurate.h"
-#include <Graphics/Parameters.h>
-#include <Graphics/Context.h>
 
+#include <Config.h>
 #include <Textures.h>
-#include <NoiseTexture.h>
-#include <FrameBuffer.h>
 #include <DisplayWindow.h>
 #include <Debugger.h>
-#include <GBI.h>
-#include <RSP.h>
-#include <gSP.h>
-#include <gDP.h>
-#include <VI.h>
+
+#include <cmath>
 
 #ifdef min
 #undef min
 #endif
 
-namespace glsl {
+namespace {
+using namespace glsl;
 
 class URasterInfo : public UniformGroup {
 public:
@@ -357,7 +349,10 @@ private:
 	fv2Uniform uBilinearOffset;
 };
 
+} // nameless namespace
+
 /*---------------CombinerProgramUniformFactoryCommon-------------*/
+namespace glsl {
 
 void CombinerProgramUniformFactoryAccurate::_addRasterInfo(GLuint _program, UniformGroups &_uniforms) const
 {
@@ -390,7 +385,6 @@ void CombinerProgramUniformFactoryAccurate::_addClampWrapMirrorEngine(GLuint _pr
 
 CombinerProgramUniformFactoryAccurate::CombinerProgramUniformFactoryAccurate(const opengl::GLInfo & _glInfo)
 		: CombinerProgramUniformFactoryCommon(_glInfo)
-		, m_glInfo(_glInfo)
 {
 }
 

@@ -1,15 +1,9 @@
-#include <iomanip> // for setprecision
-#include <assert.h>
-#include <Log.h>
 #include <Config.h>
-#include "glsl_Utils.h"
-#include "glsl_CombinerInputs.h"
-#include "glsl_CombinerProgramImpl.h"
 #include "glsl_CombinerProgramBuilderFast.h"
 #include "glsl_CombinerProgramUniformFactoryFast.h"
-#include "GraphicsDrawer.h"
 
-namespace glsl {
+namespace {
+using namespace glsl;
 
 class VertexShaderTexturedTriangleFast : public ShaderPart
 {
@@ -1091,6 +1085,10 @@ public:
 	}
 };
 
+} // nameless namespace
+
+namespace glsl {
+
 CombinerProgramBuilderFast::CombinerProgramBuilderFast(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
 : CombinerProgramBuilderCommon(_glinfo, _useProgram, std::make_unique<CombinerProgramUniformFactoryFast>(_glinfo),
         std::make_unique<VertexShaderTexturedTriangleFast>(_glinfo))
@@ -1109,7 +1107,6 @@ CombinerProgramBuilderFast::CombinerProgramBuilderFast(const opengl::GLInfo & _g
 , m_shaderReadtexCopyMode(new ShaderReadtexCopyModeFast(_glinfo))
 , m_shaderClampWrapMirror(new ShaderClampWrapMirror(_glinfo))
 {
-
 }
 
 void CombinerProgramBuilderFast::_writeFragmentGlobalVariablesTex(std::stringstream& ssShader) const
@@ -1182,5 +1179,4 @@ void CombinerProgramBuilderFast::_writeShaderReadtexCopyMode(std::stringstream& 
 	 m_shaderReadtexCopyMode->write(ssShader);
 }
 
-	
 }

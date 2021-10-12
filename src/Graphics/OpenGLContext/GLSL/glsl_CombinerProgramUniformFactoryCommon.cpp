@@ -1,5 +1,6 @@
-#include <Config.h>
 #include "glsl_CombinerProgramUniformFactoryCommon.h"
+
+#include <Config.h>
 #include <Graphics/Parameters.h>
 #include <Graphics/Context.h>
 
@@ -7,15 +8,11 @@
 #include <NoiseTexture.h>
 #include <FrameBuffer.h>
 #include <DisplayWindow.h>
-#include <Debugger.h>
-#include <GBI.h>
 #include <RSP.h>
-#include <gSP.h>
-#include <gDP.h>
 #include <VI.h>
 
-namespace glsl {
-
+namespace {
+using namespace glsl;
 /*---------------UniformGroup-------------*/
 
 class UNoiseTex : public UniformGroup
@@ -762,8 +759,10 @@ private:
 	fv3Uniform uLightColor[8];
 };
 
+} //nameless namespace
 
 /*---------------CombinerProgramUniformFactoryCommon-------------*/
+namespace glsl {
 
 void CombinerProgramUniformFactoryCommon::_addNoiseTex(GLuint _program, UniformGroups &_uniforms) const
 {

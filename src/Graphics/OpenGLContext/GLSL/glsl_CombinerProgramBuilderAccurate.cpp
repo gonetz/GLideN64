@@ -1,15 +1,9 @@
-#include <iomanip> // for setprecision
-#include <assert.h>
-#include <Log.h>
 #include <Config.h>
-#include "glsl_Utils.h"
-#include "glsl_CombinerInputs.h"
-#include "glsl_CombinerProgramImpl.h"
 #include "glsl_CombinerProgramBuilderAccurate.h"
 #include "glsl_CombinerProgramUniformFactoryAccurate.h"
-#include "GraphicsDrawer.h"
 
-namespace glsl {
+namespace {
+using namespace glsl;
 
 class VertexShaderTexturedTriangle : public ShaderPart
 {
@@ -1144,6 +1138,10 @@ public:
 			;
 	}
 };
+
+} // nameless namespace
+
+namespace glsl {
 
 CombinerProgramBuilderAccurate::CombinerProgramBuilderAccurate(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
 : CombinerProgramBuilderCommon(_glinfo, _useProgram, std::make_unique<CombinerProgramUniformFactoryAccurate>(_glinfo),

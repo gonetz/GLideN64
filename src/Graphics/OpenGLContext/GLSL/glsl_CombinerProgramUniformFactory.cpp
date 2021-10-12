@@ -1,24 +1,8 @@
-#include <algorithm>
-#include <cmath>
-#include <Config.h>
 #include "glsl_CombinerProgramUniformFactory.h"
+
+#include <Config.h>
 #include <Graphics/Parameters.h>
 #include <Graphics/Context.h>
-
-#include <Textures.h>
-#include <NoiseTexture.h>
-#include <FrameBuffer.h>
-#include <DisplayWindow.h>
-#include <Debugger.h>
-#include <GBI.h>
-#include <RSP.h>
-#include <gSP.h>
-#include <gDP.h>
-#include <VI.h>
-
-#ifdef min
-#undef min
-#endif
 
 namespace glsl {
 

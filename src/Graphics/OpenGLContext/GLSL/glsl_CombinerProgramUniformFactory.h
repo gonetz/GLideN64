@@ -85,4 +85,3 @@ protected:
 	const opengl::GLInfo & m_glInfo;
 };
 }
-

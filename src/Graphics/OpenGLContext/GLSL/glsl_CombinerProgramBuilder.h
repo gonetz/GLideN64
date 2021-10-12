@@ -127,8 +127,6 @@ private:
 	std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
 	opengl::CachedUseProgram * m_useProgram;
 	bool m_useCoverage = false;
-
 };
 
 }
-
