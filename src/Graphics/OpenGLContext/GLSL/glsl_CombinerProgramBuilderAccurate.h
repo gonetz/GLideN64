@@ -1,9 +1,7 @@
 #pragma once
-#include <Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilderCommon.h>
+#include"glsl_CombinerProgramBuilderCommon.h"
 
 namespace glsl {
-
-class CombinerProgramUniformFactory;
 
 class CombinerProgramBuilderAccurate : public glsl::CombinerProgramBuilderCommon
 {
@@ -43,4 +41,3 @@ private:
 };
 
 }
-

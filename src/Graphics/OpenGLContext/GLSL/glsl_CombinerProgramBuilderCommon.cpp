@@ -1,3 +1,5 @@
+#include "glsl_CombinerProgramBuilderCommon.h"
+
 #include <iomanip> // for setprecision
 #include <assert.h>
 #include <Log.h>
@@ -5,11 +7,11 @@
 #include "glsl_Utils.h"
 #include "glsl_CombinerInputs.h"
 #include "glsl_CombinerProgramImpl.h"
-#include "glsl_CombinerProgramBuilderCommon.h"
 #include "glsl_CombinerProgramUniformFactory.h"
 #include "GraphicsDrawer.h"
 
-namespace glsl {
+namespace {
+using namespace glsl;
 
 /*---------------ShaderParts-------------*/
 
@@ -136,7 +138,7 @@ public:
 			"OUT highp vec2 vTexCoord0;							\n"
 			"OUT highp vec2 vTexCoord1;							\n"
 			"OUT lowp vec4 vShadeColor;							\n"
-			"OUT highp vec4 vBaryCoords;"
+			"OUT highp vec4 vBaryCoords;						\n"
 			;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
 			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
@@ -1408,6 +1410,10 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart 
 		Utils::logErrorShader(GL_VERTEX_SHADER, strShaderData);
 	return shader_object;
 }
+
+} // nameless namespace
+
+namespace glsl {
 
 CombinerProgramBuilderCommon::CombinerProgramBuilderCommon(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram,
 	std::unique_ptr<CombinerProgramUniformFactory> _uniformFactory,

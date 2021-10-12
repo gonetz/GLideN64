@@ -1,26 +1,19 @@
-#include <algorithm>
-#include <cmath>
-#include <Config.h>
 #include "glsl_CombinerProgramUniformFactoryFast.h"
-#include <Graphics/Parameters.h>
-#include <Graphics/Context.h>
 
+#include <Config.h>
 #include <Textures.h>
-#include <NoiseTexture.h>
-#include <FrameBuffer.h>
 #include <DisplayWindow.h>
 #include <Debugger.h>
-#include <GBI.h>
-#include <RSP.h>
-#include <gSP.h>
-#include <gDP.h>
-#include <VI.h>
+#include <FrameBuffer.h>
+
+#include <cmath>
 
 #ifdef min
 #undef min
 #endif
 
-namespace glsl {
+namespace {
+using namespace glsl;
 
 class URasterInfoFast : public UniformGroup {
 public:
@@ -393,7 +386,10 @@ private:
 	fv2Uniform uTexScale1;
 };
 
+} //nameless namespace
+
 /*---------------CombinerProgramUniformFactoryCommon-------------*/
+namespace glsl {
 
 void CombinerProgramUniformFactoryFast::_addRasterInfo(GLuint _program, UniformGroups &_uniforms) const
 {
