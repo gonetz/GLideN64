@@ -1096,8 +1096,10 @@ public:
 			aShiftScale[t][0] = pTile->shifts > 10 ? static_cast<f32>(1 << (16 - pTile->shifts)) : 1.0f / static_cast<f32>(1 << pTile->shifts);
 			aShiftScale[t][1] = pTile->shiftt > 10 ? static_cast<f32>(1 << (16 - pTile->shiftt)) : 1.0f / static_cast<f32>(1 << pTile->shiftt);
 
-			aTexOffset[t][0] = pTile->fuls;
-			aTexOffset[t][1] = pTile->fult;
+			if (pTile->textureMode != TEXTUREMODE_BGIMAGE && pTile->textureMode != TEXTUREMODE_FRAMEBUFFER_BG) {
+				aTexOffset[t][0] = pTile->fuls;
+				aTexOffset[t][1] = pTile->fult;
+			}
 
 			aHDRatio[t][0] = pTexture->hdRatioS;
 			aHDRatio[t][1] = pTexture->hdRatioT;
