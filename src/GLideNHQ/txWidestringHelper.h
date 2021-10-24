@@ -1,6 +1,4 @@
-#ifndef ___TXWIDESCREENWRAPPER_H__
-#define ___TXWIDESCREENWRAPPER_H__
-
+#pragma once
 #include <string>
 #include <algorithm>
 
@@ -15,5 +13,3 @@ void removeColon(tx_wstring& _s)
 {
 	std::replace(_s.begin(), _s.end(), L':', L'-');
 }
-
-#endif // ___TXWIDESCREENWRAPPER_H__
