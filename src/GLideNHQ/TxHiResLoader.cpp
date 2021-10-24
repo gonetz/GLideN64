@@ -1,7 +1,7 @@
 #include "TxHiResLoader.h"
 #include "TxDbg.h"
 #include "TxDbg.h"
-#include "Ext_TxFilter.h"
+#include "TxFilterExport.h"
 
 #include <string.h>
 #include <math.h>
@@ -58,7 +58,7 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 	};
 
 	pfilename = filename + strlen(filename) - 4;
-	
+
 	if (strcmp(pfilename, ".png") &&
 		strcmp(pfilename, ".bmp")) {
 #if !DEBUG
@@ -68,7 +68,7 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 		INFO(80, wst("Error: not png or bmp!\n"));
 		return 0;
 	}
-	
+
 	/* make sure filename contains ident */
 	pfilename = strstr(filename, ident);
 	if (!pfilename) {
@@ -152,8 +152,8 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 	return length;
 }
 
-uint8_t* TxHiResLoader::loadFileInfoTex(char* fname, 
-	int siz, int* pWidth, int* pHeight, 
+uint8_t* TxHiResLoader::loadFileInfoTex(char* fname,
+	int siz, int* pWidth, int* pHeight,
 	uint32_t fmt,
 	ColorFormat* pFormat)
 {
@@ -320,7 +320,7 @@ uint8_t* TxHiResLoader::loadFileInfoTex(char* fname,
 						tex = _txImage->readPNG(fp, &width, &height, &format);
 					else
 						tex = _txImage->readBMP(fp, &width, &height, &format);
-				 
+
 					fclose(fp);
 				}
 		 }

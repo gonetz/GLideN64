@@ -1,6 +1,6 @@
 #include <stdarg.h>
 #include <osal_files.h>
-#include "GLideNHQ/Ext_TxFilter.h"
+#include "GLideNHQ/TxFilterExport.h"
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 

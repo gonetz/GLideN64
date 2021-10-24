@@ -15,7 +15,7 @@
 #include "DebugDump.h"
 #include "osal_keys.h"
 #include "DisplayWindow.h"
-#include "GLideNHQ/Ext_TxFilter.h"
+#include "GLideNHQ/TxFilterExport.h"
 #include <Graphics/Context.h>
 
 using namespace std;

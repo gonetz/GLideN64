@@ -14,7 +14,7 @@
 #include "convert.h"
 #include "FrameBuffer.h"
 #include "Config.h"
-#include "GLideNHQ/Ext_TxFilter.h"
+#include "GLideNHQ/TxFilterExport.h"
 #include "TextureFilterHandler.h"
 #include "DisplayLoadProgress.h"
 #include "Graphics/Context.h"

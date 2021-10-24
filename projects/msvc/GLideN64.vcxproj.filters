@@ -511,9 +511,6 @@
     <ClInclude Include="..\..\src\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\PostProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -822,6 +819,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactoryFast.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNHQ\TxFilterExport.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

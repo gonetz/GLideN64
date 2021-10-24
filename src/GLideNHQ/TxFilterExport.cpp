@@ -26,6 +26,7 @@
 #endif
 
 #include "TxFilter.h"
+#include "TxFilterExport.h"
 
 TxFilter *txFilter = nullptr;
 

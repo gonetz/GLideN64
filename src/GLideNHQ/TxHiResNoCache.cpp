@@ -1,7 +1,7 @@
 #include "TxHiResNoCache.h"
 
 #include "TxDbg.h"
-#include "Ext_TxFilter.h"
+#include "TxFilterExport.h"
 #include <osal_files.h>
 
 TxHiResNoCache::TxHiResNoCache(int maxwidth,

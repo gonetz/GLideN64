@@ -461,7 +461,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\GBI.h" />
     <ClInclude Include="..\..\src\gDP.h" />
     <ClInclude Include="..\..\src\GLideN64.h" />
-    <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h" />
+    <ClInclude Include="..\..\src\GLideNHQ\TxFilterExport.h" />
     <ClInclude Include="..\..\src\Graphics\ColorBufferReader.h" />
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h" />
     <ClInclude Include="..\..\src\Graphics\Context.h" />
