@@ -104,6 +104,8 @@ void Config::resetToDefaults()
 	textureFilter.txEnhancedTextureFileStorage = 0;
 	textureFilter.txHiresTextureFileStorage = 0;
 	textureFilter.txNoTextureFileStorage = 0;
+	
+	textureFilter.txHiResUploadLimit = 2000;
 
 	api().GetUserDataPath(textureFilter.txPath);
 	gln_wcscat(textureFilter.txPath, wst("/hires_texture"));

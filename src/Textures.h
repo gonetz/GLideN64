@@ -107,11 +107,8 @@ private:
 	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
 	std::vector<u32> m_tempTextureHolder;
-#ifdef VC
-	const size_t m_maxCacheSize = 1500;
-#else
-	const size_t m_maxCacheSize = 8000;
-#endif
+
+	u64 m_currentTexCacheSize = 0;
 };
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);

@@ -534,15 +534,30 @@ void TextureCache::destroy()
 	for (FBTextures::const_iterator cur = m_fbTextures.cbegin(); cur != m_fbTextures.cend(); ++cur)
 		gfxContext.deleteTexture(cur->second.name);
 	m_fbTextures.clear();
+
+	m_currentTexCacheSize = 0;
 }
 
 void TextureCache::_checkCacheSize()
 {
-	if (m_textures.size() >= m_maxCacheSize) {
+	const u64 maxCacheSize = config.textureFilter.txHiResUploadLimit * 1024 * 1024;
+
+	// we don't need to do anything,
+	// when the limit has been disabled
+	if (maxCacheSize == 0) {
+		return;
+	}
+
+	// keep removing textures until we're below the max size
+	while (m_currentTexCacheSize >= maxCacheSize)
+	{
 		CachedTexture& clsTex = m_textures.back();
 		gfxContext.deleteTexture(clsTex.name);
 		m_lruTextureLocations.erase(clsTex.crc);
 		m_textures.pop_back();
+
+		// update current cache size
+		m_currentTexCacheSize -= clsTex.textureBytes;
 	}
 }
 
@@ -746,6 +761,7 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture, u64 & _ricecrc
 
 		assert(!gfxContext.isError());
 		_updateCachedTexture(ghqTexInfo, _pTexture, tile_width, tile_height);
+		m_currentTexCacheSize += _pTexture->textureBytes;
 		return true;
 	}
 	return false;
@@ -858,6 +874,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			params.data = ghqTexInfo.data;
 			gfxContext.init2DTexture(params);
 			_updateCachedTexture(ghqTexInfo, pTexture, pTexture->width, pTexture->height);
+			m_currentTexCacheSize += pTexture->textureBytes;
 			bLoaded = true;
 		}
 	}
@@ -971,6 +988,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		gfxContext.init2DTexture(params);
 		assert(!gfxContext.isError());
 		_updateCachedTexture(ghqTexInfo, _pTexture, width, height);
+		m_currentTexCacheSize += _pTexture->textureBytes;
 		return true;
 	}
 
@@ -1270,6 +1288,7 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 				params.data = ghqTexInfo.data;
 				gfxContext.init2DTexture(params);
 				_updateCachedTexture(ghqTexInfo, _pTexture, tmptex.width, tmptex.height);
+				m_currentTexCacheSize += _pTexture->textureBytes;
 				bLoaded = true;
 			}
 		}
@@ -1497,6 +1516,7 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 				params.data = ghqTexInfo.data;
 				gfxContext.init2DTexture(params);
 				_updateCachedTexture(ghqTexInfo, _pTexture, tmptex.width, tmptex.height);
+				m_currentTexCacheSize += _pTexture->textureBytes;
 				bLoaded = true;
 			}
 		}
@@ -1738,6 +1758,7 @@ void TextureCache::clear()
 	}
 	m_textures.clear();
 	m_lruTextureLocations.clear();
+	m_currentTexCacheSize = 0;
 }
 
 void TextureCache::toggleDumpTex()
@@ -1828,6 +1849,8 @@ void TextureCache::update(u32 _t)
 		gfxContext.deleteTexture(currentTex.name);
 		m_lruTextureLocations.erase(locations_iter);
 		m_textures.erase(iter);
+
+		m_currentTexCacheSize -= currentTex.textureBytes;
 	}
 
 	m_misses++;
