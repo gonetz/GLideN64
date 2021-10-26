@@ -347,6 +347,8 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->texCachePathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txCachePath));
 	ui->texDumpPathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txDumpPath));
 
+	ui->textureFilterLimitSpinBox->setValue(config.textureFilter.txHiResUploadLimit);
+
 	// OSD settings
 	QString fontName(config.font.name.c_str());
 	ui->fontLineEdit->setText(fontName);
@@ -697,6 +699,8 @@ void ConfigDialog::accept(bool justSave) {
 		return;
 	}
 	config.textureFilter.txDumpPath[txDumpPath.path().toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
+
+	config.textureFilter.txHiResUploadLimit = ui->textureFilterLimitSpinBox->value();
 
 	// OSD settings
 	config.font.size = ui->fontSizeSpinBox->value();

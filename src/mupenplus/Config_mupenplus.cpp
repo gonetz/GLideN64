@@ -259,6 +259,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txNoTextureFileStorage", config.textureFilter.txNoTextureFileStorage, "Use no file storage or cache for HD textures.");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "txHiResUploadLimit", config.textureFilter.txHiResUploadLimit, "Limit of uploading hi-res textures to VRAM (in MB, 0 = no limit)");
+	assert(res == M64ERR_SUCCESS);	
 	// Convert to multibyte
 	char txPath[PLUGIN_PATH_SIZE * 2];
 	wcstombs(txPath, config.textureFilter.txPath, PLUGIN_PATH_SIZE * 2);
@@ -471,6 +473,8 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.textureFilter.txHiresTextureFileStorage = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txNoTextureFileStorage", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.textureFilter.txNoTextureFileStorage = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txHiResUploadLimit", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txHiResUploadLimit = atoi(value);
 	ConfigExternalClose(fileHandle);
 }
 
@@ -561,6 +565,7 @@ void Config_LoadConfig()
 	config.textureFilter.txEnhancedTextureFileStorage = ConfigGetParamBool(g_configVideoGliden64, "txEnhancedTextureFileStorage");
 	config.textureFilter.txHiresTextureFileStorage = ConfigGetParamBool(g_configVideoGliden64, "txHiresTextureFileStorage");
 	config.textureFilter.txNoTextureFileStorage = ConfigGetParamBool(g_configVideoGliden64, "txNoTextureFileStorage");
+	config.textureFilter.txHiResUploadLimit = ConfigGetParamInt(g_configVideoGliden64, "txHiResUploadLimit");
 	::mbstowcs(config.textureFilter.txPath, ConfigGetParamString(g_configVideoGliden64, "txPath"), PLUGIN_PATH_SIZE);
 	::mbstowcs(config.textureFilter.txCachePath, ConfigGetParamString(g_configVideoGliden64, "txCachePath"), PLUGIN_PATH_SIZE);
 	::mbstowcs(config.textureFilter.txDumpPath, ConfigGetParamString(g_configVideoGliden64, "txDumpPath"), PLUGIN_PATH_SIZE);

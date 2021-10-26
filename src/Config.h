@@ -178,6 +178,8 @@ struct Config
 		u32 txHiresTextureFileStorage;		// Use file storage instead of memory cache for hires textures.
 		u32 txNoTextureFileStorage;			// Use no file storage or cache for hires textures.
 
+		u32 txHiResUploadLimit; // Limit of uploading hi-res textures to VRAM (in MB)
+
 		wchar_t txPath[PLUGIN_PATH_SIZE]; // Path to texture packs
 		wchar_t txCachePath[PLUGIN_PATH_SIZE]; // Path to store texture cache, that is .htc files
 		wchar_t txDumpPath[PLUGIN_PATH_SIZE]; // Path to store texture dumps
