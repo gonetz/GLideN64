@@ -2756,7 +2756,7 @@
        <item>
         <widget class="QFrame" name="textureFilterLimitFrame">
          <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+          <enum>QFrame::NoFrame</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Plain</enum>
@@ -2780,7 +2780,7 @@
           <item>
            <widget class="QLabel" name="textureFilterLimitLabel">
             <property name="text">
-             <string>Limit of uploading hi-res textures to VRAM (0 = no limit): </string>
+             <string>Limit hi-res textures size in VRAM (0 = no limit): </string>
             </property>
            </widget>
           </item>

@@ -14,6 +14,7 @@
 #include "Graphics/Parameter.h"
 
 typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
+struct GHQTexInfo;
 
 struct CachedTexture
 {
@@ -84,6 +85,7 @@ private:
 	TextureCache(const TextureCache &) = delete;
 
 	void _checkCacheSize();
+	void _checkHdTexLimit();
 	CachedTexture * _addTexture(u64 _crc64);
 	void _loadFast(u32 _tile, CachedTexture *_pTexture);
 	void _loadAccurate(u32 _tile, CachedTexture *_pTexture);
@@ -94,6 +96,7 @@ private:
 	void _updateBackground();
 	void _initDummyTexture(CachedTexture * _pDummy);
 	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, graphics::Parameter glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
+	void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, u16 widthOrg, u16 heightOrg);
 
 	typedef std::list<CachedTexture> Textures;
 	typedef std::unordered_map<u64, Textures::iterator> Texture_Locations;
@@ -108,7 +111,12 @@ private:
 	bool m_toggleDumpTex;
 	std::vector<u32> m_tempTextureHolder;
 
-	u64 m_currentTexCacheSize = 0;
+#ifdef VC
+	const size_t m_maxCacheSize = 1500u;
+#else
+	const size_t m_maxCacheSize = 8000u;
+#endif
+	u64 m_hdTexCacheSize = 0u;
 };
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
