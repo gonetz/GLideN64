@@ -151,6 +151,26 @@ inline u32 GetI8_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
 	return I8_RGBA4444(((u8*)src)[x^(i<<1)]);
 }
 
+inline u32 GetI16_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = ((u16*)src)[x^i];
+	u32 r = tex >> 8;
+	u32 g = tex & 0xFF;
+	u32 b = r;
+	u32 a = g;
+	return (a << 24) | (b << 16) | (g << 8) | r;
+}
+
+inline u32 GetI16_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = ((u16*)src)[x^i];
+	u16 r = tex >> 12;
+	u16 g = tex & 0x0F;
+	u16 b = r;
+	u16 a = g;
+	return (a << 12) | (b << 8) | (g << 4) | r;
+}
+
 inline u32 GetCI16IA_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = ((u16*)src)[x^i];
@@ -279,7 +299,7 @@ ImageFormat::ImageFormat()
 				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
 				{ GetIA88_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // CI as IA
 				{ GetIA88_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
+				{ GetI16_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI16_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // I
 			},
 			{ // 32-bit
 				{ GetRGBA8888_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
