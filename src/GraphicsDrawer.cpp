@@ -1283,28 +1283,12 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 				f32 shiftScaleT = 1.0f;
 
 				s16 S = _params.s;
-				if (gSP.textureTile[t]->shifts > 10) {
-					const u32 shifts = 16 - gSP.textureTile[t]->shifts;
-					S = static_cast<s16>(S << shifts);
-					shiftScaleS = static_cast<f32>(1 << shifts);
-				} else if (gSP.textureTile[t]->shifts > 0) {
-					const u32 shifts = gSP.textureTile[t]->shifts;
-					S = static_cast<s16>(S >> shifts);
-					shiftScaleS /= static_cast<f32>(1 << shifts);
-				}
+				shiftScaleS = calcShiftScaleS(*gSP.textureTile[t], &S);
 				const f32 uls = _FIXED2FLOAT(S, 5);
 				const f32 lrs = uls + offsetX * shiftScaleS;
 
 				s16 T = _params.t;
-				if (gSP.textureTile[t]->shiftt > 10) {
-					const u32 shiftt = 16 - gSP.textureTile[t]->shiftt;
-					T = static_cast<s16>(T << shiftt);
-					shiftScaleT = static_cast<f32>(1 << shiftt);
-				} else if (gSP.textureTile[t]->shiftt > 0) {
-					const u32 shiftt = gSP.textureTile[t]->shiftt;
-					T = static_cast<s16>(T >> shiftt);
-					shiftScaleT /= static_cast<f32>(1 << shiftt);
-				}
+				shiftScaleT = calcShiftScaleT(*gSP.textureTile[t], &T);
 				const f32 ult = _FIXED2FLOAT(T, 5);
 				const f32 lrt = ult + offsetY * shiftScaleT;
 

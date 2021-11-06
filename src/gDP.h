@@ -329,4 +329,7 @@ void gDPTriShadeTxtrZ( u32 w0, u32 w1 );
 bool isCurrentColorImageDepthImage();
 bool isDepthCompareEnabled();
 
+f32 calcShiftScaleS(const gDPTile & _tile, s16 * _s = nullptr);
+f32 calcShiftScaleT(const gDPTile & _tile, s16 * _t = nullptr);
+
 #endif

@@ -43,6 +43,38 @@ bool isDepthCompareEnabled()
 		((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM);
 }
 
+f32 calcShiftScaleS(const gDPTile & _tile, s16 * _s)
+{
+	if (_tile.shifts > 10) {
+		const u32 shifts = 16 - _tile.shifts;
+		if (_s != nullptr)
+			*_s = static_cast<s16>(*_s << shifts);
+		return static_cast<f32>(1 << shifts);
+	} else if (_tile.shifts > 0) {
+		const u32 shifts = _tile.shifts;
+		if (_s != nullptr)
+			*_s = static_cast<s16>(*_s >> shifts);
+		return 1.0f / static_cast<f32>(1 << shifts);
+	}
+	return 1.0f;
+}
+
+f32 calcShiftScaleT(const gDPTile & _tile, s16 * _t)
+{
+	if (_tile.shiftt > 10) {
+		const u32 shiftt = 16 - _tile.shiftt;
+		if (_t != nullptr)
+			*_t = static_cast<s16>(*_t << shiftt);
+		return static_cast<f32>(1 << shiftt);
+	} else if (_tile.shiftt > 0) {
+		const u32 shiftt = _tile.shiftt;
+		if (_t != nullptr)
+			*_t = static_cast<s16>(*_t >> shiftt);
+		return 1.0f / static_cast<f32>(1 << shiftt);
+	}
+	return 1.0f;
+}
+
 void gDPSetOtherMode( u32 mode0, u32 mode1 )
 {
 	gDP.otherMode.h = mode0;

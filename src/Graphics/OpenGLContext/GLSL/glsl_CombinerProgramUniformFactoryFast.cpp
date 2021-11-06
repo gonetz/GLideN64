@@ -78,33 +78,18 @@ public:
 		float tcbounds[2][4] = {};
 		if (useTexCoordBounds) {
 			f32 uls, lrs, ult, lrt, S, T, shiftScaleS, shiftScaleT;
-			s16 shiftedS, shiftedT;
-			u32 shifts, shiftt;
 			for (int t = 0; t < 2; t++) {
 				const CachedTexture * _pTexture = textureCache().current[t];
 				const gDPTile * _pTile = gSP.textureTile[t];
-				if (_pTexture != nullptr && _pTile != nullptr){
-					if (_pTile->shifts > 10) {
-						shifts = 16 - _pTile->shifts;
-						shiftedS = static_cast<s16>(gDP.lastTexRectInfo.s << shifts);
-						shiftScaleS = static_cast<f32>(1 << shifts);
-					} else {
-						shifts = _pTile->shifts;
-						shiftedS = static_cast<s16>(gDP.lastTexRectInfo.s >> shifts);
-						shiftScaleS = 1.0f / static_cast<f32>(1 << shifts);
-					}
-					if (_pTile->shiftt > 10) {
-						shiftt = 16 - _pTile->shiftt;
-						shiftedT = static_cast<s16>(gDP.lastTexRectInfo.t << shiftt);
-						shiftScaleT = static_cast<f32>(1 << shiftt);
-					} else {
-						shiftt = _pTile->shiftt;
-						shiftedT = static_cast<s16>(gDP.lastTexRectInfo.t >> shiftt);
-						shiftScaleT = 1.0f / static_cast<f32>(1 << shiftt);
-					}
-
+				if (_pTexture != nullptr && _pTile != nullptr) {
+					s16 shiftedS = gDP.lastTexRectInfo.s;
+					shiftScaleS = calcShiftScaleS(*_pTile, &shiftedS);
 					S = _FIXED2FLOAT(shiftedS, 5);
+
+					s16 shiftedT = gDP.lastTexRectInfo.t;
+					shiftScaleT = calcShiftScaleT(*_pTile, &shiftedT);
 					T = _FIXED2FLOAT(shiftedT, 5);
+
 					uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx * shiftScaleS;
 					lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx * shiftScaleS;
 					ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy * shiftScaleT;

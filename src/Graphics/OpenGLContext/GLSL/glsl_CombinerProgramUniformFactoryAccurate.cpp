@@ -274,8 +274,8 @@ public:
 			aTexSize[t][0] = pTexture->width * pTexture->hdRatioS;
 			aTexSize[t][1] = pTexture->height * pTexture->hdRatioT;
 
-			aShiftScale[t][0] = pTile->shifts > 10 ? static_cast<f32>(1 << (16 - pTile->shifts)) : 1.0f / static_cast<f32>(1 << pTile->shifts);
-			aShiftScale[t][1] = pTile->shiftt > 10 ? static_cast<f32>(1 << (16 - pTile->shiftt)) : 1.0f / static_cast<f32>(1 << pTile->shiftt);
+			aShiftScale[t][0] = calcShiftScaleS(*pTile);
+			aShiftScale[t][1] = calcShiftScaleT(*pTile);
 
 			if (pTile->textureMode != TEXTUREMODE_BGIMAGE && pTile->textureMode != TEXTUREMODE_FRAMEBUFFER_BG) {
 				aTexOffset[t][0] = pTile->fuls;
