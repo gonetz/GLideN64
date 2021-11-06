@@ -751,13 +751,17 @@ public:
 				"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);								\\\n"
 				;
 			static const std::string strReadTex1 =
+				"#define GET_HIGH4(byte) floor(byte/16.0) \n"
+				"#define GET_LOW4(byte) (byte - 16.0*floor(byte/16.0)) \n"
 				"#define READ_TEX1_MIPMAP(name, tex, tcData, tile)										\\\n"
 				"{																						\\\n"
 				// Fetch from texture atlas
 				// First 8 texels contain info about tile size and offset, 1 texel per tile
 				"  mediump vec4 texWdthAndOff0 = 255.0 * texelFetch(tex, ivec2(0, 0), 0);				\\\n"
 				"  mediump vec4 texWdthAndOff = 255.0 * texelFetch(tex, ivec2(int(tile), 0), 0);		\\\n"
-				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;						\\\n"
+				"  mediump float lod_scales = pow(2.0, GET_HIGH4(texWdthAndOff0.a) - GET_HIGH4(texWdthAndOff.a)); \\\n"
+				"  mediump float lod_scalet = pow(2.0, GET_LOW4(texWdthAndOff0.a) - GET_LOW4(texWdthAndOff.a)); \\\n"
+				"  mediump vec2 lod_scale = vec2(lod_scales, lod_scalet);								\\\n"
 				"  mediump int offset = int(texWdthAndOff.r) + int(texWdthAndOff.g) * 256;				\\\n"
 				"  mediump int width = int(texWdthAndOff.b);											\\\n"
 				"  mediump ivec2 iCoords00 = ivec2(tcData[0] * lod_scale);								\\\n"

@@ -1411,7 +1411,12 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 		// Load all tiles into one 1D texture atlas.
 		while (true)
 		{
-			const u32 tileSizePacked = texDataOffset | (tmptex.width << 16) | (tmptex.height << 24);
+
+			u32 mipRatioS = gDP.tiles[gSP.texture.tile + mipLevel + 1].shifts + 5u;
+			if (mipRatioS >= 16u) mipRatioS -= 16u;
+			u32 mipRatioT = gDP.tiles[gSP.texture.tile + mipLevel + 1].shiftt + 5u;
+			if (mipRatioT >= 16) mipRatioT -= 16u;
+			const u32 tileSizePacked = texDataOffset | (tmptex.width << 16) | (mipRatioT << 24) | (mipRatioS << 28);
 			m_tempTextureHolder[mipLevel] = tileSizePacked;
 
 			getLoadParams(tmptex.format, tmptex.size);
