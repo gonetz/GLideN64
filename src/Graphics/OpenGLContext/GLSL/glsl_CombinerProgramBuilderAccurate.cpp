@@ -621,14 +621,22 @@ public:
 				"  lowp vec4 c11 = texture2D(tex, (tcData[3] + 0.5)/texSize);									\n"
 				;
 			static const std::string strReadTex1 =
+				"mediump float get_high4(in float byte) {														\n"
+				"  return floor(byte/16.0);																		\n"
+				"}																								\n"
+				"mediump float get_low4(in float byte) {														\n"
+				"  return byte - 16.0*floor(byte/16.0);															\n"
+				"}																								\n"
 				"lowp vec4 TextureMipMap1(in sampler2D tex, in highp vec2 tcData[5], in lowp float lod)			\n"
 				"{																								\n"
 				// Fetch from texture atlas
 				// First 8 texels contain info about tile size and offset, 1 texel per tile
-				"  mediump vec2 texSize = uTextureSize[1];														\n"
+				"  mediump vec2 texSize = uTextureSize[1];															\n"
 				"  mediump vec4 texWdthAndOff0 = 255.0 * texture2D(tex, vec2(0.5, 0.5)/texSize);					\n"
 				"  mediump vec4 texWdthAndOff = 255.0 * texture2D(tex, vec2(lod + 0.5, 0.5)/texSize);				\n"
-				"  mediump vec2 lod_scale = texWdthAndOff.ba / texWdthAndOff0.ba;								\n"
+				"  mediump float lod_scales = pow(2.0, get_high4(texWdthAndOff0.a) - get_high4(texWdthAndOff.a));	\n"
+				"  mediump float lod_scalet = pow(2.0, get_low4(texWdthAndOff0.a) - get_low4(texWdthAndOff.a));		\n"
+				"  mediump vec2 lod_scale = vec2(lod_scales, lod_scalet);										\n"
 				"  mediump float offset = texWdthAndOff.r + texWdthAndOff.g * 256.0;							\n"
 				"  mediump float width = texWdthAndOff.b;														\n"
 				"  mediump vec2 Coords00 = floor(tcData[0] * lod_scale);										\n"
