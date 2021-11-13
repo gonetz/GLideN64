@@ -347,6 +347,9 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_WCWNitro;
 	else if (strstr(RSP.romname, (const char *)"MarioTennis") != nullptr)
 		config.generalEmulation.hacks |= hack_fbTextureOffset;
+	else if (strstr(RSP.romname, (const char *)"Extreme G 2") != nullptr ||
+		strstr(RSP.romname, (const char *)"\xb4\xb8\xbd\xc4\xd8\xb0\xd1\x47\x32") != nullptr)
+		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 
 	api().FindPluginPath(RSP.pluginpath);
 
