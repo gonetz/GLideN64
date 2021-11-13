@@ -1,19 +1,29 @@
 @echo off
 setlocal enableextensions disabledelayedexpansion
 cls
-set DPROJ=GLideN64.sln
+set FPROJ=GLideN64.sln
 set DMN=REM
 set ERR=if errorlevel 1 goto err
-set MSG=%DPROJ% does not exist in the same directory
-if not exist "%~dp0%DPROJ%" goto err
+
+:: This allows the script to work from outside the repository for ease of
+:: use by third-party tools with extended functionality such as regression
+:: tracking
+set TPSM=GLideN64\projects\msvc\
+set EXIT=exit
+if exist "%~dp0%TPSM%%FPROJ%" goto slavemode
+set TPSM=
+set EXIT=exit /b
+set MSG=%FPROJ% does not exist in the same directory
+if not exist "%~dp0%TPSM%%FPROJ%" goto err
+:slavemode
 
 set REB=
 set CONF=Release
 set EXT=7z
-set DMQT=1
 set DQTD=1
 set EBQ=start "" explorer .
-for %%B in (EX86 EX64 D7Z DPJQT DPJWTL DMCL ESIM) do set "%%B=0"
+for %%B in (EX86 EX64 D7Z DPJQT DMQT DPJWTL DMCL ESIM) do set "%%B=0"
+set DMQT=1
 for %%K in (msbuild vctip mspdbsrv) do taskkill /im %%K.exe /f 2>nul
 if "%*"=="" goto help
 for %%P in (%*) do (
@@ -77,7 +87,7 @@ set ARCH=x86
 if %EX64%==1 set ARCH=x64
 set "TARCH=%ARCH%"
 :X86
-pushd "%~dp0..\..\"
+pushd "%~dp0%TPSM%..\..\"
 if "%ARCH%"=="x86" set TARCH=Win32
 
 if %DQT%==2 goto noqt
@@ -101,7 +111,7 @@ set MSG=7z failed to extract:^& echo %QTVER%.7z
 %ERR%
 
 :nodl
-set "QTDIR=%~dp0..\..\..\Qt\%QTVER%"
+set "QTDIR=%~dp0%TPSM%..\..\..\Qt\%QTVER%"
 if "%ARCH%"=="x64" (
 	if defined QTDIR_x64 set "QTDIR="%QTDIR_x64%""
 ) else (
@@ -112,15 +122,17 @@ set MSG=Something went wrong when detecting Qt %ARCH%:^& echo %QTDIR%
 if not exist "%QTDIR%\include\QtCore" goto err
 :noqt
 
-if not defined BUILDROUTE set "BUILDROUTE="%~dp0..\..\build""
+if not defined BUILDROUTE set "BUILDROUTE="%~dp0%TPSM%..\..\build""
 set BUILDROUTE=%BUILDROUTE:"=%
-set "IDTS=%ARCH%"
-if defined TOOLSET set "IDTS="%TOOLSET%-%ARCH%""
+for /f "tokens=1" %%R in ('git rev-parse --short HEAD') do set "REV=GLideN64-%%R-"
+set "IDTS=-%ARCH%"
+if "%CONF%"=="Debug" set "IDTS=%IDTS%-dbg"
+if defined TOOLSET set "IDTS="-%TOOLSET%%IDTS%""
 set IDTS=%IDTS:"=%
-set "PJ64QT=%BUILDROUTE%\Project64-Qt-%IDTS%"
-::set "M64QT=%BUILDROUTE%\Mupen64Plus-Qt-%IDTS%"
-set "PJ64WTL=%BUILDROUTE%\Project64-WTL-%IDTS%"
-set "M64CL=%BUILDROUTE%\Mupen64Plus-CLI-%IDTS%"
+set "PJ64QT=%BUILDROUTE%\%REV%Project64-Qt%IDTS%"
+::set "M64QT=%BUILDROUTE%\%REV%Mupen64Plus-Qt%IDTS%"
+set "PJ64WTL=%BUILDROUTE%\%REV%Project64-WTL%IDTS%"
+set "M64CL=%BUILDROUTE%\%REV%Mupen64Plus-CLI%IDTS%"
 
 set MOD=
 if "%ARCH%"=="x64" set MOD=_x64
@@ -135,10 +147,15 @@ if %MOD% LEQ 4 (set MOD=Lylat
 
 set BPJQT=msbuild
 if %ESIM%==1 (
-	set "BPJQT=echo %BPJQT%"
+	set "BPJQT=echo msbuild"
 	md "translations\wtl" 2>nul
 	cd.>"translations\wtl\%MOD%.Lang"
-	del /f /q "%BUILDROUTE%\*-%IDTS%.%EXT%" 2>nul
+	pushd "%BUILDROUTE%"
+	for /f "tokens=*" %%S in ('dir /ad /b "%REV%*%IDTS%"') do (
+		if "%%S" NEQ "" rd /s /q "%%S"
+	)
+	del /f /q "%REV%*%IDTS%.%EXT%" 2>nul
+	popd
 	type nul
 )
 for %%C in (MQT PJWTL MCL) do set "B%%C=%BPJQT%"
@@ -153,7 +170,7 @@ set PTS=%PTS:"=%
 
 goto mbbeg
 :mbcl
-	%~1 "%~dp0%~2" /m /p:Configuration=%CONF%%~3;%PTS% %REB%
+	%~1 "%~dp0%TPSM%%~2" /m /p:Configuration=%CONF%%~3;%PTS% %REB%
 	%ERR%
 	if "%~1" NEQ "REM" echo.
 	goto:eof
@@ -162,21 +179,21 @@ goto mbbeg
 set MSG=Qt version, architecture and path are really correct?^& echo %QTDIR%
 call :mbcl "%BPJQT%" "GLideNUI.vcxproj"
 %DMN%
-call :mbcl "%BPJQT%" "%DPROJ%" "_qt"
+call :mbcl "%BPJQT%" "%FPROJ%" "_qt"
 %DMN%
 
 ::if %DPJQT%==1 call :mbcl "%BMQT%" "GLideNUI.vcxproj"
 %DMN%
-::call :mbcl "%BMQT%" "%DPROJ%" "_mupenplus_qt"
+::call :mbcl "%BMQT%" "%FPROJ%" "_mupenplus_qt"
 %DMN%
 
 set MSG=ERROR!
 call :mbcl "%BPJWTL%" "GLideNUI-wtl.vcxproj"
 %DMN%
-call :mbcl "%BPJWTL%" "%DPROJ%" "_wtl"
+call :mbcl "%BPJWTL%" "%FPROJ%" "_wtl"
 %DMN%
 
-call :mbcl "%BMCL%" "%DPROJ%" "_mupenplus"
+call :mbcl "%BMCL%" "%FPROJ%" "_mupenplus"
 %DMN%
 
 goto pjqt
@@ -186,7 +203,7 @@ goto pjqt
 	type nul
 	copy /y ini\GLideN64.custom.ini "%~1\"
 	%ERR%
-	del /f /q "%~1\*.lib" "%~1\*.exp" 2>nul
+	for %%D in (exp ilk lib) do del /f /q "%~1\*.%%D" 2>nul
 	type nul
 	goto:eof
 
@@ -219,14 +236,13 @@ call :cini "%M64CL%"
 %DMN%
 
 :pkg
-for /f "tokens=1" %%R in ('git rev-parse --short HEAD') do set "REV=%%R"
 set MSG=The route could not be accessed:^& echo %BUILDROUTE%
 pushd "%BUILDROUTE%"
 %ERR%
-set MOD=plugins
+set MOD=binaries
 if %D7Z%==0 (
 	set MOD=compressed files
-	for /f "tokens=*" %%Z in ('dir /ad /b *-%IDTS%') do 7z a -t%EXT% "GLideN64-%REV%-%%Z.%EXT%" ".\%%Z\*"
+	for /f "tokens=*" %%Z in ('dir /ad /b %REV%*%IDTS%') do 7z a -t%EXT% "%%Z.%EXT%" ".\%%Z\*"
 )
 
 if "%ARCH%"=="x64" (
@@ -237,13 +253,13 @@ set MSG=DONE!^& echo Path to the %MOD%:^& echo %CD%
 %EBQ%
 :err
 set WTF=%errorlevel%
-set DMN=exit /b %WTF%
+set DMN=%EXIT% %WTF%
 echo.
 echo %MSG%
-exit /b %WTF%
+%EXIT% %WTF%
 
 :clean
-pushd "%~dp0"
+pushd "%~dp0%TPSM%"
 for /f "tokens=*" %%E in ('dir /ad /b') do (
 	if /i "%%E" NEQ "lib" rd /s /q "%%E"
 )
@@ -251,11 +267,11 @@ cd ..\..
 del /f /q "src\Revision.h" 2>nul
 rd /s /q "build" 2>nul
 rd /s /q "translations\wtl" 2>nul
-exit /b 0
+%EXIT% 0
 
 :help
 echo.
-echo GLideN64's simplified build and packaging script
+echo GLideN64's simplified build and packing script
 echo.
 echo Usage:
 echo   set ^<variable^>
@@ -285,19 +301,19 @@ echo               have no effect if Qt variables are used or if the same
 echo               version has already been extracted
 ::echo   --noqt      To build without Qt support, equivalent to using '--nopjqt'
 ::echo               and '--nomqt' simultaneously, it will ignore the effects of
-::echo               Qt variables and "--dlqt"
+::echo               Qt variables and '--dlqt'
 echo   --nopjqt    To skip Project64 Qt builds
 ::echo   --nomqt     To skip Mupen64Plus Qt builds
 echo   --nopjwtl   To skip Project64 WTL builds
 echo   --nomcl     To skip Mupen64Plus CLI builds
-echo   --nopak     To skip packing the plugins, "--zip" will be ineffective
-echo               It will disable 7-Zip completely if "--dlqt" isn't used
+echo   --nopak     To skip packing the binaries, '--zip' will be ineffective
+echo               It will disable 7-Zip completely if '--dlqt' isn't used
 echo   --rebuild   To rebuild without cleaning
 echo   --sim       Simulated build, quick environment check without compiling
-echo               It's destructive to the final product by creating
-echo               dummy files, make sure to use "--clean" afterwards
+echo               It's destructive to the final product, it removes binaries
+echo               and creates dummy files, use '--clean' to discard changes
 echo   --q         Don't interact with Windows Explorer at the end
-echo   --zip       Pack to ZIP files instead of 7Z files
+echo   --zip       To package ZIP files instead 7Z files
 echo.
 echo Usage examples:
 echo.
@@ -312,4 +328,4 @@ echo.
 echo   set QTDIR_x86="G:\Static Qt\qt-5.7.1-x86-msvc2015"
 echo   set QTDIR_x64=G:\Static Qt\qt-5.7.1-x64-msvc2015
 echo   %~nx0 --nopjwtl --nomcl --all
-exit /b 0
+%EXIT% 0
