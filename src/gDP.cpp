@@ -916,11 +916,13 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 	f32 ult = T + (ceilf(uly) - uly) * DTDY;
 	f32 lrt = T + (ceilf(lry) - uly - 1.0f) * DTDY;
 
-	gDP.m_texCoordBounds.valid = true;
-	gDP.m_texCoordBounds.uls = fmin(uls, lrs);
-	gDP.m_texCoordBounds.ult = fmin(ult, lrt);
-	gDP.m_texCoordBounds.lrs = fmax(uls, lrs);
-	gDP.m_texCoordBounds.lrt = fmax(ult, lrt);
+	if (config.graphics2D.enableTexCoordBounds != 0) {
+		gDP.m_texCoordBounds.valid = true;
+		gDP.m_texCoordBounds.uls = fmin(uls, lrs);
+		gDP.m_texCoordBounds.ult = fmin(ult, lrt);
+		gDP.m_texCoordBounds.lrs = fmax(uls, lrs);
+		gDP.m_texCoordBounds.lrt = fmax(ult, lrt);
+	}
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	GraphicsDrawer::TexturedRectParams params(ulx, uly, lrx, lry, dsdx, dtdy, s, t,

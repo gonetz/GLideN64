@@ -347,6 +347,7 @@ bool TexrectDrawer::draw()
 	GraphicsDrawer &  drawer = wnd.getDrawer();
 	drawer.setBlendMode();
 	gDP.changed |= CHANGED_RENDERMODE;  // Force update of depth compare parameters
+	gDP.m_texCoordBounds.valid = false;
 	drawer._updateDepthCompare();
 
 	int enableAlphaTest = 0;
