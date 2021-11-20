@@ -130,7 +130,7 @@ struct gDPTexrectInfo
 };
 
 struct texCoordBounds {
-	bool valid;
+	bool valid = false;
 	f32 uls, lrs, ult, lrt;
 };
 

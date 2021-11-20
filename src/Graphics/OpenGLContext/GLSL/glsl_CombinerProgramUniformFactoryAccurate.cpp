@@ -26,8 +26,7 @@ public:
 	void update(bool _force) override {
 		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
 		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
-		const bool isBackground = gSP.textureTile[0] != nullptr && gSP.textureTile[0]->textureMode == TEXTUREMODE_BGIMAGE;
-		const bool useTexCoordBounds = (isTexRect || isBackground) && !isNativeRes && config.graphics2D.enableTexCoordBounds;
+		const bool useTexCoordBounds = gDP.m_texCoordBounds.valid && !isNativeRes;
 		/* At rasterization stage, the N64 places samples on the top left of the fragment while OpenGL		*/
 		/* places them in the fragment center. As a result, a normal approach results in shifted texture	*/
 		/* coordinates. In native resolution, this difference can be negated by shifting vertices by 0.5.	*/
@@ -83,6 +82,7 @@ public:
 		uTexCoordOffset.set(texCoordOffset[0], texCoordOffset[1], _force);
 		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
 		uTexCoordBounds.set(tcbounds, _force);
+		gDP.m_texCoordBounds.valid = false;
 	}
 
 private:
