@@ -205,7 +205,6 @@ void Rasterize(vertexi * vtx, int vertices, int dzdx)
 	int y1 = iceil(min_y);
 	if (y1 >= (int)gDP.scissor.lry)
 		return;
-	int shift;
 
 	const u16 * const zLUT = depthBufferList().getZLUT();
 	const s32 depthBufferWidth = static_cast<s32>(depthBufferList().getCurrent()->m_width);
@@ -225,17 +224,14 @@ void Rasterize(vertexi * vtx, int vertices, int dzdx)
 			int prestep = isub((int)((unsigned int)x1 << 16), left_x);
 			int z = isumm(left_z, imul16(prestep, dzdx));
 
-			shift = x1 + y1*depthBufferWidth;
+			int shift = x1 + y1*depthBufferWidth;
 			//draw to depth buffer
-			int trueZ;
-			int idx;
-			u16 encodedZ;
 			for (int x = 0; x < width; x++)	{
-				trueZ = z / 8192;
+				int trueZ = z / 8192;
 				if (trueZ < 0)
 					trueZ = 0;
-				encodedZ = zLUT[trueZ];
-				idx = (shift + x) ^ 1;
+				u16 encodedZ = zLUT[trueZ];
+				int idx = (shift + x) ^ 1;
 				if (encodedZ < destptr[idx])
 					destptr[idx] = encodedZ;
 				z = isumm(z, dzdx);
