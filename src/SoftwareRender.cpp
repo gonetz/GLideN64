@@ -258,6 +258,9 @@ f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements)
 
 f32 renderTriangles(const SPVertex * _pVertices, const u16 * _pElements, u32 _numElements)
 {
+	if (gDP.scissor.ulx > gDP.scissor.lrx || gDP.scissor.uly > gDP.scissor.lry)
+		return 0.0f;
+
 	vertexclip vclip[16];
 	vertexi vdraw[12];
 	const SPVertex * vsrc[4];
@@ -346,6 +349,9 @@ f32 renderAndDrawTriangles(const SPVertex *_pVertices,
 	bool _flatColors,
 	GraphicsDrawer::Statistics & _statistics)
 {
+	if (gDP.scissor.ulx > gDP.scissor.lrx || gDP.scissor.uly > gDP.scissor.lry)
+		return 0.0f;
+
 	f32 maxY = 0.0f;
 	std::vector<SPVertex> vResult;
 	vResult.reserve(_numElements * 3);
