@@ -661,7 +661,10 @@ void FrameBufferList::setBufferChanged(f32 _maxY)
 	gDP.colorImage.height = max(gDP.colorImage.height, static_cast<u32>(_maxY));
 	gDP.colorImage.height = min(gDP.colorImage.height, static_cast<u32>(gDP.scissor.lry));
 	if (m_pCurrent != nullptr) {
-		m_pCurrent->m_height = max(m_pCurrent->m_height, gDP.colorImage.height);
+		if (m_pCurrent->m_isMainBuffer)
+			m_pCurrent->m_height = max(m_pCurrent->m_height, min(gDP.colorImage.height, VI.height));
+		else
+			m_pCurrent->m_height = max(m_pCurrent->m_height, gDP.colorImage.height);
 		m_pCurrent->m_cfb = false;
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_copiedToRdram = false;
