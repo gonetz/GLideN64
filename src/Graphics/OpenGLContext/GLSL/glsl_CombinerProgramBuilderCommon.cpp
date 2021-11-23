@@ -1362,11 +1362,11 @@ public:
 		m_part +=
 			" highp vec2 mTexCoord0 = vTexCoord0 + vec2(0.0001);						\n"
 			" highp vec2 mTexCoord1 = vTexCoord1 + vec2(0.0001);						\n"
-			" mTexCoord0 += uTexCoordOffset[0];											\n"
-			" mTexCoord1 += uTexCoordOffset[1];											\n"
+			" mTexCoord0 += uTexCoordOffset;											\n"
+			" mTexCoord1 += uTexCoordOffset;											\n"
 			" if (uUseTexCoordBounds != 0) {											\n"
-			" mTexCoord0 = clamp(mTexCoord0, uTexCoordBounds.xy, uTexCoordBounds.zw); \n"
-			" mTexCoord1 = clamp(mTexCoord1, uTexCoordBounds.xy, uTexCoordBounds.zw); \n"
+			" mTexCoord0 = clamp(mTexCoord0, uTexCoordBounds.xy, uTexCoordBounds.zw);	\n"
+			" mTexCoord1 = clamp(mTexCoord1, uTexCoordBounds.xy, uTexCoordBounds.zw);	\n"
 			" }																			\n"
 			;
 	}

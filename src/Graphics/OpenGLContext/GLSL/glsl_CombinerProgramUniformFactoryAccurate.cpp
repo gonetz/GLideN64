@@ -18,8 +18,7 @@ class URasterInfo : public UniformGroup {
 public:
 	URasterInfo(GLuint _program) {
 		LocateUniform(uVertexOffset);
-		LocateUniform(uTexCoordOffset[0]);
-		LocateUniform(uTexCoordOffset[1]);
+		LocateUniform(uTexCoordOffset);
 		LocateUniform(uUseTexCoordBounds);
 		LocateUniform(uTexCoordBounds);
 	}
@@ -35,7 +34,7 @@ public:
 		/* effective. Still, an heuristic is applied to render texture rectangles as correctly as possible  */
 		/* in higher resolutions too. See issue #2324 for details. 											*/
 		const float vertexOffset = isNativeRes ? 0.5f : 0.0f;
-		float texCoordOffset[2][2] = { 0.0f, 0.0f };
+		float texCoordOffset[2] = { 0.0f, 0.0f };
 		if (isTexRect && !isNativeRes) {
 			float scale[2] = { 0.0f, 0.0f };
 			if (config.graphics2D.enableNativeResTexrects != 0 && gDP.otherMode.textureFilter != G_TF_POINT) {
@@ -44,37 +43,30 @@ public:
 				scale[0] = scale[1] = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 			}
 
-			for (int t = 0; t < 2; t++) {
-				const CachedTexture* _pTexture = textureCache().current[t];
-				if (_pTexture != nullptr) {
-					if (config.frameBufferEmulation.nativeResFactor != 0) {
-						if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
-							texCoordOffset[t][0] = -0.5f * gDP.lastTexRectInfo.dsdx;
-							texCoordOffset[t][1] = -0.5f * gDP.lastTexRectInfo.dtdy;
-						} else {
-							texCoordOffset[t][0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? -0.5f / scale[0] : -1.0f + 0.5f / scale[0]) * gDP.lastTexRectInfo.dsdx;
-							texCoordOffset[t][1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy;
-						}
-					} else {
-						texCoordOffset[t][0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dsdx;
-						texCoordOffset[t][1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dtdy;
-						if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
-							texCoordOffset[t][0] -= 0.5f;
-							texCoordOffset[t][1] -= 0.5f;
-						}
-					}
+			if (config.frameBufferEmulation.nativeResFactor != 0) {
+				if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
+					texCoordOffset[0] = -0.5f * gDP.lastTexRectInfo.dsdx;
+					texCoordOffset[1] = -0.5f * gDP.lastTexRectInfo.dtdy;
+				} else {
+					texCoordOffset[0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? -0.5f / scale[0] : -1.0f + 0.5f / scale[0]) * gDP.lastTexRectInfo.dsdx;
+					texCoordOffset[1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? -0.5f / scale[1] : -1.0f + 0.5f / scale[1]) * gDP.lastTexRectInfo.dtdy;
+				}
+			} else {
+				texCoordOffset[0] = (gDP.lastTexRectInfo.dsdx >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dsdx;
+				texCoordOffset[1] = (gDP.lastTexRectInfo.dtdy >= 0.0f ? 0.0f : -1.0f) * gDP.lastTexRectInfo.dtdy;
+				if (gDP.otherMode.textureFilter != G_TF_POINT && gDP.otherMode.cycleType != G_CYC_COPY) {
+					texCoordOffset[0] -= 0.5f;
+					texCoordOffset[1] -= 0.5f;
 				}
 			}
 		}
 		/* Hack for framebuffer textures. See #519 and #2112 */
 		if ((config.generalEmulation.hacks & hack_fbTextureOffset) != 0) {
-			for (int t = 0; t < 2; t++) {
-				const CachedTexture* _pTexture = textureCache().current[t];
-				if (_pTexture != nullptr) {
-					if (gDP.otherMode.textureFilter != G_TF_POINT && _pTexture->frameBufferTexture != CachedTexture::fbNone) {
-						texCoordOffset[t][0] -= 1.0f;
-						texCoordOffset[t][1] -= 1.0f;
-					}
+			const CachedTexture* _pTexture = textureCache().current[0];
+			if (_pTexture != nullptr) {
+				if (gDP.otherMode.textureFilter != G_TF_POINT && _pTexture->frameBufferTexture != CachedTexture::fbNone) {
+					texCoordOffset[0] -= 1.0f;
+					texCoordOffset[1] -= 1.0f;
 				}
 			}
 		}
@@ -93,15 +85,14 @@ public:
 		}
 
 		uVertexOffset.set(vertexOffset, vertexOffset, _force);
-		uTexCoordOffset[0].set(texCoordOffset[0][0], texCoordOffset[0][1], _force);
-		uTexCoordOffset[1].set(texCoordOffset[1][0], texCoordOffset[1][1], _force);
+		uTexCoordOffset.set(texCoordOffset[0], texCoordOffset[1], _force);
 		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
 		uTexCoordBounds.set(tcbounds, _force);
 	}
 
 private:
 	fv2Uniform uVertexOffset;
-	fv2Uniform uTexCoordOffset[2];
+	fv2Uniform uTexCoordOffset;
 	iUniform uUseTexCoordBounds;
 	fv4Uniform uTexCoordBounds;
 };

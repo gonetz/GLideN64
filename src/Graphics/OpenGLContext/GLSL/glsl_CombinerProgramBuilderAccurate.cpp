@@ -120,7 +120,7 @@ public:
 			"uniform highp vec2 uShiftScale[2];		\n"
 			"uniform highp vec2 uTexOffset[2];		\n"
 			"uniform highp vec2 uHDRatio[2];		\n"
-			"uniform highp vec2 uTexCoordOffset[2];	\n"
+			"uniform highp vec2 uTexCoordOffset;	\n"
 			"uniform highp vec2 uBilinearOffset;	\n"
 			"uniform highp vec2 uCacheOffset[2];	\n"
 			"uniform lowp int uUseTexCoordBounds;	\n"
