@@ -9,6 +9,10 @@ public:
 	CombinerProgramBuilderAccurate(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram);
 
 private:
+	const ShaderPart * getVertexShaderTexturedRect() const override;
+	const ShaderPart * getVertexShaderTexturedTriangle() const override;
+
+	void _writeFragmentCorrectTexCoords(std::stringstream& ssShader) const override;
 	void _writeFragmentGlobalVariablesTex(std::stringstream& ssShader) const override;
 	void _writeFragmentHeaderReadMSTex(std::stringstream& ssShader) const override;
 	void _writeFragmentHeaderReadTex(std::stringstream& ssShader) const override;
@@ -24,6 +28,9 @@ private:
 	void _writeShaderReadtex(std::stringstream& ssShader) const override;
 	void _writeShaderReadtexCopyMode(std::stringstream& ssShader) const override;
 
+	ShaderPartPtr m_vertexTexturedTriangle;
+	ShaderPartPtr m_vertexTexturedRect;
+	ShaderPartPtr m_fragmentCorrectTexCoords;
 	ShaderPartPtr m_fragmentGlobalVariablesTex;
 	ShaderPartPtr m_fragmentHeaderTextureEngine;
 	ShaderPartPtr m_fragmentHeaderReadMSTex;

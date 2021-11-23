@@ -7,8 +7,7 @@ class CombinerProgramBuilderCommon : public glsl::CombinerProgramBuilder
 {
 public:
 	CombinerProgramBuilderCommon(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram,
-		std::unique_ptr<CombinerProgramUniformFactory> _uniformFactory,
-		std::unique_ptr<ShaderPart> _vertexTexturedTriangle);
+		std::unique_ptr<CombinerProgramUniformFactory> _uniformFactory);
 	~CombinerProgramBuilderCommon();
 
 	const ShaderPart * getVertexShaderHeader() const override;
@@ -49,7 +48,6 @@ private:
 	void _writeFragmentMain(std::stringstream& ssShader) const override;
 	void _writeFragmentBlendMux(std::stringstream& ssShader) const override;
 	void _writeShaderCoverage(std::stringstream& ssShader) const override;
-	void _writeFragmentCorrectTexCoords(std::stringstream& ssShader) const override;
 	void _writeFragmentReadTexMipmap(std::stringstream& ssShader) const override;
 	void _writeFragmentCallN64Depth(std::stringstream& ssShader) const override;
 	void _writeFragmentRenderTarget(std::stringstream& ssShader) const override;
@@ -76,7 +74,6 @@ private:
 	ShaderPartPtr m_vertexHeader;
 	ShaderPartPtr m_vertexEnd;
 	ShaderPartPtr m_vertexRect;
-	ShaderPartPtr m_vertexTexturedRect;
 	ShaderPartPtr m_vertexTriangle;
 
 	ShaderPartPtr m_fragmentHeader;
@@ -90,7 +87,6 @@ private:
 	ShaderPartPtr m_fragmentMain;
 	ShaderPartPtr m_fragmentMain2Cycle;
 	ShaderPartPtr m_fragmentBlendMux;
-	ShaderPartPtr m_fragmentCorrectTexCoords;
 	ShaderPartPtr m_fragmentReadTexMipmap;
 	ShaderPartPtr m_fragmentCallN64Depth;
 	ShaderPartPtr m_fragmentRenderTarget;
@@ -106,10 +102,10 @@ private:
 
 	u32 m_combinerOptionsBits;
 
-	GLuint m_vertexShaderRect;
-	GLuint m_vertexShaderTriangle;
-	GLuint m_vertexShaderTexturedRect;
-	GLuint m_vertexShaderTexturedTriangle;
+	mutable GLuint m_vertexShaderRect = 0u;
+	mutable GLuint m_vertexShaderTriangle = 0u;
+	mutable GLuint m_vertexShaderTexturedRect = 0u;
+	mutable GLuint m_vertexShaderTexturedTriangle = 0u;
 };
 
 }

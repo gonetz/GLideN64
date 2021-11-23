@@ -67,6 +67,10 @@ public:
 	static u32 s_cycleType;
 	static TextureConvert s_textureConvert;
 
+protected:
+	virtual const ShaderPart * getVertexShaderTexturedRect() const = 0;
+	virtual const ShaderPart * getVertexShaderTexturedTriangle() const = 0;
+
 private:
 	CombinerInputs compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
 

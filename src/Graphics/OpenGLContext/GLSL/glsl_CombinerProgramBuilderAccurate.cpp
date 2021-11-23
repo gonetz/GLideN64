@@ -31,8 +31,7 @@ public:
 			"uniform mediump vec2 uAdjustTrans;					\n"
 			"uniform mediump vec2 uAdjustScale;					\n"
 			"uniform lowp ivec2 uCacheFrameBuffer;				\n"
-			"OUT highp vec2 vTexCoord0;							\n"
-			"OUT highp vec2 vTexCoord1;							\n"
+			"OUT highp vec2 vTexCoord;							\n"
 			"OUT mediump vec2 vLodTexCoord;						\n"
 			"OUT lowp float vNumLights;							\n"
 			"OUT lowp vec4 vShadeColor;							\n"
@@ -50,8 +49,7 @@ public:
 			"  vec2 texCoord = aTexCoord;									\n"
 			"  texCoord *= uTexScale;										\n"
 			"  if (uTexturePersp == 0 && aModify[2] == 0.0) texCoord *= 0.5;\n"
-			"  vTexCoord0 = texCoord;										\n"
-			"  vTexCoord1 = texCoord;										\n"
+			"  vTexCoord = texCoord;										\n"
 			"  vLodTexCoord = texCoord;										\n"
 			"  vNumLights = aNumLights;										\n"
 			"  if ((aModify[0]) != 0.0) {									\n"
@@ -80,6 +78,51 @@ public:
 			"  }															\n"
 			"  vBaryCoords = vec4(aBaryCoords, 1.0 - aBaryCoords.x - aBaryCoords.y, 0.5);	\n"
 			"  vShadeColorNoperspective = vShadeColor;							\n"
+			;
+	}
+};
+
+class VertexShaderTexturedRect : public ShaderPart
+{
+public:
+	VertexShaderTexturedRect(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"IN highp vec4 aRectPosition;						\n"
+			"IN highp vec2 aTexCoord0;							\n"
+			"IN highp vec2 aTexCoord1;							\n"
+			"IN highp vec2 aBaryCoords;							\n"
+			"													\n"
+			"OUT highp vec2 vTexCoord;							\n"
+			"OUT lowp vec4 vShadeColor;							\n"
+			"OUT highp vec4 vBaryCoords;						\n"
+			;
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
+		else
+			m_part += "OUT lowp vec4 vShadeColorNoperspective;				\n";
+		m_part +=
+			"uniform lowp vec4 uRectColor;						\n"
+			"void main()										\n"
+			"{													\n"
+			"  gl_Position = aRectPosition;						\n"
+			"  vShadeColor = uRectColor;						\n"
+			"  vShadeColorNoperspective = uRectColor;			\n"
+			"  vTexCoord = aTexCoord0;							\n"
+			"  vBaryCoords = vec4(aBaryCoords, vec2(1.0) - aBaryCoords);	\n"
+			;
+	}
+};
+
+class ShaderFragmentCorrectTexCoords : public ShaderPart {
+public:
+	ShaderFragmentCorrectTexCoords() {
+		m_part +=
+			" highp vec2 mTexCoord = vTexCoord + vec2(0.0001);						\n"
+			" mTexCoord += uTexCoordOffset;											\n"
+			" if (uUseTexCoordBounds != 0)											\n"
+			" mTexCoord = clamp(mTexCoord, uTexCoordBounds.xy, uTexCoordBounds.zw);	\n"
+			"																		\n"
 			;
 	}
 };
@@ -120,12 +163,11 @@ public:
 			"uniform highp vec2 uShiftScale[2];		\n"
 			"uniform highp vec2 uTexOffset[2];		\n"
 			"uniform highp vec2 uHDRatio[2];		\n"
-			"uniform highp vec2 uTexCoordOffset[2];	\n"
+			"uniform highp vec2 uTexCoordOffset;	\n"
 			"uniform highp vec2 uBilinearOffset;	\n"
 			"uniform highp vec2 uCacheOffset[2];	\n"
 			"uniform lowp int uUseTexCoordBounds;	\n"
-			"uniform highp vec4 uTexCoordBounds0;	\n"
-			"uniform highp vec4 uTexCoordBounds1;	\n"
+			"uniform highp vec4 uTexCoordBounds;	\n"
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"highp vec2 texCoord0;					\n"
 			"highp vec2 texCoord1;					\n"
@@ -181,8 +223,7 @@ public:
 
 		m_part +=
 			"IN lowp vec4 vShadeColor;		\n"
-			"IN highp vec2 vTexCoord0;		\n"
-			"IN highp vec2 vTexCoord1;		\n"
+			"IN highp vec2 vTexCoord;		\n"
 			"IN mediump vec2 vLodTexCoord;	\n"
 			"IN lowp float vNumLights;		\n"
 			"IN highp vec4 vBaryCoords;		\n"
@@ -1136,7 +1177,7 @@ public:
 	ShaderFragmentTextureEngineTex0(const opengl::GLInfo _glinfo)
 	{
 		m_part =
-			"textureEngine0(mTexCoord0, tcData0); \n"
+			"textureEngine0(mTexCoord, tcData0); \n"
 			;
 	}
 };
@@ -1146,7 +1187,7 @@ public:
 	ShaderFragmentTextureEngineTex1(const opengl::GLInfo _glinfo)
 	{
 		m_part =
-			"textureEngine1(mTexCoord1, tcData1); \n"
+			"textureEngine1(mTexCoord, tcData1); \n"
 			;
 	}
 };
@@ -1156,8 +1197,10 @@ public:
 namespace glsl {
 
 CombinerProgramBuilderAccurate::CombinerProgramBuilderAccurate(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
-: CombinerProgramBuilderCommon(_glinfo, _useProgram, std::make_unique<CombinerProgramUniformFactoryAccurate>(_glinfo),
-	   std::make_unique<VertexShaderTexturedTriangle>(_glinfo))
+: CombinerProgramBuilderCommon(_glinfo, _useProgram, std::make_unique<CombinerProgramUniformFactoryAccurate>(_glinfo))
+, m_vertexTexturedTriangle(new VertexShaderTexturedTriangle(_glinfo))
+, m_vertexTexturedRect(new VertexShaderTexturedRect(_glinfo))
+, m_fragmentCorrectTexCoords(new ShaderFragmentCorrectTexCoords())
 , m_fragmentGlobalVariablesTex(new ShaderFragmentGlobalVariablesTex(_glinfo))
 , m_fragmentHeaderTextureEngine(new ShaderFragmentHeaderTextureEngine(_glinfo))
 , m_fragmentHeaderReadMSTex(new ShaderFragmentHeaderReadMSTex(_glinfo))
@@ -1173,6 +1216,21 @@ CombinerProgramBuilderAccurate::CombinerProgramBuilderAccurate(const opengl::GLI
 , m_shaderReadtexCopyMode(new ShaderReadtexCopyMode(_glinfo))
 , m_shaderTextureEngine(new ShaderTextureEngine(_glinfo))
 {
+}
+
+const ShaderPart * CombinerProgramBuilderAccurate::getVertexShaderTexturedRect() const
+{
+	return m_vertexTexturedRect.get();
+}
+
+const ShaderPart * CombinerProgramBuilderAccurate::getVertexShaderTexturedTriangle() const
+{
+	return m_vertexTexturedTriangle.get();
+}
+
+void CombinerProgramBuilderAccurate::_writeFragmentCorrectTexCoords(std::stringstream& ssShader)const
+{
+	m_fragmentCorrectTexCoords->write(ssShader);
 }
 
 void CombinerProgramBuilderAccurate::_writeFragmentGlobalVariablesTex(std::stringstream& ssShader) const

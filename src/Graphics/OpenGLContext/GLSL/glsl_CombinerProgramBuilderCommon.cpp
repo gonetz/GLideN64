@@ -124,40 +124,6 @@ public:
 	}
 };
 
-class VertexShaderTexturedRect : public ShaderPart
-{
-public:
-	VertexShaderTexturedRect(const opengl::GLInfo & _glinfo)
-	{
-		m_part =
-			"IN highp vec4 aRectPosition;						\n"
-			"IN highp vec2 aTexCoord0;							\n"
-			"IN highp vec2 aTexCoord1;							\n"
-			"IN highp vec2 aBaryCoords;							\n"
-			"													\n"
-			"OUT highp vec2 vTexCoord0;							\n"
-			"OUT highp vec2 vTexCoord1;							\n"
-			"OUT lowp vec4 vShadeColor;							\n"
-			"OUT highp vec4 vBaryCoords;						\n"
-			;
-		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
-		else
-			m_part += "OUT lowp vec4 vShadeColorNoperspective;				\n";
-		m_part +=
-			"uniform lowp vec4 uRectColor;						\n"
-			"void main()										\n"
-			"{													\n"
-			"  gl_Position = aRectPosition;						\n"
-			"  vShadeColor = uRectColor;						\n"
-			"  vShadeColorNoperspective = uRectColor;			\n"
-			"  vTexCoord0 = aTexCoord0;							\n"
-			"  vTexCoord1 = aTexCoord1;							\n"
-			"  vBaryCoords = vec4(aBaryCoords, vec2(1.0) - aBaryCoords);	\n"
-			;
-	}
-};
-
 class VertexShaderRect : public ShaderPart
 {
 public:
@@ -1356,22 +1322,6 @@ public:
 	}
 };
 
-class ShaderFragmentCorrectTexCoords : public ShaderPart {
-public:
-	ShaderFragmentCorrectTexCoords() {
-		m_part +=
-			" highp vec2 mTexCoord0 = vTexCoord0 + vec2(0.0001);						\n"
-			" highp vec2 mTexCoord1 = vTexCoord1 + vec2(0.0001);						\n"
-			" mTexCoord0 += uTexCoordOffset[0];											\n"
-			" mTexCoord1 += uTexCoordOffset[1];											\n"
-			" if (uUseTexCoordBounds != 0) {											\n"
-			" mTexCoord0 = clamp(mTexCoord0, uTexCoordBounds0.xy, uTexCoordBounds0.zw); \n"
-			" mTexCoord1 = clamp(mTexCoord1, uTexCoordBounds1.xy, uTexCoordBounds1.zw); \n"
-			" }																			\n"
-			;
-	}
-};
-
 class ShaderCoverage : public ShaderPart {
 public:
 	ShaderCoverage() {
@@ -1394,7 +1344,7 @@ public:
 /*---------------ShaderPartsEnd-------------*/
 
 static
-GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart * _footer)
+GLuint _createVertexShader(const ShaderPart* _header, const ShaderPart* _body, const ShaderPart* _footer)
 {
 	std::stringstream ssShader;
 	_header->write(ssShader);
@@ -1416,8 +1366,7 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart 
 namespace glsl {
 
 CombinerProgramBuilderCommon::CombinerProgramBuilderCommon(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram,
-	std::unique_ptr<CombinerProgramUniformFactory> _uniformFactory,
-	std::unique_ptr<ShaderPart> _vertexTexturedTriangle)
+	std::unique_ptr<CombinerProgramUniformFactory> _uniformFactory)
 : CombinerProgramBuilder(_glinfo, _useProgram, std::move(_uniformFactory))
 , m_blender1(new ShaderBlender1(_glinfo))
 , m_blender2(new ShaderBlender2(_glinfo))
@@ -1433,7 +1382,6 @@ CombinerProgramBuilderCommon::CombinerProgramBuilderCommon(const opengl::GLInfo 
 , m_vertexHeader(new VertexShaderHeader(_glinfo))
 , m_vertexEnd(new VertexShaderEnd(_glinfo))
 , m_vertexRect(new VertexShaderRect(_glinfo))
-, m_vertexTexturedRect(new VertexShaderTexturedRect(_glinfo))
 , m_vertexTriangle(new VertexShaderTriangle(_glinfo))
 , m_fragmentHeader(new FragmentShaderHeader(_glinfo))
 , m_fragmentGlobalVariablesNotex(new ShaderFragmentGlobalVariablesNotex(_glinfo))
@@ -1446,7 +1394,6 @@ CombinerProgramBuilderCommon::CombinerProgramBuilderCommon(const opengl::GLInfo 
 , m_fragmentMain(new ShaderFragmentMain(_glinfo))
 , m_fragmentMain2Cycle(new ShaderFragmentMain2Cycle(_glinfo))
 , m_fragmentBlendMux(new ShaderFragmentBlendMux(_glinfo))
-, m_fragmentCorrectTexCoords(new ShaderFragmentCorrectTexCoords())
 , m_fragmentReadTexMipmap(new ShaderFragmentReadTexMipmap(_glinfo))
 , m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_glinfo))
 , m_fragmentRenderTarget(new ShaderFragmentRenderTarget(_glinfo))
@@ -1460,10 +1407,6 @@ CombinerProgramBuilderCommon::CombinerProgramBuilderCommon(const opengl::GLInfo 
 , m_shaderCoverage(new ShaderCoverage())
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {
-	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get(), m_vertexEnd.get());
-	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get(), m_vertexEnd.get());
-	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get(), m_vertexEnd.get());
-	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), _vertexTexturedTriangle.get(), m_vertexEnd.get());
 }
 
 CombinerProgramBuilderCommon::~CombinerProgramBuilderCommon()
@@ -1496,21 +1439,29 @@ bool CombinerProgramBuilderCommon::isObsolete() const
 
 GLuint CombinerProgramBuilderCommon::_getVertexShaderRect() const
 {
+	if (m_vertexShaderRect == 0)
+		m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get(), m_vertexEnd.get());
 	return m_vertexShaderRect;
 }
 
 GLuint CombinerProgramBuilderCommon::_getVertexShaderTriangle() const
 {
+	if (m_vertexShaderTriangle == 0)
+		m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get(), m_vertexEnd.get());
 	return m_vertexShaderTriangle;
 }
 
 GLuint CombinerProgramBuilderCommon::_getVertexShaderTexturedRect() const
 {
+	if (m_vertexShaderTexturedRect == 0)
+		m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), getVertexShaderTexturedRect(), m_vertexEnd.get());
 	return m_vertexShaderTexturedRect;
 }
 
 GLuint CombinerProgramBuilderCommon::_getVertexShaderTexturedTriangle() const
 {
+	if (m_vertexShaderTexturedTriangle == 0)
+		m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), getVertexShaderTexturedTriangle(), m_vertexEnd.get());
 	return m_vertexShaderTexturedTriangle;
 }
 
@@ -1627,11 +1578,6 @@ void CombinerProgramBuilderCommon::_writeFragmentBlendMux(std::stringstream& ssS
 void CombinerProgramBuilderCommon::_writeShaderCoverage(std::stringstream& ssShader)const
 {
 	 m_shaderCoverage->write(ssShader);
-}
-
-void CombinerProgramBuilderCommon::_writeFragmentCorrectTexCoords(std::stringstream& ssShader)const
-{
-	 m_fragmentCorrectTexCoords->write(ssShader);
 }
 
 void CombinerProgramBuilderCommon::_writeFragmentReadTexMipmap(std::stringstream& ssShader)const
