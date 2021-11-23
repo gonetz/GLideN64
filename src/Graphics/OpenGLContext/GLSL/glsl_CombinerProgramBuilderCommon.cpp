@@ -1365,8 +1365,8 @@ public:
 			" mTexCoord0 += uTexCoordOffset[0];											\n"
 			" mTexCoord1 += uTexCoordOffset[1];											\n"
 			" if (uUseTexCoordBounds != 0) {											\n"
-			" mTexCoord0 = clamp(mTexCoord0, uTexCoordBounds0.xy, uTexCoordBounds0.zw); \n"
-			" mTexCoord1 = clamp(mTexCoord1, uTexCoordBounds1.xy, uTexCoordBounds1.zw); \n"
+			" mTexCoord0 = clamp(mTexCoord0, uTexCoordBounds.xy, uTexCoordBounds.zw); \n"
+			" mTexCoord1 = clamp(mTexCoord1, uTexCoordBounds.xy, uTexCoordBounds.zw); \n"
 			" }																			\n"
 			;
 	}

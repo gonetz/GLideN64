@@ -21,8 +21,7 @@ public:
 		LocateUniform(uTexCoordOffset[0]);
 		LocateUniform(uTexCoordOffset[1]);
 		LocateUniform(uUseTexCoordBounds);
-		LocateUniform(uTexCoordBounds0);
-		LocateUniform(uTexCoordBounds1);
+		LocateUniform(uTexCoordBounds);
 	}
 
 	void update(bool _force) override {
@@ -79,40 +78,32 @@ public:
 				}
 			}
 		}
-		float tcbounds[2][4] = {};
+		float tcbounds[4] = {};
 		if (useTexCoordBounds) {
-			f32 uls, lrs, ult, lrt, S, T;
-			for (int t = 0; t < 2; t++) {
-				const CachedTexture * _pTexture = textureCache().current[t];
-				if (_pTexture != nullptr) {
-					S = _FIXED2FLOAT(gDP.lastTexRectInfo.s, 5);
-					T = _FIXED2FLOAT(gDP.lastTexRectInfo.t, 5);
-					uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx;
-					lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx;
-					ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy;
-					lrt = T + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy;
-					tcbounds[t][0] = fmin(uls, lrs);
-					tcbounds[t][1] = fmin(ult, lrt);
-					tcbounds[t][2] = fmax(uls, lrs);
-					tcbounds[t][3] = fmax(ult, lrt);
-				}
-			}
+			f32 S = _FIXED2FLOAT(gDP.lastTexRectInfo.s, 5);
+			f32 T = _FIXED2FLOAT(gDP.lastTexRectInfo.t, 5);
+			f32 uls = S + (ceilf(gDP.lastTexRectInfo.ulx) - gDP.lastTexRectInfo.ulx) * gDP.lastTexRectInfo.dsdx;
+			f32 lrs = S + (ceilf(gDP.lastTexRectInfo.lrx) - gDP.lastTexRectInfo.ulx - 1.0f) * gDP.lastTexRectInfo.dsdx;
+			f32 ult = T + (ceilf(gDP.lastTexRectInfo.uly) - gDP.lastTexRectInfo.uly) * gDP.lastTexRectInfo.dtdy;
+			f32 lrt = T + (ceilf(gDP.lastTexRectInfo.lry) - gDP.lastTexRectInfo.uly - 1.0f) * gDP.lastTexRectInfo.dtdy;
+			tcbounds[0] = fmin(uls, lrs);
+			tcbounds[1] = fmin(ult, lrt);
+			tcbounds[2] = fmax(uls, lrs);
+			tcbounds[3] = fmax(ult, lrt);
 		}
 
 		uVertexOffset.set(vertexOffset, vertexOffset, _force);
 		uTexCoordOffset[0].set(texCoordOffset[0][0], texCoordOffset[0][1], _force);
 		uTexCoordOffset[1].set(texCoordOffset[1][0], texCoordOffset[1][1], _force);
 		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
-		uTexCoordBounds0.set(tcbounds[0], _force);
-		uTexCoordBounds1.set(tcbounds[1], _force);
+		uTexCoordBounds.set(tcbounds, _force);
 	}
 
 private:
 	fv2Uniform uVertexOffset;
 	fv2Uniform uTexCoordOffset[2];
 	iUniform uUseTexCoordBounds;
-	fv4Uniform uTexCoordBounds0;
-	fv4Uniform uTexCoordBounds1;
+	fv4Uniform uTexCoordBounds;
 };
 
 class UMipmap : public UniformGroup
