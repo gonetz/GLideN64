@@ -21,6 +21,8 @@ set_property(SOURCE ${PATH_REVISION} PROPERTY SKIP_AUTOGEN ON)
 
 project( GLideN64 )
 
+include(GNUInstallDirs)
+
 set(GLideN64_SOURCES
   3DMath.cpp
   Combiner.cpp
@@ -555,3 +557,12 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release")
 	endif (NOHQ)
   endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Release")
+
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+	install(TARGETS ${GLideN64_DLL_NAME}
+		DESTINATION "${CMAKE_INSTALL_LIBDIR}/mupen64plus"
+	)
+	install(FILES ../ini/${PROJECT_NAME}.custom.ini
+		DESTINATION "${CMAKE_INSTALL_DATADIR}/mupen64plus"
+	)
+endif(UNIX AND NOT APPLE AND NOT ANDROID)
