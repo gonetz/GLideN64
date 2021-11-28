@@ -54,17 +54,12 @@ endif(WIN32)
 
 # Build type
 
-if( NOT CMAKE_BUILD_TYPE)
-	set( CMAKE_BUILD_TYPE Release)
-endif( NOT CMAKE_BUILD_TYPE)
-
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set( CMAKE_BUILD_TYPE Debug)
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
 	set( DEBUG_BUILD TRUE)
 	add_definitions(
 		-DDEBUG
 	)
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions( -D__MSC__)
@@ -81,12 +76,12 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQ
 endif()
 
 add_definitions( -DTXFILTER_LIB)
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
     SET( BUILD_VARIANT "debug" )
 else()
     SET( BUILD_VARIANT "release" )
 endif()
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
   add_library( GLideNHQd STATIC ${GLideNHQ_SOURCES})
   set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_START_STATIC 1)
   set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_END_STATIC 1)
@@ -113,9 +108,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
       osald
     )
   endif(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-if( CMAKE_BUILD_TYPE STREQUAL "Release")
+else( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
   add_library( GLideNHQ STATIC ${GLideNHQ_SOURCES})
 
 #  set_target_properties(GLideNHQ PROPERTIES LINK_SEARCH_START_STATIC 1)
@@ -152,4 +145,4 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release")
       osal
     )
   endif(PANDORA)
-endif( CMAKE_BUILD_TYPE STREQUAL "Release")
+endif( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
