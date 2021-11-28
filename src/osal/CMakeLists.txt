@@ -28,17 +28,12 @@ endif(WIN32)
 
 # Build type
 
-if( NOT CMAKE_BUILD_TYPE)
-	set( CMAKE_BUILD_TYPE Release)
-endif( NOT CMAKE_BUILD_TYPE)
-
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set( CMAKE_BUILD_TYPE Debug)
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
 	set( DEBUG_BUILD TRUE)
 	add_definitions(
 		-DDEBUG
 	)
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions( -D__MSC__)
@@ -53,10 +48,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQ
     SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -static ${PIC_FLAGS} " )
 endif()
 
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
   add_library( osald STATIC ${OSAL_SOURCES})
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-if( CMAKE_BUILD_TYPE STREQUAL "Release")
+else( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
   add_library( osal STATIC ${OSAL_SOURCES})
-endif( CMAKE_BUILD_TYPE STREQUAL "Release")
+endif( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
