@@ -1,12 +1,28 @@
-SCRIPT_DIRECTORY=`dirname "$0"`
-rev=\"`git rev-parse --short HEAD`\"
-lastrev=$(head -n 1 "$SCRIPT_DIRECTORY/Revision.h" 2> /dev/null | cut -d ' ' -f3)
+#!/bin/sh
 
-echo current revision $rev
-echo last build revision $lastrev
+set -eu
+
+cd -- "$(cd -- "${0%/*}/" && pwd -P)"
+
+header='./Revision.h'
+
+if [ "${1:-}" != --nogit ]
+then
+   rev="\"$(git rev-parse --short HEAD)\"" || rev='""'
+else
+   rev='""'
+fi
+
+lastrev=''
+if [ -e "$header" ]
+then
+   lastrev="$(head -n 1 "$header" 2> /dev/null | cut -d ' ' -f3)"
+fi
+
+printf '%s\n' "current revision $rev" "last build revision $lastrev"
 
 if [ "$lastrev" != "$rev" ]
 then
-   echo "#define PLUGIN_REVISION $rev" > "$SCRIPT_DIRECTORY/Revision.h"
-   echo "#define PLUGIN_REVISION_W L$rev" >> "$SCRIPT_DIRECTORY/Revision.h"
+   printf '%s\n' "#define PLUGIN_REVISION $rev" \
+      "#define PLUGIN_REVISION_W L$rev" > "$header"
 fi
