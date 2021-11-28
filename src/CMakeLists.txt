@@ -12,11 +12,20 @@ option(GL_PROFILE "Set to ON to turn on GL profiling" ${GL_PROFILE})
 
 # run script to generate Revision.h
 set(PATH_REVISION "Revision.h")
-add_custom_command(
-        OUTPUT ${PATH_REVISION}
-        COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
-        COMMENT "Generate Git version"
-)
+find_package(Git)
+if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
+	add_custom_command(
+		OUTPUT ${PATH_REVISION}
+		COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
+		COMMENT "Generate Git version"
+	)
+else(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
+	add_custom_command(
+		OUTPUT ${PATH_REVISION}
+		COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh --nogit
+		COMMENT "Generate version"
+	)
+endif(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
 set_property(SOURCE ${PATH_REVISION} PROPERTY SKIP_AUTOGEN ON)
 
 project( GLideN64 )
@@ -534,7 +543,6 @@ if(GLIDEN64_BUILD_TYPE STREQUAL "Release")
         PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/Release
   )
-
 endif(GLIDEN64_BUILD_TYPE STREQUAL "Release")
 
 if(GLIDEN64_BUILD_TYPE STREQUAL "Debug")
