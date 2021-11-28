@@ -3,8 +3,8 @@
 #include "../GLideN64.h"
 #include "../GLideNUI/GLideNUI.h"
 #include "../Config.h"
-#include "../Revision.h"
 #include <DisplayWindow.h>
+#include <Revision.h>
 
 void PluginAPI::DllAbout(/*HWND _hParent*/)
 {
