@@ -4,7 +4,7 @@ set -eu
 
 cd -- "$(cd -- "${0%/*}/" && pwd -P)"
 
-header='./Revision.h'
+header="${OUTPUT:-./Revision.h}"
 
 if [ "${1:-}" != --nogit ]
 then
@@ -23,6 +23,7 @@ printf '%s\n' "current revision $rev" "last build revision $lastrev"
 
 if [ "$lastrev" != "$rev" ]
 then
+  [ "$header" = "${header##*/}" ] || mkdir -p -- "${header%/*}"
    printf '%s\n' "#define PLUGIN_REVISION $rev" \
       "#define PLUGIN_REVISION_W L$rev" > "$header"
 fi

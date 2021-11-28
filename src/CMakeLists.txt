@@ -11,22 +11,25 @@ option(ANDROID "Set to ON if targeting an Android device" ${ANDROID})
 option(GL_PROFILE "Set to ON to turn on GL profiling" ${GL_PROFILE})
 
 # run script to generate Revision.h
-set(PATH_REVISION "Revision.h")
+set(PATH_REVISION "${CMAKE_CURRENT_BINARY_DIR}/inc/Revision.h")
 find_package(Git)
 if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
 	add_custom_command(
 		OUTPUT ${PATH_REVISION}
-		COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
+		COMMAND
+		OUTPUT=${PATH_REVISION} ${CMAKE_SOURCE_DIR}/getRevision.sh
 		COMMENT "Generate Git version"
 	)
 else(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
 	add_custom_command(
 		OUTPUT ${PATH_REVISION}
-		COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh --nogit
+		COMMAND
+		OUTPUT=${PATH_REVISION} ${CMAKE_SOURCE_DIR}/getRevision.sh --nogit
 		COMMENT "Generate version"
 	)
 endif(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
 set_property(SOURCE ${PATH_REVISION} PROPERTY SKIP_AUTOGEN ON)
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/inc")
 
 project( GLideN64 )
 
