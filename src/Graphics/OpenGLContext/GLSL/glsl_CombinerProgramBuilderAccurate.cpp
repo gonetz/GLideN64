@@ -90,7 +90,6 @@ public:
 		m_part =
 			"IN highp vec4 aRectPosition;						\n"
 			"IN highp vec2 aTexCoord0;							\n"
-			"IN highp vec2 aTexCoord1;							\n"
 			"IN highp vec2 aBaryCoords;							\n"
 			"													\n"
 			"OUT highp vec2 vTexCoord;							\n"
