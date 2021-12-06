@@ -99,26 +99,32 @@ public:
 		LocateUniform(uMinLod);
 		LocateUniform(uMaxTile);
 		LocateUniform(uEnableLod);
+		LocateUniform(uNoAtlasTex);
 		LocateUniform(uTextureDetail);
 	}
 
 	void update(bool _force) override
 	{
 		uMinLod.set(gDP.primColor.m, _force);
-		const CachedTexture * _pTexture = textureCache().current[1];
-		if (_pTexture == nullptr)
-			uMaxTile.set(gSP.texture.level, _force);
-		else
-			uMaxTile.set(_pTexture->max_level > 0 ? gSP.texture.level : std::min(gSP.texture.level, 1u), _force);
-		const int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
-		uEnableLod.set(uCalcLOD, _force);
+		uEnableLod.set(gDP.otherMode.textureLOD == G_TL_LOD ? 1 : 0, _force);
 		uTextureDetail.set(gDP.otherMode.textureDetail, _force);
+
+		u32 maxTile = gSP.texture.level;
+		const CachedTexture * _pTexture = textureCache().current[1];
+		if (_pTexture != nullptr && _pTexture->max_level == 0)
+			maxTile = std::min(gSP.texture.level, 1u); // Hack for HD textures
+		uMaxTile.set(maxTile, _force);
+
+		bool bNoAtlasTex = maxTile == 0 || gDP.otherMode.textureLOD != G_TL_LOD ||
+			(gDP.otherMode.textureDetail != G_TD_DETAIL && maxTile == 1);
+		uNoAtlasTex.set(bNoAtlasTex ? 1 : 0, _force);
 	}
 
 private:
 	fUniform uMinLod;
 	iUniform uMaxTile;
 	iUniform uEnableLod;
+	iUniform uNoAtlasTex;
 	iUniform uTextureDetail;
 };
 
