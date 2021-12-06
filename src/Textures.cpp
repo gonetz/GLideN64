@@ -1616,37 +1616,40 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	} else {
 		params.target = textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[_t];
+		params.minFilter = textureParameters::FILTER_NEAREST;
+		params.magFilter = textureParameters::FILTER_NEAREST;
+		params.maxMipmapLevel = Parameter(0);
 
-		const bool bUseBilinear = gDP.otherMode.textureFilter != G_TF_POINT && config.texture.bilinearMode != BILINEAR_3POINT;
-		const bool bUseLOD = currentCombiner()->usesLOD();
-		const s32 texLevel = bUseLOD ? _pTexture->max_level : 0;
-		params.maxMipmapLevel = Parameter(texLevel);
+		if (config.generalEmulation.enableInaccurateTextureCoordinates != 0) {
 
-		if (bUseLOD) {
-			if (bUseBilinear) {
-				// Apply standard bilinear to mipmap textures
-				if (texLevel > 0)
-					params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
-				else
-					params.minFilter = textureParameters::FILTER_LINEAR;
-				params.magFilter = textureParameters::FILTER_LINEAR;
-			} else {
-				if (texLevel > 0)
-					params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
-				else
-					params.minFilter = textureParameters::FILTER_NEAREST;
-				params.magFilter = textureParameters::FILTER_NEAREST;
+			const bool bUseBilinear = gDP.otherMode.textureFilter != G_TF_POINT && config.texture.bilinearMode != BILINEAR_3POINT;
+			const bool bUseLOD = currentCombiner()->usesLOD();
+			const s32 texLevel = bUseLOD ? _pTexture->max_level : 0;
+			params.maxMipmapLevel = Parameter(texLevel);
+
+			if (bUseLOD) {
+				if (bUseBilinear) {
+					// Apply standard bilinear to mipmap textures
+					if (texLevel > 0)
+						params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
+					else
+						params.minFilter = textureParameters::FILTER_LINEAR;
+					params.magFilter = textureParameters::FILTER_LINEAR;
+				} else {
+					if (texLevel > 0)
+						params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
+					else
+						params.minFilter = textureParameters::FILTER_NEAREST;
+					params.magFilter = textureParameters::FILTER_NEAREST;
+				}
 			}
-		} else { // Don't use texture filter. Texture will be filtered by filter shader
-			params.minFilter = textureParameters::FILTER_NEAREST;
-			params.magFilter = textureParameters::FILTER_NEAREST;
-		}
 
-		// Set clamping modes
-		params.wrapS = _pTexture->clampS ? textureParameters::WRAP_CLAMP_TO_EDGE :
-			_pTexture->mirrorS ? textureParameters::WRAP_MIRRORED_REPEAT : textureParameters::WRAP_REPEAT;
-		params.wrapT = _pTexture->clampT ? textureParameters::WRAP_CLAMP_TO_EDGE :
-			_pTexture->mirrorT ? textureParameters::WRAP_MIRRORED_REPEAT : textureParameters::WRAP_REPEAT;
+			// Set clamping modes
+			params.wrapS = _pTexture->clampS ? textureParameters::WRAP_CLAMP_TO_EDGE :
+				_pTexture->mirrorS ? textureParameters::WRAP_MIRRORED_REPEAT : textureParameters::WRAP_REPEAT;
+			params.wrapT = _pTexture->clampT ? textureParameters::WRAP_CLAMP_TO_EDGE :
+				_pTexture->mirrorT ? textureParameters::WRAP_MIRRORED_REPEAT : textureParameters::WRAP_REPEAT;
+		}
 
 		if (config.texture.anisotropy != 0) {
 			switch (dwnd().getDrawer().getDrawingState()) {
