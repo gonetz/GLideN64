@@ -17,14 +17,14 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
 	add_custom_command(
 		OUTPUT ${PATH_REVISION}
 		COMMAND
-		OUTPUT=${PATH_REVISION} ${CMAKE_SOURCE_DIR}/getRevision.sh
+		env OUTPUT=${PATH_REVISION} ${CMAKE_SOURCE_DIR}/getRevision.sh
 		COMMENT "Generate Git version"
 	)
 else(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
 	add_custom_command(
 		OUTPUT ${PATH_REVISION}
 		COMMAND
-		OUTPUT=${PATH_REVISION} ${CMAKE_SOURCE_DIR}/getRevision.sh --nogit
+		env OUTPUT=${PATH_REVISION} ${CMAKE_SOURCE_DIR}/getRevision.sh --nogit
 		COMMENT "Generate version"
 	)
 endif(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/../.git")
