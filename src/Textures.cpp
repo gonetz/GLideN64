@@ -637,8 +637,9 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 				// 32 bit texture loaded into lower and upper half of TMEM, thus actual bytes doubled.
 				info.bytes *= 2;
 		}
-		gDP.loadTile->loadWidth = gDP.loadTile->loadHeight = 0;
 	}
+
+	gDP.loadTile->loadWidth = gDP.loadTile->loadHeight = 0;
 	_sizes.bytes = info.bytes;
 
 	if (tileWidth == 1 && tileHeight == 1 &&
@@ -1447,8 +1448,8 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			tmptex.size = mipTile.size;
 			TileSizes sizes;
 			_calcTileSizes(tileMipLevel, sizes, nullptr);
-			tmptex.width = sizes.width;
-			tmptex.height = sizes.height;
+			tmptex.width = std::min(tmptex.width, static_cast<u16>(sizes.width));
+			tmptex.height = std::min(tmptex.height, static_cast<u16>(sizes.height));
 			tmptex.clampWidth = sizes.clampWidth;
 			tmptex.clampHeight = sizes.clampHeight;
 			_pTexture->textureBytes += (tmptex.width * tmptex.height) << sizeShift;
