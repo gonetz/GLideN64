@@ -502,13 +502,6 @@ struct ObjCoordinates
 		lrs = uls + (lrx - ulx) * scaleW;
 		lrt = ult + (lry - uly) * scaleH;
 
-		if (config.frameBufferEmulation.nativeResFactor != 1u || config.video.multisampling != 0u) {
-			uls -= 0.5f * scaleW;
-			ult -= 0.5f * scaleH;
-			lrs -= 0.5f * scaleW;
-			lrt -= 0.5f * scaleH;
-		}
-
 		// G_CYC_COPY (BgRectCopyOnePiece()) does not allow texture filtering
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			// Correct texture coordinates if G_OBJRM_BILERP
