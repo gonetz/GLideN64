@@ -476,10 +476,8 @@ struct ObjCoordinates
 
 		f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
 		f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
-		//f32 imageW = (f32)(_pObjScaleBg->imageW >> 2);
-		//f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
-		f32 imageW = (f32)gSP.bgImage.width;
-		f32 imageH = (f32)gSP.bgImage.height;
+		f32 imageW = (f32)((_pObjScaleBg->imageW >> 2) & 0xFFFFFFFE);
+		f32 imageH = (f32)((_pObjScaleBg->imageH >> 2) & 0xFFFFFFFE);
 
 		if (u32(imageW) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0u) {
 			const f32 width = f32(*REG.VI_WIDTH);
