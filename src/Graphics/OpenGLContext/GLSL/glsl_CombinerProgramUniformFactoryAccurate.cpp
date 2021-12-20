@@ -1,6 +1,7 @@
 #include "glsl_CombinerProgramUniformFactoryAccurate.h"
 
 #include <Config.h>
+#include <FrameBuffer.h>
 #include <Textures.h>
 #include <DisplayWindow.h>
 #include <Debugger.h>
@@ -249,7 +250,7 @@ public:
 			if (!m_useTile[t])
 				continue;
 
-			const gDPTile * pTile = gSP.textureTile[t];
+			gDPTile * pTile = gSP.textureTile[t];
 			CachedTexture * pTexture = cache.current[t];
 			if (pTile == nullptr || pTexture == nullptr)
 				continue;
@@ -261,8 +262,21 @@ public:
 			aShiftScale[t][1] = calcShiftScaleT(*pTile);
 
 			if (pTile->textureMode != TEXTUREMODE_BGIMAGE && pTile->textureMode != TEXTUREMODE_FRAMEBUFFER_BG) {
-				aTexOffset[t][0] = pTile->fuls;
-				aTexOffset[t][1] = pTile->fult;
+				float fuls = pTile->fuls;
+				float fult = pTile->fult;
+				if (pTile->frameBufferAddress > 0u) {
+					FrameBuffer * pBuffer = frameBufferList().getBuffer(pTile->frameBufferAddress);
+					if (pBuffer != nullptr) {
+						if (pTile->masks > 0 && pTile->clamps == 0u)
+							fuls = float(pTile->uls % (1 << pTile->masks));
+						if (pTile->maskt > 0 && pTile->clampt == 0u)
+							fult = float(pTile->ult % (1 << pTile->maskt));
+					} else {
+						pTile->frameBufferAddress = 0u;
+					}
+				}
+				aTexOffset[t][0] = fuls;
+				aTexOffset[t][1] = fult;
 			}
 
 			aHDRatio[t][0] = pTexture->hdRatioS;
