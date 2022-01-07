@@ -142,6 +142,7 @@ void F5INDI_DMA_Segmented(u32 _w0, u32 _w1)
 static
 void F5INDI_Lighting_Overlay1(u32 _w0, u32 _w1)
 {
+	static bool showErrorMessage = true;
 	const u32 S = ((_SHIFTR(_w1, 24, 7) << 2) + 4) & 0xFFF8;
 	memset(DMEM + 0xD40, 0, S);
 
@@ -208,7 +209,12 @@ void F5INDI_Lighting_Overlay1(u32 _w0, u32 _w1)
 					++V;
 					s16 Z1 = (s16)_SHIFTR(*V, 16, 16);
 
-					V = CAST_DMEM(const u32*, 0x170 + offsetAddr[offsetAddrIdx^3]);
+					const u32 addr = 0x170 + offsetAddr[offsetAddrIdx ^ 3];
+					if (addr >= 0x1000 && showErrorMessage) {
+						dwnd().getDrawer().showMessage("Wrong data address detected!!! Please report to developers.\n", Milliseconds(5000));
+						showErrorMessage = false;
+					}
+					V = CAST_DMEM(const u32*, (addr&0x0FFC));
 					offsetAddrIdx++;
 					s16 X = (s16)_SHIFTR(*V, 16, 16);
 					s16 Y = (s16)_SHIFTR(*V, 0, 16);
