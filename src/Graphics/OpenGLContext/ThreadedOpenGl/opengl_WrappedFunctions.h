@@ -4750,6 +4750,34 @@ private:
 	}
 };
 
+class GlFlushCommand : public OpenGlCommand
+{
+public:
+    GlFlushCommand() :
+            OpenGlCommand(true, true, "glFlush")
+    {
+    }
+
+    static std::shared_ptr<OpenGlCommand> get()
+    {
+        static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+        auto ptr = getFromPool<GlFlushCommand>(poolId);
+        ptr->set();
+        return ptr;
+    }
+
+    void commandToExecute() override
+    {
+        ptrFlush();
+    }
+
+private:
+    void set()
+    {
+
+    }
+};
+
 class GlCopyTexImage2DCommand : public OpenGlCommand
 {
 public:

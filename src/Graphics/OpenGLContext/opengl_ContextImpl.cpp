@@ -204,11 +204,6 @@ void ContextImpl::clearDepthBuffer()
 	CachedDepthMask * depthMask = m_cachedFunctions->getCachedDepthMask();
 	enableScissor->enable(false);
 
-	if (m_glInfo.renderer == Renderer::PowerVR) {
-		depthMask->setDepthMask(false);
-		glClear(GL_DEPTH_BUFFER_BIT);
-	}
-
 	depthMask->setDepthMask(true);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
