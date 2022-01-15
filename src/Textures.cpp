@@ -21,6 +21,8 @@
 #include "Graphics/Parameters.h"
 #include "DisplayWindow.h"
 
+#include "Log.h"
+
 using namespace std;
 using namespace graphics;
 
@@ -1110,15 +1112,22 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 	} else {
 		j = 0;
 		const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
+
 		for (y = 0; y < tmptex.height; ++y) {
 			ty = min(y, clampTClamp) & maskTMask;
 
 			pSrc = &TMEM[(tmptex.tMem + *pLine * ty) & tMemMask];
-
 			i = (ty & 1) << 1;
+
+ 			int tmemIndex = (tmptex.tMem + *pLine * ty) & tMemMask;
+			if (tmemIndex + (min(tmptex.width, clampSClamp)-1)/4 >= sizeof(TMEM)/sizeof(TMEM[0])) {
+				LOG(LOG_ERROR, "tx=%d tmemfinal=%d tmem=%d pline=%d ty=%d x=%d, clamp=%d, final=%d",
+					tx, tmemIndex, tmptex.tMem, *pLine, ty, tmptex.width, clampSClamp,
+					tmemIndex + min(tmptex.width, clampSClamp)/4);
+			}
+
 			for (x = 0; x < tmptex.width; ++x) {
 				tx = min(x, clampSClamp) & maskSMask;
-
 				if (glInternalFormat == internalcolorFormat::RGBA8) {
 					pDest[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
 				} else {
