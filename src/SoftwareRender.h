@@ -10,7 +10,7 @@
 * No coordinate clipping applied.
 * Return max vertex Y.
 */
-f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements);
+f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements, graphics::DrawModeParam _mode);
 
 /* Software render triangles to N64 depth buffer
 * Coordinates of vertices can be in screen space or in homogeneous space

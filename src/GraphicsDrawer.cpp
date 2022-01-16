@@ -816,7 +816,7 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 	m_dmaVerticesNum = 0;
 
 	if (config.frameBufferEmulation.enable != 0) {
-		const f32 maxY = renderScreenSpaceTriangles(m_dmaVertices.data(), _numVtx);
+		const f32 maxY = renderScreenSpaceTriangles(m_dmaVertices.data(), _numVtx, _mode);
 		frameBufferList().setBufferChanged(maxY);
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 			gDP.otherMode.depthUpdate != 0) {
