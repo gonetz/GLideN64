@@ -1512,9 +1512,7 @@ bool gSPCullVertices( u32 v0, u32 vn )
 {
 	if (vn < v0) {
 		// Aidyn Chronicles - The First Mage seems to pass parameters in reverse order.
-		const u32 v = v0;
-		v0 = vn;
-		vn = v;
+		std::swap(v0, vn);
 	}
 	u32 clip = 0;
 	GraphicsDrawer & drawer = dwnd().getDrawer();
