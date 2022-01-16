@@ -30,13 +30,6 @@ public:
 		const bool isNativeRes = config.frameBufferEmulation.nativeResFactor == 1 && config.video.multisampling == 0;
 		const bool isTexRect = dwnd().getDrawer().getDrawingState() == DrawingState::TexRect;
 		const bool useTexCoordBounds = isTexRect && !isNativeRes && config.graphics2D.enableTexCoordBounds;
-		/* At rasterization stage, the N64 places samples on the top left of the fragment while OpenGL		*/
-		/* places them in the fragment center. As a result, a normal approach results in shifted texture	*/
-		/* coordinates. In native resolution, this difference can be negated by shifting vertices by 0.5.	*/
-		/* In higher resolutions, there	are more samples than the game intends, so shifting is not very		*/
-		/* effective. Still, an heuristic is applied to render texture rectangles as correctly as possible  */
-		/* in higher resolutions too. See issue #2324 for details. 											*/
-		const float vertexOffset = isNativeRes ? 0.5f : 0.0f;
 		float texCoordOffset[2][2] = { 0.0f, 0.0f };
 		if (isTexRect && !isNativeRes) {
 			float scale[2] = { 0.0f, 0.0f };
@@ -109,7 +102,7 @@ public:
 			}
 		}
 
-		uVertexOffset.set(vertexOffset, vertexOffset, _force);
+		uVertexOffset.set(0.0, 0.0, _force);
 		uTexCoordOffset[0].set(texCoordOffset[0][0], texCoordOffset[0][1], _force);
 		uTexCoordOffset[1].set(texCoordOffset[1][0], texCoordOffset[1][1], _force);
 		uUseTexCoordBounds.set(useTexCoordBounds ? 1 : 0, _force);
