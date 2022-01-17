@@ -1,7 +1,7 @@
 
 # GLideN64 [![Github Badge]][Workflow]
 
-*A next generation,* ***N64*** *emulator*, ***Graphics Plugin*** *.*
+*A next generation* ***Graphics Plugin*** *for the* ***N64*** *emulator.*
 
 ---
 
