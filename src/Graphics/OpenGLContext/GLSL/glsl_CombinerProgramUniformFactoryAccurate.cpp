@@ -258,8 +258,6 @@ public:
 			aTexSize[t][0] = pTexture->width * pTexture->hdRatioS;
 			aTexSize[t][1] = pTexture->height * pTexture->hdRatioT;
 
-			aShiftScale[t][0] = calcShiftScaleS(*pTile);
-			aShiftScale[t][1] = calcShiftScaleT(*pTile);
 
 			if (pTile->textureMode != TEXTUREMODE_BGIMAGE && pTile->textureMode != TEXTUREMODE_FRAMEBUFFER_BG) {
 				float fuls = pTile->fuls;
@@ -277,6 +275,9 @@ public:
 				}
 				aTexOffset[t][0] = fuls;
 				aTexOffset[t][1] = fult;
+
+				aShiftScale[t][0] = calcShiftScaleS(*pTile);
+				aShiftScale[t][1] = calcShiftScaleT(*pTile);
 			}
 
 			aHDRatio[t][0] = pTexture->hdRatioS;
