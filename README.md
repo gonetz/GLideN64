@@ -27,7 +27,7 @@ Download them from the latest **[Release]** .
 
 ##### Version
 
-*Choose between the `32-bit` / `64-bit`* <br>
+*Choose between `32-bit` / `64-bit`* <br>
 *according to your emulator version.*
 
 ##### Earlier Builds
