@@ -23,7 +23,7 @@ class TxHiResLoader
 protected:
 	uint32_t checkFileName(char* ident, char* fname, uint32_t* pChksum, uint32_t* pPalchksum, uint32_t* pFmt, uint32_t* pSiz);
 	uint8_t* loadFileInfoTex(char* fname, int siz, int* pWidth, int* pHeight, uint32_t fmt, ColorFormat* pFormat);
- 	
+
 	std::unique_ptr<TxImage> _txImage;
 	std::unique_ptr<TxQuantize> _txQuantize;
 	std::unique_ptr<TxReSample> _txReSample;
@@ -42,7 +42,7 @@ public:
 
 	virtual bool empty() const = 0;
 	virtual bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) = 0;
-	virtual bool get(Checksum checksum, GHQTexInfo *info) = 0;
+	virtual bool get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *info) = 0;
 	virtual bool reload() = 0;
 	virtual void dump() = 0;
 };

@@ -45,6 +45,9 @@
 #define CHDIR(a) chdir(a)
 #endif
 
+typedef unsigned char  uint8;
+typedef unsigned short uint16;
+typedef unsigned int  uint32;
 #ifdef __MSC__
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
@@ -100,21 +103,77 @@ typedef unsigned char boolean;
 #define GZ_HIRESTEXCACHE    0x00800000
 #define DUMP_TEXCACHE       0x01000000
 #define DUMP_HIRESTEXCACHE  0x02000000
-#define TILE_HIRESTEX       0x04000000
-#define UNDEFINED_0         0x08000000
+#define UNDEFINED_0         0x04000000
+#define UNDEFINED_1         0x08000000
 #define FORCE16BPP_HIRESTEX 0x10000000
 #define FORCE16BPP_TEX      0x20000000
 #define LET_TEXARTISTS_FLY  0x40000000 /* a little freedom for texture artists */
 #define DUMP_TEX            0x80000000
 
-struct GHQTexInfo {
-  unsigned char *data = nullptr;
-  int width = 0;
-  int height = 0;
-  unsigned int format = 0;
-  unsigned short texture_format = 0;
-  unsigned short pixel_type = 0;
-  unsigned char is_hires_tex = 0;
+struct Checksum
+{
+	union
+	{
+		uint64 _checksum; /* checksum hi:palette low:texture */
+		struct
+		{
+			uint32 _texture;
+			uint32 _palette;
+		};
+	};
+
+	Checksum(uint64 checksum) : _checksum(checksum) {}
+	Checksum(uint32 texture, uint32 palette) : _texture(texture), _palette(palette) {}
+
+	operator bool() const {
+		return _checksum != 0;
+	}
+
+	operator uint64() const {
+		return _checksum;
+	}
+};
+
+struct N64FormatSize
+{
+	union
+	{
+		uint16 _formatsize;
+		struct
+		{
+			uint8 _format;
+			uint8 _size;
+		};
+	};
+
+	N64FormatSize(uint16 n64format, uint16 n64size) :
+		_format(static_cast<uint8>(n64format)),
+		_size(static_cast<uint8>(n64size))
+	{}
+
+	uint16 formatsize() const
+	{
+		return _formatsize;
+	}
+
+	bool operator==(const N64FormatSize& _other) const
+	{
+		return _other._formatsize == _formatsize;
+	}
+};
+
+struct GHQTexInfo
+{
+  GHQTexInfo() {}
+  ~GHQTexInfo() {}
+  unsigned char *data{ nullptr };
+  unsigned int width{ 0u };
+  unsigned int height{ 0u };
+  unsigned int format{ 0u };
+  unsigned short texture_format{ 0u };
+  unsigned short pixel_type{ 0u };
+  unsigned char is_hires_tex{ 0u };
+  N64FormatSize n64_format_size{ 0u, 0u };
 };
 
 /* Callback to display hires texture info.
@@ -155,10 +214,6 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #endif
 #endif // OS_WINDOWS
 
-typedef unsigned char  uint8;
-typedef unsigned short uint16;
-typedef unsigned int  uint32;
-
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -173,16 +228,16 @@ txfilter_shutdown(void);
 
 TAPI boolean TAPIENTRY
 txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
-		 uint64 g64crc, GHQTexInfo *info);
+		 uint64 g64crc, N64FormatSize n64FmtSz, GHQTexInfo *info);
 
 TAPI boolean TAPIENTRY
-txfilter_hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *info);
+txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSize n64FmtSz, GHQTexInfo *info);
 
 TAPI uint64 TAPIENTRY
 txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
 
 TAPI boolean TAPIENTRY
-txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64);
+txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum r_crc64);
 
 TAPI boolean TAPIENTRY
 txfilter_reloadhirestex();

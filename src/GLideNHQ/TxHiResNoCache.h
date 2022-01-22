@@ -10,7 +10,7 @@ class TxHiResNoCache : public TxHiResLoader
 		bool _createFileIndexInDir(tx_wstring directory, bool update);
 		void _clear();
 
-		struct fileIndexEntry_t
+		struct FileIndexEntry
 		{
 			char fname[MAX_PATH];
 			tx_wstring directory;
@@ -21,8 +21,10 @@ class TxHiResNoCache : public TxHiResLoader
 		tx_wstring _fullTexPath;
 		tx_wstring _ident;
 		char _identc[MAX_PATH];
-		std::map<uint64, fileIndexEntry_t> _filesIndex;
-		std::map<uint64, GHQTexInfo> _loadedTex;
+		using FileIndexMap = std::multimap<uint64, FileIndexEntry>;
+		FileIndexMap _filesIndex;
+		FileIndexMap::const_iterator findFile(Checksum checksum, N64FormatSize n64FmtSz) const;
+		std::multimap<uint64, GHQTexInfo> _loadedTex;
 		dispInfoFuncExt _callback;
 	public:
 		~TxHiResNoCache();
@@ -37,7 +39,7 @@ class TxHiResNoCache : public TxHiResLoader
 			   dispInfoFuncExt callback);
   		bool empty() const override;
   		bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override { return false; }
-  		bool get(Checksum checksum, GHQTexInfo *info) override;
+		bool get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *info) override;
   		bool reload() override;
   		void dump() override { };
 };

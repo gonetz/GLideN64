@@ -60,7 +60,7 @@ public:
 			   dispInfoFuncExt callback);
   bool empty() const override;
   bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override;
-  bool get(Checksum checksum, GHQTexInfo *info) override;
+  bool get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *info) override;
   bool reload() override;
   void dump() override;
 };

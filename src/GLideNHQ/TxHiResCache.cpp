@@ -97,7 +97,6 @@ int TxHiResCache::_getConfig() const
 {
 	return getOptions() &
 		(HIRESTEXTURES_MASK |
-		TILE_HIRESTEX |
 		FORCE16BPP_HIRESTEX |
 		GZ_HIRESTEXCACHE |
 		FILE_HIRESTEXCACHE |
@@ -251,7 +250,7 @@ TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_pa
 				chksum64 <<= 32;
 				chksum64 |= (uint64)chksum;
 			}
-			if (isCached(chksum64)) {
+			if (isCached(chksum64, N64FormatSize(fmt, siz))) {
 #if !DEBUG
 				INFO(80, wst("-----\n"));
 				INFO(80, wst("file: %s\n"), fname);
@@ -281,6 +280,7 @@ TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_pa
 		tmpInfo.width = width;
 		tmpInfo.height = height;
 		tmpInfo.is_hires_tex = 1;
+		tmpInfo.n64_format_size = N64FormatSize(fmt, siz);
 		setTextureFormat(format, &tmpInfo);
 
 		/* remove redundant in cache */
@@ -325,7 +325,7 @@ bool TxHiResCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
 	return TxCache::add(checksum, info, dataSize);
 }
 
-bool TxHiResCache::get(Checksum checksum, GHQTexInfo *info)
+bool TxHiResCache::get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *info)
 {
-	return TxCache::get(checksum, info);
+	return TxCache::get(checksum, n64FmtSz, info);
 }

@@ -37,7 +37,7 @@ private:
 public:
   ~TxTexCache();
   TxTexCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident, dispInfoFuncExt callback);
-	bool add(uint64 checksum /* checksum hi:palette low:texture */, GHQTexInfo *info);
+  bool add(Checksum checksum, GHQTexInfo *info);
   void dump();
 };
 

@@ -571,4 +571,3 @@ uint8_t* TxHiResLoader::loadFileInfoTex(char* fname,
 
 	return tex;
 }
-
