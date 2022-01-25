@@ -12,6 +12,10 @@ QString getCurrentProfile(const QString & _strIniFolder);
 void changeProfile(const QString & _strIniFolder, const QString & _strProfile);
 void addProfile(const QString & _strIniFolder, const QString & _strProfile);
 void removeProfile(const QString & _strIniFolder, const QString & _strProfile);
+#ifdef M64P_GLIDENUI
+bool isPathWriteable(const QString dir);
+void copyConfigFiles(const QString _srcDir, const QString _targetDir);
+#endif // M64P_GLIDENUI
 
 #endif // SETTINGS_H
 

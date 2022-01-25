@@ -13,6 +13,11 @@ extern "C" {
 #define CALL
 #endif
 
+#ifdef M64P_GLIDENUI
+EXPORT bool CALL IsPathWriteable(const wchar_t * dir);
+EXPORT void CALL CopyConfigFiles(const wchar_t * _srcDir, const wchar_t * _targetDir);
+#endif // M64P_GLIDENUI
+
 EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy);
 EXPORT int CALL RunAbout(const wchar_t * _strFileName);
 EXPORT void CALL LoadConfig(const wchar_t * _strFileName);
