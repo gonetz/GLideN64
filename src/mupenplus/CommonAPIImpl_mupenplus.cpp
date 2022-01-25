@@ -50,10 +50,12 @@ void _cutLastPathSeparator(wchar_t * _strPath)
 }
 
 static
-void _getWSPath(const char * _path, wchar_t * _strPath)
+void _getWSPath(const char * _path, wchar_t * _strPath, bool cutLastPathSeperator = false)
 {
 	::mbstowcs(_strPath, _path, PLUGIN_PATH_SIZE);
-	_cutLastPathSeparator(_strPath);
+	if (cutLastPathSeperator) {
+		_cutLastPathSeparator(_strPath);
+	}
 }
 
 void PluginAPI::GetUserDataPath(wchar_t * _strPath)
@@ -65,6 +67,13 @@ void PluginAPI::GetUserCachePath(wchar_t * _strPath)
 {
 	_getWSPath(ConfigGetUserCachePath(), _strPath);
 }
+
+#ifdef M64P_GLIDENUI
+void PluginAPI::GetUserConfigPath(wchar_t * _strPath)
+{
+	_getWSPath(ConfigGetUserConfigPath(), _strPath);
+}
+#endif // M64P_GLIDENUI
 
 void PluginAPI::FindPluginPath(wchar_t * _strPath)
 {
@@ -91,7 +100,7 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 
 			if (line.find("GLideN64") != std::string::npos)
 			{
-				_getWSPath(line.c_str(), _strPath);
+				_getWSPath(line.c_str(), _strPath, true);
 				maps.close();
 				return;
 			}
@@ -104,14 +113,14 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 	int res = readlink("/proc/self/exe", path, 510);
 	if (res != -1) {
 		path[res] = 0;
-		_getWSPath(path, _strPath);
+		_getWSPath(path, _strPath, true);
 	}
 #elif defined(OS_MAC_OS_X)
 #define MAXPATHLEN 256
 	char path[MAXPATHLEN];
 	uint32_t pathLen = MAXPATHLEN * 2;
 	if (_NSGetExecutablePath(path, &pathLen) == 0) {
-		_getWSPath(path, _strPath);
+		_getWSPath(path, _strPath, true);
 	}
 #elif defined(OS_ANDROID)
 	GetUserCachePath(_strPath);

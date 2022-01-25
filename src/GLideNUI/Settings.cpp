@@ -600,3 +600,28 @@ void removeProfile(const QString & _strIniFolder, const QString & _strProfile)
 	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
 	settings.remove(_strProfile);
 }
+
+#ifdef M64P_GLIDENUI
+#include <QFileInfo>
+
+bool isPathWriteable(const QString dir)
+{
+	QFileInfo path(dir);
+	return path.isWritable();
+}
+
+void copyConfigFiles(const QString _srcDir, const QString _targetDir)
+{
+	QStringList files = {
+		strIniFileName,
+		strDefaultIniFileName,
+		strCustomSettingsFileName
+	};
+
+	for (const QString& file : files) {
+		if (!QFile::exists(_targetDir + "/" + file)) {
+			QFile::copy(_srcDir + "/" + file, _targetDir + "/" + file);
+		}
+	}
+}
+#endif // M64P_GLIDENUI

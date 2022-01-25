@@ -97,6 +97,18 @@ int runAboutThread(const wchar_t * _strFileName) {
 	return 0;
 }
 
+#ifdef M64P_GLIDENUI
+EXPORT bool CALL IsPathWriteable(const wchar_t * dir)
+{
+	return isPathWriteable(QString::fromWCharArray(dir));
+}
+
+EXPORT void CALL CopyConfigFiles(const wchar_t * _srcDir, const wchar_t * _targetDir)
+{
+	return copyConfigFiles(QString::fromWCharArray(_srcDir), QString::fromWCharArray(_targetDir));
+}
+#endif // M64P_GLIDENUI
+
 EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
 {
 	return runConfigThread(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy);

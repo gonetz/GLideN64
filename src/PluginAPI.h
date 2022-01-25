@@ -45,6 +45,9 @@ public:
 	void FindPluginPath(wchar_t * _strPath);
 	void GetUserDataPath(wchar_t * _strPath);
 	void GetUserCachePath(wchar_t * _strPath);
+#ifdef M64P_GLIDENUI
+	void GetUserConfigPath(wchar_t * _strPath);
+#endif // M64P_GLIDENUI
 	bool isRomOpen() const { return m_bRomOpen; }
 
 #ifndef MUPENPLUSAPI
