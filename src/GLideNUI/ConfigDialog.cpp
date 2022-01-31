@@ -103,6 +103,8 @@ QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 		return tr("Toggle OSD rendering resolution");
 	case Config::HotKey::hkForceGammaCorrection:
 		return tr("Toggle force gamma correction");
+	case Config::HotKey::hkInaccurateTexCords:
+		return tr("Toggle inaccurate texture coordinates");
 	}
 	return tr("Unknown hotkey");
 }

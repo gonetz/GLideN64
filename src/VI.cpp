@@ -216,6 +216,16 @@ static void checkHotkeys()
 			dwnd().getDrawer().showMessage("Force gamma correction off\n", Milliseconds(750));
 		config.gammaCorrection.force = !config.gammaCorrection.force;
 	}
+
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkInaccurateTexCords], 0x0001)) {
+		config.generalEmulation.enableInaccurateTextureCoordinates = !config.generalEmulation.enableInaccurateTextureCoordinates;
+		dwnd().stop();
+		dwnd().start();
+		if (config.generalEmulation.enableInaccurateTextureCoordinates == 0)
+			dwnd().getDrawer().showMessage("Disable inaccurate texture coordinates\n", Milliseconds(1000));
+		else
+			dwnd().getDrawer().showMessage("Enable inaccurate texture coordinates\n", Milliseconds(1000));
+	}
 }
 
 void VI_UpdateScreen()
