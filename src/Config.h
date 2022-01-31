@@ -234,6 +234,7 @@ struct Config
 		hkOsdInternalResolution,
 		hkOsdRenderingResolution,
 		hkForceGammaCorrection,
+		hkInaccurateTexCords,
 		hkTotal
 	};
 

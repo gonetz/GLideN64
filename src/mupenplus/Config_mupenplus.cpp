@@ -51,6 +51,8 @@ const char* _hotkeyDescription(u32 _idx)
 		return "Hotkey: toggle OSD rendering resolution";
 	case Config::HotKey::hkForceGammaCorrection:
 		return "Hotkey: toggle force gamma correction";
+	case Config::HotKey::hkInaccurateTexCords:
+		return "Hotkey: toggle inaccurate texture coordinates";
 	}
 	return "Unknown hotkey";
 }
