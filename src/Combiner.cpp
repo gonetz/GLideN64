@@ -271,7 +271,7 @@ graphics::CombinerProgram * Combiner_Compile(CombinerKey key)
 void CombinerInfo::update()
 {
 	// TODO: find, why gDP.changed & CHANGED_COMBINE not always works (e.g. Mario Tennis).
-	if (gDP.changed & CHANGED_COMBINE)
+	// if (gDP.changed & CHANGED_COMBINE)
 	{
 		if (gDP.otherMode.cycleType == G_CYC_COPY)
 		{

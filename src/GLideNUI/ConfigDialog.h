@@ -1,5 +1,5 @@
-#ifndef CONFIGDIALOG_H
-#define CONFIGDIALOG_H
+#ifndef UI_CONFIGDIALOG_H
+#define UI_CONFIGDIALOG_H
 
 #include <QDialog>
 #include <QTreeWidgetItem>
@@ -77,4 +77,4 @@ private:
 	const char * m_romName;
 };
 
-#endif // CONFIGDIALOG_H
+#endif // UI_CONFIGDIALOG_H

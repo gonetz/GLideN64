@@ -131,5 +131,8 @@
     <ClInclude Include="GeneratedFiles\ui_configDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\ui_configDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

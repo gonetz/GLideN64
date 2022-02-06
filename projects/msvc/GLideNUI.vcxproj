@@ -36,15 +36,19 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
-  </ImportGroup>    
+  </ImportGroup>
   <PropertyGroup Label="UserMacros">
-	<QTDIR>C:\Qt57</QTDIR>
- </PropertyGroup>
+    <QTDIR>C:\Qt</QTDIR>
+  </PropertyGroup>
   <PropertyGroup>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\lib\</OutDir>
     <IntDir>$(SolutionDir)build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Qt\include;C:\Qt\include\QtGui;C:\Qt\include\QtCore;C:\Qt\include\QtWidgets;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>C:\Qt\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -93,7 +97,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>qtpcre.lib;qtmain.lib;qwindows.lib;qico.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Dwmapi.lib;Version.lib;Wtsapi32.lib;Userenv.lib;Netapi32.lib;qtpcre2.lib;qtmain.lib;qwindows.lib;qico.lib;qtharfbuzz.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5WindowsUIAutomationSupport.lib;Qt5FontDatabaseSupport.lib;Qt5EventDispatcherSupport.lib;Qt5ThemeSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>Qt5UiTools.lib;Qt5WinExtras.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -148,6 +152,7 @@ endlocal
       <AdditionalInputs>$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
+    <ClInclude Include="..\..\src\GLideNUI\ui_configDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_AboutDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_configDialog.h" />
     <ClInclude Include="..\..\src\GLideNUI\GLideNUI.h" />
