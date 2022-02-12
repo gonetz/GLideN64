@@ -24,136 +24,155 @@
 using namespace std;
 using namespace graphics;
 
-inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetNone(u16 offset, u16 x, u16 i, u8 palette)
 {
 	return 0x00000000;
 }
 
-inline u32 GetCI4_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
+inline u8 Get4BitPaletteColor(u16 offset, u16 x, u16 i)
 {
-	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+	u8* tmem8 = reinterpret_cast<u8*>(TMEM);
+	return tmem8[((offset << 3) + ((x >> 1) ^ (i << 1))) & 0xFFF];
+}
 
+u32 GetCI4_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
+{
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 	return CI4_RGBA8888((x & 1) ? (palette << 4) | (color4B & 0x0F) : (palette << 4) | (color4B >> 4));
 }
 
-inline u32 GetCI4_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetCI4_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
-
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 	return CI4_RGBA4444((x & 1) ? (palette << 4) | (color4B & 0x0F) : (palette << 4) | (color4B >> 4));
 }
 
-inline u32 GetCI4IA_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetCI4IA_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return IA88_RGBA4444( *(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)] );
+		return IA88_RGBA4444(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
 	else
-		return IA88_RGBA4444( *(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)] );
+		return IA88_RGBA4444(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
 }
 
-inline u32 GetCI4IA_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI4IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return IA88_RGBA8888( *(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)] );
+		return IA88_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
 	else
-		return IA88_RGBA8888( *(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)] );
+		return IA88_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
 }
 
-inline u32 GetCI4RGBA_RGBA5551( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI4RGBA_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return RGBA5551_RGBA5551( *(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)] );
+		return RGBA5551_RGBA5551(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
 	else
-		return RGBA5551_RGBA5551( *(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)] );
+		return RGBA5551_RGBA5551(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
 }
 
-inline u32 GetCI4RGBA_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI4RGBA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return RGBA5551_RGBA8888( *(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)] );
+		return RGBA5551_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
 	else
-		return RGBA5551_RGBA8888( *(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)] );
+		return RGBA5551_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
 }
 
-inline u32 GetIA31_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetIA31_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
-
-	return IA31_RGBA8888( (x & 1) ? (color4B & 0x0F) : (color4B >> 4) );
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
+	return IA31_RGBA8888((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
 }
 
-inline u32 GetIA31_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetIA31_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
-
-	return IA31_RGBA4444( (x & 1) ? (color4B & 0x0F) : (color4B >> 4) );
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
+	return IA31_RGBA4444((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
 }
 
-inline u32 GetI4_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetI4_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
-
-	return I4_RGBA8888( (x & 1) ? (color4B & 0x0F) : (color4B >> 4) );
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
+	return I4_RGBA8888((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
 }
 
-inline u32 GetI4_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetI4_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u8 color4B = ((u8*)src)[(x>>1)^(i<<1)];
-
-	return I4_RGBA4444( (x & 1) ? (color4B & 0x0F) : (color4B >> 4) );
+	const u8 color4B = Get4BitPaletteColor(offset, x, i);
+	return I4_RGBA4444((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
 }
 
-inline u32 GetCI8IA_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+inline u8 Get8BitPaletteColor(u16 offset, u16 x, u16 i)
 {
-	return IA88_RGBA4444( *(u16*)&TMEM[256 + ((u8*)src)[x^(i<<1)]] );
+	u8* tmem8 = reinterpret_cast<u8*>(TMEM);
+	return tmem8[((offset << 3) + (x ^ (i << 1))) & 0xFFF];
 }
 
-inline u32 GetCI8IA_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI8IA_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return IA88_RGBA8888( *(u16*)&TMEM[256 + ((u8*)src)[x^(i<<1)]] );
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return IA88_RGBA4444(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
 }
 
-inline u32 GetCI8RGBA_RGBA5551( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI8IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return RGBA5551_RGBA5551( *(u16*)&TMEM[256 + ((u8*)src)[x^(i<<1)]] );
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return IA88_RGBA8888(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
 }
 
-inline u32 GetCI8RGBA_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI8RGBA_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return RGBA5551_RGBA8888( *(u16*)&TMEM[256 + ((u8*)src)[x^(i<<1)]] );
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return RGBA5551_RGBA5551(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
 }
 
-inline u32 GetIA44_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetCI8RGBA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return IA44_RGBA8888(((u8*)src)[x^(i<<1)]);
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return RGBA5551_RGBA8888(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
 }
 
-inline u32 GetIA44_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetIA44_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return IA44_RGBA4444(((u8*)src)[x^(i<<1)]);
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return IA44_RGBA8888(color);
 }
 
-inline u32 GetI8_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetIA44_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return I8_RGBA8888(((u8*)src)[x^(i<<1)]);
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return IA44_RGBA4444(color);
 }
 
-inline u32 GetI8_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetI8_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return I8_RGBA4444(((u8*)src)[x^(i<<1)]);
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return I8_RGBA8888(color);
+}
+u32 GetI8_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
+{
+	const u8 color = Get8BitPaletteColor(offset, x, i);
+	return I8_RGBA4444(color);
 }
 
-inline u32 GetI16_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
+inline u16 Get16BitColor(u16 offset, u16 x, u16 i)
 {
-	const u16 tex = ((u16*)src)[x^i];
+	u16* tmem16 = reinterpret_cast<u16*>(TMEM);
+	return tmem16[((offset << 2) + (x ^ i)) & 0x7FF];
+}
+
+u32 GetI16_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = Get16BitColor(offset, x, i);
 	u32 r = tex >> 8;
 	u32 g = tex & 0xFF;
 	u32 b = r;
@@ -161,9 +180,9 @@ inline u32 GetI16_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
 	return (a << 24) | (b << 16) | (g << 8) | r;
 }
 
-inline u32 GetI16_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetI16_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = ((u16*)src)[x^i];
+	const u16 tex = Get16BitColor(offset, x, i);
 	u16 r = tex >> 12;
 	u16 g = tex & 0x0F;
 	u16 b = r;
@@ -171,66 +190,75 @@ inline u32 GetI16_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
 	return (a << 12) | (b << 8) | (g << 4) | r;
 }
 
-inline u32 GetCI16IA_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetCI16IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = ((u16*)src)[x^i];
-	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
+	const u16 tex = Get16BitColor(offset, x, i);
+	const u16 col = (*(u16*)&TMEM[0x100 + (tex & 0xFF)]);
 	const u16 c = col >> 8;
 	const u16 a = col & 0xFF;
 	return (a << 24) | (c << 16) | (c << 8) | c;
 }
 
-inline u32 GetCI16IA_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetCI16IA_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = ((u16*)src)[x^i];
-	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
+	const u16 tex = Get16BitColor(offset, x, i);
+	const u16 col = (*(u16*)&TMEM[0x100 + (tex & 0xFF)]);
 	const u16 c = col >> 12;
 	const u16 a = col & 0x0F;
 	return (a << 12) | (c << 8) | (c << 4) | c;
 }
 
-inline u32 GetCI16RGBA_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetCI16RGBA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = (((u16*)src)[x^i])&0xFF;
-	return RGBA5551_RGBA8888(((u16*)&TMEM[256])[tex << 2]);
+	const u16 tex = Get16BitColor(offset, x, i) & 0xFF;
+	return RGBA5551_RGBA8888(((u16*)&TMEM[0x100])[tex << 2]);
 }
 
-inline u32 GetCI16RGBA_RGBA5551(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetCI16RGBA_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = (((u16*)src)[x^i]) & 0xFF;
-	return RGBA5551_RGBA5551(((u16*)&TMEM[256])[tex << 2]);
+	const u16 tex = Get16BitColor(offset, x, i) & 0xFF;
+	return RGBA5551_RGBA5551(((u16*)&TMEM[0x100])[tex << 2]);
 }
 
-inline u32 GetRGBA5551_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
+u32 GetRGBA5551_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u16 tex = ((u16*)src)[x^i];
+	const u16 tex = Get16BitColor(offset, x, i);
 	return RGBA5551_RGBA8888(tex);
 }
 
-inline u32 GetRGBA5551_RGBA5551( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetRGBA5551_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
 {
-	u16 tex = ((u16*)src)[x^i];
+	const u16 tex = Get16BitColor(offset, x, i);
 	return RGBA5551_RGBA5551(tex);
 }
 
-inline u32 GetIA88_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetIA88_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return IA88_RGBA8888(((u16*)src)[x^i]);
+	const u16 tex = Get16BitColor(offset, x, i);
+	return IA88_RGBA8888(tex);
 }
 
-inline u32 GetIA88_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetIA88_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return IA88_RGBA4444(((u16*)src)[x^i]);
+	const u16 tex = Get16BitColor(offset, x, i);
+	return IA88_RGBA4444(tex);
 }
 
-inline u32 GetRGBA8888_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
+inline u32 Get32BitColor(u16 offset, u16 x, u16 i)
 {
-	return ((u32*)src)[x^i];
+	u32* tmem32 = reinterpret_cast<u32*>(TMEM);
+	return tmem32[((offset << 1) + (x ^ i)) & 0x3FF];
 }
 
-inline u32 GetRGBA8888_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
+u32 GetRGBA8888_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
-	return RGBA8888_RGBA4444(((u32*)src)[x^i]);
+	return Get32BitColor(offset, x, i);
+}
+
+u32 GetRGBA8888_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
+{
+	const u32 tex = Get32BitColor(offset, x, i);
+	return RGBA8888_RGBA4444(tex);
 }
 
 inline u32 YUV_RGBA8888(u8 y, u8 u, u8 v)
@@ -238,7 +266,7 @@ inline u32 YUV_RGBA8888(u8 y, u8 u, u8 v)
 	return (0xff << 24) | (y << 16) | (v << 8) | u;
 }
 
-inline void GetYUV_RGBA8888(u64 * src, u32 * dst, u16 x)
+void GetYUV_RGBA8888(u64 * src, u32 * dst, u16 x)
 {
 	const u32 t = (((u32*)src)[x]);
 	u8 y1 = (u8)t & 0xFF;
@@ -251,12 +279,223 @@ inline void GetYUV_RGBA8888(u64 * src, u32 * dst, u16 x)
 	*(dst++) = c;
 }
 
+u32 GetNoneBG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return 0x00000000;
+}
+
+u32 GetCI4_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	return CI4_RGBA8888((x & 1) ? (palette << 4) | (color4B & 0x0F) : (palette << 4) | (color4B >> 4));
+}
+
+u32 GetCI4_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	return CI4_RGBA4444((x & 1) ? (palette << 4) | (color4B & 0x0F) : (palette << 4) | (color4B >> 4));
+}
+
+u32 GetCI4IA_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	if (x & 1)
+		return IA88_RGBA4444(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+	else
+		return IA88_RGBA4444(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+}
+
+u32 GetCI4IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	if (x & 1)
+		return IA88_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+	else
+		return IA88_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+}
+
+u32 GetCI4RGBA_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	if (x & 1)
+		return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+	else
+		return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+}
+
+u32 GetCI4RGBA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	if (x & 1)
+		return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+	else
+		return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+}
+
+u32 GetIA31_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	return IA31_RGBA8888((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
+}
+
+u32 GetIA31_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	return IA31_RGBA4444((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
+}
+
+u32 GetI4_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	return I4_RGBA8888((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
+}
+
+u32 GetI4_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
+
+	return I4_RGBA4444((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
+}
+
+u32 GetCI8IA_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return IA88_RGBA4444(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+}
+
+u32 GetCI8IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return IA88_RGBA8888(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+}
+
+u32 GetCI8RGBA_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+}
+
+u32 GetCI8RGBA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+}
+
+u32 GetIA44_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return IA44_RGBA8888(((u8*)src)[x ^ (i << 1)]);
+}
+
+u32 GetIA44_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return IA44_RGBA4444(((u8*)src)[x ^ (i << 1)]);
+}
+
+u32 GetI8_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return I8_RGBA8888(((u8*)src)[x ^ (i << 1)]);
+}
+
+u32 GetI8_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return I8_RGBA4444(((u8*)src)[x ^ (i << 1)]);
+}
+
+u32 GetI16_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = ((u16*)src)[x^i];
+	u32 r = tex >> 8;
+	u32 g = tex & 0xFF;
+	u32 b = r;
+	u32 a = g;
+	return (a << 24) | (b << 16) | (g << 8) | r;
+}
+
+u32 GetI16_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = ((u16*)src)[x^i];
+	u16 r = tex >> 12;
+	u16 g = tex & 0x0F;
+	u16 b = r;
+	u16 a = g;
+	return (a << 12) | (b << 8) | (g << 4) | r;
+}
+
+u32 GetCI16IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = ((u16*)src)[x^i];
+	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
+	const u16 c = col >> 8;
+	const u16 a = col & 0xFF;
+	return (a << 24) | (c << 16) | (c << 8) | c;
+}
+
+u32 GetCI16IA_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = ((u16*)src)[x^i];
+	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
+	const u16 c = col >> 12;
+	const u16 a = col & 0x0F;
+	return (a << 12) | (c << 8) | (c << 4) | c;
+}
+
+u32 GetCI16RGBA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = (((u16*)src)[x^i]) & 0xFF;
+	return RGBA5551_RGBA8888(((u16*)&TMEM[256])[tex << 2]);
+}
+
+u32 GetCI16RGBA_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	const u16 tex = (((u16*)src)[x^i]) & 0xFF;
+	return RGBA5551_RGBA5551(((u16*)&TMEM[256])[tex << 2]);
+}
+
+u32 GetRGBA5551_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u16 tex = ((u16*)src)[x^i];
+	return RGBA5551_RGBA8888(tex);
+}
+
+u32 GetRGBA5551_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	u16 tex = ((u16*)src)[x^i];
+	return RGBA5551_RGBA5551(tex);
+}
+
+u32 GetIA88_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return IA88_RGBA8888(((u16*)src)[x^i]);
+}
+
+u32 GetIA88_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return IA88_RGBA4444(((u16*)src)[x^i]);
+}
+
+u32 GetRGBA8888_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return ((u32*)src)[x^i];
+}
+
+u32 GetRGBA8888_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
+{
+	return RGBA8888_RGBA4444(((u32*)src)[x^i]);
+}
+
 struct TextureLoadParameters
 {
 	GetTexelFunc				Get16;
+	GetTexelFuncBG				Get16BG;
 	DatatypeParam				glType16;
 	InternalColorFormatParam	glInternalFormat16;
 	GetTexelFunc				Get32;
+	GetTexelFuncBG				Get32BG;
 	DatatypeParam				glType32;
 	InternalColorFormatParam	glInternalFormat32;
 	InternalColorFormatParam	autoFormat;
@@ -281,125 +520,125 @@ ImageFormat::ImageFormat()
 	{ // G_TT_NONE
 		{ //		Get16					glType16	glInternalFormat16		Get32					glType32	glInternalFormat32	autoFormat
 			{ // 4-bit
-				{ GetI4_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI4_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // RGBA as I
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // YUV
-				{ GetCI4_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // CI without palette
-				{ GetIA31_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA31_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // IA
-				{ GetI4_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI4_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // I
+				{ GetI4_RGBA4444, GetI4_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI4_RGBA8888, GetI4_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // RGBA as I
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // YUV
+				{ GetCI4_RGBA4444, GetCI4_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4_RGBA8888, GetCI4_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // CI without palette
+				{ GetIA31_RGBA4444, GetIA31_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA31_RGBA8888, GetIA31_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // IA
+				{ GetI4_RGBA4444, GetI4_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI4_RGBA8888, GetI4_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // I
 			},
 			{ // 8-bit
-				{ GetI8_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI8_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 4096 }, // RGBA as I
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 4096 }, // YUV
-				{ GetI8_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI8_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 4096 }, // CI without palette
-				{ GetIA44_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA44_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 3, 4096 }, // IA
-				{ GetI8_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI8_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 4096 }, // I
+				{ GetI8_RGBA4444, GetI8_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI8_RGBA8888, GetI8_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 4096 }, // RGBA as I
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 4096 }, // YUV
+				{ GetI8_RGBA4444, GetI8_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI8_RGBA8888, GetI8_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 4096 }, // CI without palette
+				{ GetIA44_RGBA4444, GetIA44_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA44_RGBA8888, GetIA44_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 3, 4096 }, // IA
+				{ GetI8_RGBA4444, GetI8_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI8_RGBA8888, GetI8_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 4096 }, // I
 			},
 			{ // 16-bit
-				{ GetRGBA5551_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
-				{ GetIA88_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // CI as IA
-				{ GetIA88_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // IA
-				{ GetI16_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI16_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // I
+				{ GetRGBA5551_RGBA5551, GetRGBA5551_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, GetRGBA5551_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
+				{ GetIA88_RGBA4444, GetIA88_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, GetIA88_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // CI as IA
+				{ GetIA88_RGBA4444, GetIA88_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, GetIA88_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // IA
+				{ GetI16_RGBA4444, GetI16_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetI16_RGBA8888, GetI16_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // I
 			},
 			{ // 32-bit
-				{ GetRGBA8888_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // CI
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // I
+				{ GetRGBA8888_RGBA4444, GetRGBA8888_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, GetRGBA8888_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // CI
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // IA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // I
 			}
 		},
 			// DUMMY
 		{ //		Get16					glType16	glInternalFormat16			Get32				glType32	glInternalFormat32	autoFormat
 			{ // 4-bit
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI (Banjo-Kazooie uses this, doesn't make sense, but it works...)
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // YUV
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // IA as CI
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // I as CI
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI (Banjo-Kazooie uses this, doesn't make sense, but it works...)
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // YUV
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // IA as CI
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // I as CI
 			},
 			{ // 8-bit
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 4096 }, // YUV
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // CI
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // IA as CI
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // I as CI
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 4096 }, // YUV
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // CI
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // IA as CI
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // I as CI
 			},
 			{ // 16-bit
-				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // CI
-				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI16RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // IA as CI
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
+				{ GetCI16RGBA_RGBA5551, GetCI16RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, GetRGBA5551_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // CI
+				{ GetCI16RGBA_RGBA5551, GetCI16RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI16RGBA_RGBA8888, GetCI16RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // IA as CI
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
 			},
 			{ // 32-bit
-				{ GetRGBA8888_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // CI
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // I
+				{ GetRGBA8888_RGBA4444, GetRGBA8888_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, GetRGBA8888_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // CI
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // IA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // I
 			}
 		},
 			// G_TT_RGBA16
 		{ //		Get16					glType16			glInternalFormat16	Get32				glType32	glInternalFormat32	autoFormat
 			{ // 4-bit
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI (Banjo-Kazooie uses this, doesn't make sense, but it works...)
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // YUV
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // IA as CI
-				{ GetCI4RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // I as CI
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI (Banjo-Kazooie uses this, doesn't make sense, but it works...)
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 4, 8192 }, // YUV
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // CI
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // IA as CI
+				{ GetCI4RGBA_RGBA5551, GetCI4RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI4RGBA_RGBA8888, GetCI4RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 4, 4096 }, // I as CI
 			},
 			{ // 8-bit
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 4096 }, // YUV
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // CI
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // IA as CI
-				{ GetCI8RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // I as CI
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 4096 }, // YUV
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // CI
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // IA as CI
+				{ GetCI8RGBA_RGBA5551, GetCI8RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI8RGBA_RGBA8888, GetCI8RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 3, 2048 }, // I as CI
 			},
 			{ // 16-bit
-				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // CI
-				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI16RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // IA as CI
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
+				{ GetCI16RGBA_RGBA5551, GetCI16RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, GetRGBA5551_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // CI
+				{ GetCI16RGBA_RGBA5551, GetCI16RGBA_RGBA5551_BG, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI16RGBA_RGBA8888, GetCI16RGBA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // IA as CI
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
 			},
 			{ // 32-bit
-				{ GetRGBA8888_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // CI
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // I
+				{ GetRGBA8888_RGBA4444, GetRGBA8888_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, GetRGBA8888_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // CI
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // IA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 1024 }, // I
 			}
 		},
 			// G_TT_IA16
 		{ //		Get16					glType16			glInternalFormat16	Get32				glType32	glInternalFormat32	autoFormat
 			{ // 4-bit
-				{ GetCI4IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 8192 }, // YUV
-				{ GetCI4IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // CI
-				{ GetCI4IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // IA
-				{ GetCI4IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // I
+				{ GetCI4IA_RGBA4444, GetCI4IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, GetCI4IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // IA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 8192 }, // YUV
+				{ GetCI4IA_RGBA4444, GetCI4IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, GetCI4IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // CI
+				{ GetCI4IA_RGBA4444, GetCI4IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, GetCI4IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // IA
+				{ GetCI4IA_RGBA4444, GetCI4IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI4IA_RGBA8888, GetCI4IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 4, 4096 }, // I
 			},
 			{ // 8-bit
-				{ GetCI8IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 4096 }, // YUV
-				{ GetCI8IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // CI
-				{ GetCI8IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // IA
-				{ GetCI8IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // I
+				{ GetCI8IA_RGBA4444, GetCI8IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, GetCI8IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 4096 }, // YUV
+				{ GetCI8IA_RGBA4444, GetCI8IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, GetCI8IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // CI
+				{ GetCI8IA_RGBA4444, GetCI8IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, GetCI8IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // IA
+				{ GetCI8IA_RGBA4444, GetCI8IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI8IA_RGBA8888, GetCI8IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 3, 2048 }, // I
 			},
 			{ // 16-bit
-				{ GetCI16IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI16IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // CI
-				{ GetCI16IA_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI16IA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // I
+				{ GetCI16IA_RGBA4444, GetCI16IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI16IA_RGBA8888, GetCI16IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // CI
+				{ GetCI16IA_RGBA4444, GetCI16IA_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetCI16IA_RGBA8888, GetCI16IA_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // IA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 2048 }, // I
 			},
 			{ // 32-bit
-				{ GetRGBA8888_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // YUV
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // CI
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // IA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // I
+				{ GetRGBA8888_RGBA4444, GetRGBA8888_RGBA4444_BG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetRGBA8888_RGBA8888, GetRGBA8888_RGBA8888_BG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 1024 }, // RGBA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // YUV
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // CI
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // IA
+				{ GetNone, GetNoneBG, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, GetNoneBG, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 0, 1024 }, // I
 			}
 		}
 	};
@@ -795,7 +1034,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	u32 x, y, j, tx, ty;
 	u16 clampSClamp;
 	u16 clampTClamp;
-	GetTexelFunc GetTexel;
+	GetTexelFuncBG GetTexel;
 	InternalColorFormatParam glInternalFormat;
 	DatatypeParam glType;
 
@@ -803,12 +1042,12 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			ImageFormat::get().tlp[pTexture->format == 2 ? G_TT_RGBA16 : G_TT_NONE][pTexture->size][pTexture->format];
 	if (loadParams.autoFormat == internalcolorFormat::RGBA8) {
 		pTexture->textureBytes = (pTexture->width * pTexture->height) << 2;
-		GetTexel = loadParams.Get32;
+		GetTexel = loadParams.Get32BG;
 		glInternalFormat = loadParams.glInternalFormat32;
 		glType = loadParams.glType32;
 	} else {
 		pTexture->textureBytes = (pTexture->width * pTexture->height) << 1;
-		GetTexel = loadParams.Get16;
+		GetTexel = loadParams.Get16BG;
 		glInternalFormat = loadParams.glInternalFormat16;
 		glType = loadParams.glType16;
 	}
@@ -1043,7 +1282,6 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 	u16 maskTMask, clampTClamp;
 	u16 x, y, tx, ty;
 	u32 i, j;
-	u64 *pSrc;
 
 	if (tmptex.maskS > 0) {
 		clampSClamp = tmptex.clampS ? tmptex.clampWidth - 1 : (tmptex.mirrorS ? (tmptex.width << 1) - 1 : tmptex.width - 1);
@@ -1101,7 +1339,7 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 		j = 0;
 		*pLine <<= 1;
 		for (y = 0; y < tmptex.height; ++y) {
-			pSrc = &TMEM[tmptex.tMem] + *pLine * y;
+			u64* pSrc = &TMEM[tmptex.tMem] + *pLine * y;
 			for (x = 0; x < tmptex.width / 2; x++) {
 				GetYUV_RGBA8888(pSrc, pDest + j, x);
 				j += 2;
@@ -1113,17 +1351,16 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 		for (y = 0; y < tmptex.height; ++y) {
 			ty = min(y, clampTClamp) & maskTMask;
 
-			pSrc = &TMEM[(tmptex.tMem + *pLine * ty) & tMemMask];
+			u16 tmemOffset = (tmptex.tMem + *pLine * ty) & tMemMask;
 
 			i = (ty & 1) << 1;
 			for (x = 0; x < tmptex.width; ++x) {
 				tx = min(x, clampSClamp) & maskSMask;
 
-				if (glInternalFormat == internalcolorFormat::RGBA8) {
-					pDest[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
-				} else {
-					((u16*)pDest)[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
-				}
+				if (glInternalFormat == internalcolorFormat::RGBA8)
+					pDest[j++] = GetTexel(tmemOffset, tx, i, tmptex.palette);
+				else
+					((u16*)pDest)[j++] = GetTexel(tmemOffset, tx, i, tmptex.palette);
 			}
 		}
 	}
