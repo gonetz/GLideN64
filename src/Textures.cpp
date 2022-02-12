@@ -20,7 +20,6 @@
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
 #include "DisplayWindow.h"
-#include "Log.h"
 
 using namespace std;
 using namespace graphics;
@@ -1151,19 +1150,6 @@ void doubleTexture(T* pTex, u32 width, u32 height)
 	}
 }
 
-static
-bool checkTextureSize(CachedTexture *_pTexture)
-{
-	// Sanity check: size of texture in bytes must not exceed TMEM size.
-	auto sizeInBytes = ((_pTexture->width * _pTexture->height) << _pTexture->size >> 1);
-	if (sizeInBytes <= 0x1000)
-		return true;;
-
-	LOG(LOG_ERROR, "%s wrong texture size. width: %d, height: %d, size: %d, bytes: %d",
-		RSP.romname, _pTexture->width, _pTexture->height, _pTexture->size, sizeInBytes);
-	return false;
-}
-
 void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 {
 	u64 ricecrc = 0;
@@ -1201,9 +1187,6 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 			sizeShift = 2;
 	}
 	_pTexture->textureBytes = (_pTexture->width * _pTexture->height) << sizeShift;
-
-	if (!checkTextureSize(_pTexture))
-		return;
 
 	unsigned int totalTexSize = std::max(static_cast<u32>(_pTexture->textureBytes/sizeof(u32) + 8), MIPMAP_TILE_WIDTH)
 								* (_pTexture->max_level + 1);
@@ -1390,9 +1373,6 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			sizeShift = 2;
 	}
 	_pTexture->textureBytes = (_pTexture->width * _pTexture->height) << sizeShift;
-
-	if (!checkTextureSize(_pTexture))
-		return;
 
 	unsigned int totalTexSize = std::max(static_cast<u32>(_pTexture->textureBytes/sizeof(u32) + 8), MIPMAP_TILE_WIDTH)
 								* (_pTexture->max_level + 1);
