@@ -13,7 +13,8 @@
 #include "Graphics/ObjectHandle.h"
 #include "Graphics/Parameter.h"
 
-typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
+typedef u32 (*GetTexelFunc)(u16 offset, u16 x, u16 i, u8 palette);
+typedef u32 (*GetTexelFuncBG)(u64 *src, u16 x, u16 i, u8 palette);
 struct GHQTexInfo;
 
 struct CachedTexture
