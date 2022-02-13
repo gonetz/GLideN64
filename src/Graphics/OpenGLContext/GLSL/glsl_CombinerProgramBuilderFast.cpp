@@ -795,27 +795,11 @@ public:
 					"}														\n"
 				;
 			}
-		}
-		else {
-			if (config.generalEmulation.enableLOD == 0) {
-				// Fake mipmap
+		} else {
+			if (config.texture.bilinearMode == BILINEAR_3POINT) {
 				m_part =
-					"uniform lowp int uMaxTile;			\n"
-					"uniform mediump float uMinLod;		\n"
-					"														\n"
-					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = texture(uTex0, texCoord0);				\n"
-					"  readtex1 = texture(uTex1, texCoord1);				\n"
-					"  if (uMaxTile == 0) return 1.0;						\n"
-					"  return uMinLod;										\n"
-					"}														\n"
-				;
-			} else {
-				if (config.texture.bilinearMode == BILINEAR_3POINT)
-					m_part =
 					"#define TEX_OFFSET_NORMAL(off, tex, texCoord, lod) texture(tex, texCoord - (off)/texSize)			\n"
-					"#define TEX_OFFSET_MIPMAP(off, tex, texCoord, lod) textureLod(tex, texCoord - (off)/texSize, lod)	\n"
-					"#define READ_TEX_NORMAL(name, tex, texCoord, lod)											\\\n"
+					"#define READ_TEX_NORMAL(name, tex, texCoord, lod)													\\\n"
 					"  {																								\\\n"
 					"  mediump vec2 texSize = vec2(textureSize(tex, int(lod)));											\\\n"
 					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));										\\\n"
@@ -825,6 +809,10 @@ public:
 					"  lowp vec4 c2 = TEX_OFFSET_NORMAL(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, lod);	\\\n"
 					"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 										\\\n"
 					"  }																								\n"
+					;
+				if (config.generalEmulation.enableLOD != 0) {
+					m_part +=
+					"#define TEX_OFFSET_MIPMAP(off, tex, texCoord, lod) textureLod(tex, texCoord - (off)/texSize, lod)	\n"
 					"#define READ_TEX_MIPMAP(name, tex, texCoord, lod)													\\\n"
 					"  {																								\\\n"
 					"  mediump vec2 texSize = vec2(textureSize(tex, int(lod)));											\\\n"
@@ -836,13 +824,68 @@ public:
 					"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 										\\\n"
 					"  }																								\n"
 					;
-				else
+				}
+			} else {
 					m_part =
-					"#define TEX_FETCH_NORMAL(tex, texCoord, lod) texture(tex, texCoord)									\n"
-					"#define TEX_FETCH_MIPMAP(tex, texCoord, lod) textureLod(tex, texCoord, lod)							\n"
-					"#define READ_TEX_NORMAL(name, tex, texCoord, lod) name = TEX_FETCH_NORMAL(tex, texCoord, lod)	\n"
-					"#define READ_TEX_MIPMAP(name, tex, texCoord, lod) name = TEX_FETCH_MIPMAP(tex, texCoord, lod)	\n"
-					;
+						"#define TEX_OFFSET_NORMAL(off, tex, texCoord, lod) texture(tex, texCoord - (off)/texSize)						\n"
+						"#define READ_TEX_NORMAL(name, tex, texCoord, lod)																\\\n"
+						"  {																											\\\n"
+						"  mediump vec2 texSize = vec2(textureSize(tex, int(lod)));														\\\n"
+						"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+						"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+						"  lowp vec4 zero = vec4(0.0);																					\\\n"
+						"																												\\\n"
+						"  lowp vec4 p0q0 = TEX_OFFSET_NORMAL(offset, tex, texCoord, lod);												\\\n"
+						"  lowp vec4 p1q0 = TEX_OFFSET_NORMAL(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, lod);			\\\n"
+						"																												\\\n"
+						"  lowp vec4 p0q1 = TEX_OFFSET_NORMAL(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, lod);			\\\n"
+						"  lowp vec4 p1q1 = TEX_OFFSET_NORMAL(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord, lod);	\\\n"
+						"																												\\\n"
+						"  mediump vec2 interpolationFactor = abs(offset);																\\\n"
+						"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n"
+						"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n"
+						"  name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n"
+						"}																												\n"
+						;
+					if (config.generalEmulation.enableLOD != 0) {
+						m_part +=
+						"#define TEX_OFFSET_MIPMAP(off, tex, texCoord, lod) textureLod(tex, texCoord - (off)/texSize, lod)				\n"
+						"#define READ_TEX_MIPMAP(name, tex, texCoord, lod)																\\\n"
+						"  {																											\\\n"
+						"  mediump vec2 texSize = vec2(textureSize(tex, int(lod)));														\\\n"
+						"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+						"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+						"  lowp vec4 zero = vec4(0.0);																					\\\n"
+						"																												\\\n"
+						"  lowp vec4 p0q0 = TEX_OFFSET_MIPMAP(offset, tex, texCoord, lod);												\\\n"
+						"  lowp vec4 p1q0 = TEX_OFFSET_MIPMAP(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, lod);			\\\n"
+						"																												\\\n"
+						"  lowp vec4 p0q1 = TEX_OFFSET_MIPMAP(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, lod);			\\\n"
+						"  lowp vec4 p1q1 = TEX_OFFSET_MIPMAP(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord, lod);	\\\n"
+						"																												\\\n"
+						"  mediump vec2 interpolationFactor = abs(offset);																\\\n"
+						"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n"
+						"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n"
+						"  name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n"
+						"}																												\n"
+						;
+					}
+			}
+
+			if (config.generalEmulation.enableLOD == 0) {
+				// Fake mipmap
+				m_part +=
+					"uniform lowp int uMaxTile;			\n"
+					"uniform mediump float uMinLod;		\n"
+					"														\n"
+					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+					"  READ_TEX_NORMAL(readtex0, uTex0, texCoord0, 0.0);	\n"
+					"  READ_TEX_NORMAL(readtex1, uTex1, texCoord1, 0.0);	\n"
+					"  if (uMaxTile == 0) return 1.0;						\n"
+					"  return uMinLod;										\n"
+					"}														\n"
+				;
+			} else {
 				m_part +=
 					"uniform lowp int uEnableLod;		\n"
 					"uniform mediump float uMinLod;		\n"
@@ -906,7 +949,7 @@ public:
 					"  }																	\n"
 					"  return lod_frac;														\n"
 					"}																		\n"
-				;
+					;
 			}
 		}
 	}

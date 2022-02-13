@@ -785,8 +785,7 @@ public:
 				"  return lod_frac;															\n"
 				"}																			\n"
 				;
-		}
-		else {
+		} else {
 			static const std::string strReadTex0 =
 				"#define READ_TEX0_MIPMAP(name, tex, tcData)											\\\n"
 				"{																						\\\n"
