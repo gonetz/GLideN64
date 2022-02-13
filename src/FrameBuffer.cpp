@@ -143,7 +143,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 
 bool FrameBuffer::isAuxiliary() const
 {
-	return m_width != VI.width;
+	return m_width != VI.width || m_size < G_IM_SIZ_16b;
 }
 
 void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb)
