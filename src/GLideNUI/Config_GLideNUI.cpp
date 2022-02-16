@@ -42,6 +42,17 @@ void Config_LoadConfig()
 {
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
 	api().FindPluginPath(strIniFolderPath);
+
+#ifdef M64P_GLIDENUI
+	wchar_t strConfigFolderPath[PLUGIN_PATH_SIZE];
+	api().GetUserConfigPath(strConfigFolderPath);
+
+	if (!IsPathWriteable(strIniFolderPath)) {
+		CopyConfigFiles(strIniFolderPath, strConfigFolderPath);
+		api().GetUserConfigPath(strIniFolderPath);
+	}
+#endif // M64P_GLIDENUI
+
 	LoadConfig(strIniFolderPath);
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
