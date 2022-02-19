@@ -8,10 +8,6 @@
 #include "PluginAPI.h"
 #include "FrameBuffer.h"
 
-#ifdef min
-#undef min
-#endif
-
 bool DisplayWindow::start()
 {
 	if (!_start())

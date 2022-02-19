@@ -1,5 +1,4 @@
 #include "glsl_CombinerProgramUniformFactoryAccurate.h"
-
 #include <Config.h>
 #include <FrameBuffer.h>
 #include <Textures.h>
@@ -7,10 +6,6 @@
 #include <Debugger.h>
 
 #include <cmath>
-
-#ifdef min
-#undef min
-#endif
 
 namespace {
 using namespace glsl;

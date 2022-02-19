@@ -25,6 +25,9 @@
 #define __EXT_TXFILTER_H__
 
 #ifdef OS_WINDOWS
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #define TXHMODULE HMODULE
 #define DLOPEN(a) LoadLibraryW(a)

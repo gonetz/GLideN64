@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include "Platform.h"
 
 #include "Config.h"
 #include "../GLideNHQ/inc/png.h"
@@ -118,6 +118,6 @@ void SaveScreenshot(const wchar_t * _folder, const char * _name, int _width, int
 	}
 	if (i == 1000)
 		return;
-	
+
 	write_png_file(fileName, _width, _height, _data);
 }
