@@ -116,8 +116,10 @@ public:
 			maxTile = std::min(gSP.texture.level, 1u); // Hack for HD textures
 		uMaxTile.set(maxTile, _force);
 
-		bool bNoAtlasTex = maxTile == 0 || gDP.otherMode.textureLOD != G_TL_LOD ||
-			(gDP.otherMode.textureDetail != G_TD_DETAIL && maxTile == 1);
+		bool bNoAtlasTex = (_pTexture != nullptr && _pTexture->bHDTexture) ||
+							maxTile == 0 ||
+							gDP.otherMode.textureLOD != G_TL_LOD ||
+							(gDP.otherMode.textureDetail != G_TD_DETAIL && maxTile == 1);
 		uNoAtlasTex.set(bNoAtlasTex ? 1 : 0, _force);
 	}
 
