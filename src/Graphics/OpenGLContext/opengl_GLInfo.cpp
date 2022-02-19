@@ -64,6 +64,9 @@ void GLInfo::init() {
 		renderer = Renderer::Tegra;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s", strRenderer);
 
+	if (strstr(strDriverVersion, "ANGLE") != nullptr)
+		renderer = Renderer::Angle;
+
 	int numericVersion = majorVersion * 10 + minorVersion;
 	if (isGLES2) {
 		imageTextures = false;
@@ -172,6 +175,12 @@ void GLInfo::init() {
 		config.generalEmulation.enableFragmentDepthWrite = 0;
 	}
 
+#ifdef OS_ANDROID
+	if (renderer == Renderer::Angle) {
+        config.generalEmulation.enableFragmentDepthWrite = 0;
+    }
+#endif
+
 	depthTexture = !isGLES2 || Utils::isExtensionSupported(*this, "GL_OES_depth_texture");
 	noPerspective = Utils::isExtensionSupported(*this, "GL_NV_shader_noperspective_interpolation");
 
@@ -190,7 +199,7 @@ void GLInfo::init() {
 #ifdef OS_ANDROID
 	eglImage = eglImage &&
 	        ( (isGLES2 && GraphicBufferWrapper::isSupportAvailable()) || (isGLESX && GraphicBufferWrapper::isPublicSupportAvailable()) ) &&
-		    (renderer != Renderer::PowerVR) && (renderer != Renderer::Tegra);
+		    (renderer != Renderer::PowerVR) && (renderer != Renderer::Tegra) && (renderer != Renderer::Angle);
 #endif
 
 	if (renderer == Renderer::Intel) {

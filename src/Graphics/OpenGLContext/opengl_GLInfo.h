@@ -11,6 +11,7 @@ enum class Renderer {
 	Intel,
 	PowerVR,
 	Tegra,
+	Angle,
 	Other
 };
 
