@@ -41,7 +41,7 @@ void ColorBufferToRDRAM::destroy() {
 
 bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 {
-	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
+	if (VI.width == 0)
 		return false;
 
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
