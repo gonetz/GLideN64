@@ -8,10 +8,6 @@
 
 #include <cmath>
 
-#ifdef min
-#undef min
-#endif
-
 namespace {
 using namespace glsl;
 

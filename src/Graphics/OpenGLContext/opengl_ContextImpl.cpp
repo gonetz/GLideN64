@@ -26,10 +26,6 @@
 #include <Graphics/OpenGLContext/GraphicBuffer/GraphicBufferWrapper.h>
 #endif
 
-#ifdef min
-#undef min
-#endif
-
 using namespace opengl;
 
 ContextImpl::ContextImpl()
@@ -37,7 +33,6 @@ ContextImpl::ContextImpl()
 {
 
 }
-
 
 ContextImpl::~ContextImpl()
 {

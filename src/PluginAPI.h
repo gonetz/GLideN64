@@ -2,6 +2,9 @@
 #define COMMONPLUGINAPI_H
 
 #ifdef MUPENPLUSAPI
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include "m64p_plugin.h"
 #else
 #include "windows/GLideN64_windows.h"

@@ -2,6 +2,9 @@
 #define GLFUNCTIONS_H
 
 #ifdef OS_WINDOWS
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 //#define FORCE_UNBUFFERED_DRAWER // Debug option.
 #elif defined(OS_LINUX)
