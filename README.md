@@ -1,16 +1,46 @@
-GLideN64
-========
 
-A new generation, open-source graphics plugin for N64 emulators.
+# GLideN64 [![Github Badge]][Workflow]
 
-Latest build status for master branch:
-[![GLideN64](https://github.com/gonetz/GLideN64/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/gonetz/GLideN64/actions?query=branch%3Amaster)
+*A next generation* ***Graphics Plugin*** *for* ***N64*** *emulators.*
 
-To get Continuous Integration (CI) builds for mupen64plus and zilmar-spec emulators: 
-* if you have a Github account, log in and click the build status icon, then click on the latest CI run.
-* if you don't have a Github account, download the latest build from [the `github-actions` release.](https://github.com/gonetz/GLideN64/releases/tag/github-actions)
+---
 
-Choose the between the 32-bit and 64-bit version depending on your emulator version.
-If you want to download an earlier build, log into Github and click the status icon.
+## Continuous Integration
 
-CI builds have the latest features and fixes, and are generally stable, but may introduce bugs and have incomplete translations.
+**CI** builds have the latest `features` / `fixes` , are generally <br>
+stable, but may introduce **bugs** and have *incomplete translations* .
+
+<br>
+
+To obtain **CI** builds for the `mupen64plus` & <br>
+`zilmar-spec` emulators do the following :
+
+##### With Github
+
+Download them from the latest **[Workflow]** .
+
+##### Without Github
+
+Download them from the latest **[Release]** .
+
+<br>
+
+##### Version
+
+*Choose between `32-bit` / `64-bit`* <br>
+*according to your emulator version.*
+
+##### Earlier Builds
+
+*For earlier builds you will have to log in and <br>
+download them from an older* ***[Workflow]*** *.*
+
+
+<!----------------------------------------------------------------------------->
+
+[Wiki]: https://github.com/gonetz/GLideN64/wiki
+
+[Release]: https://github.com/gonetz/GLideN64/releases/tag/github-actions
+[Workflow]: https://github.com/gonetz/GLideN64/actions?query=branch%3Amaster
+
+[Github Badge]: https://github.com/gonetz/GLideN64/actions/workflows/build.yml/badge.svg?branch=master
