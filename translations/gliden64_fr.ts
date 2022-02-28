@@ -338,7 +338,7 @@
     <message>
         <location filename="configDialog.ui" line="1518"/>
         <source>Enable unoptimized</source>
-        <translationActiver non-optimisé</translation>
+        <translation>Activer non-optimisé</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1528"/>
