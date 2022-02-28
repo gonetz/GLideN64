@@ -147,6 +147,7 @@ GBIInfo GBI;
 void GBI_Unknown( u32 w0, u32 w1 )
 {
 	DebugMsg(DEBUG_NORMAL, "UNKNOWN GBI COMMAND 0x%02X", _SHIFTR(w0, 24, 8));
+	LOG(LOG_ERROR, "UNKNOWN GBI COMMAND 0x%02X", _SHIFTR(w0, 24, 8));
 }
 
 void GBIInfo::init()
@@ -199,6 +200,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 		switch (m_pCurrent->type) {
 			case F3D:
+			case Turbo3D:
 				F3D_Init();
 				m_hwlSupported = true;
 			break;
@@ -260,10 +262,6 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			break;
 			case F3DAM:
 				F3DAM_Init();
-				m_hwlSupported = true;
-			break;
-			case Turbo3D:
-				F3D_Init();
 				m_hwlSupported = true;
 			break;
 			case ZSortp:

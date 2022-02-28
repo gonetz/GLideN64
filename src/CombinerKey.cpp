@@ -15,11 +15,14 @@ CombinerKey::CombinerKey(u64 _mux, bool _setModeBits)
 	// [1 - 2] cycle type
 	// [3 - 3] bi_lerp1
 	// [4 - 4] bi_lerp0
+	// [5 - 5] is HWL supported
 	u32 flags = CombinerInfo::get().isRectMode() ? 1U : 0U;
 	const u32 cycleType = gDP.otherMode.cycleType;
 	const u32 bilerp = (gDP.otherMode.h >> 10) & 3;
+	const u32 isHWLSupported = static_cast<u32>(GBI.isHWLSupported());
 	flags |= (cycleType << 1);
 	flags |= (bilerp << 3);
+	flags |= (isHWLSupported << 5);
 
 	m_key.muxs0 |= (flags << 24);
 }
@@ -64,9 +67,14 @@ bool CombinerKey::isRectKey() const
 	return ((m_key.muxs0 >> 24) & 1) != 0;
 }
 
+bool CombinerKey::isHWLSupported() const
+{
+	return ((m_key.muxs0 >> 29) & 1) != 0;
+}
+
 void CombinerKey::read(std::istream & _is)
 {
-	_is.read((char*)&m_key.mux, sizeof(m_key.mux));
+	_is.read(reinterpret_cast<char*>(&m_key.mux), sizeof(m_key.mux));
 }
 
 const CombinerKey & CombinerKey::getEmpty()

@@ -25,6 +25,9 @@
 #define __EXT_TXFILTER_H__
 
 #ifdef OS_WINDOWS
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <windows.h>
 #define TXHMODULE HMODULE
 #define DLOPEN(a) LoadLibraryW(a)
@@ -45,6 +48,9 @@
 #define CHDIR(a) chdir(a)
 #endif
 
+typedef unsigned char  uint8;
+typedef unsigned short uint16;
+typedef unsigned int  uint32;
 #ifdef __MSC__
 typedef __int64 int64;
 typedef unsigned __int64 uint64;
@@ -93,27 +99,84 @@ typedef unsigned char boolean;
 #define JABO_HIRESTEXTURES  0x00030000
 
 #define FILE_CACHE_MASK     0x00300000
+#define FILE_NOTEXCACHE     0x08500000
 #define FILE_TEXCACHE       0x00100000
 #define FILE_HIRESTEXCACHE  0x00200000
 #define GZ_TEXCACHE         0x00400000
 #define GZ_HIRESTEXCACHE    0x00800000
 #define DUMP_TEXCACHE       0x01000000
 #define DUMP_HIRESTEXCACHE  0x02000000
-#define TILE_HIRESTEX       0x04000000
-#define UNDEFINED_0         0x08000000
+#define UNDEFINED_0         0x04000000
+#define UNDEFINED_1         0x08000000
 #define FORCE16BPP_HIRESTEX 0x10000000
 #define FORCE16BPP_TEX      0x20000000
 #define LET_TEXARTISTS_FLY  0x40000000 /* a little freedom for texture artists */
 #define DUMP_TEX            0x80000000
 
-struct GHQTexInfo {
-  unsigned char *data = nullptr;
-  int width = 0;
-  int height = 0;
-  unsigned int format = 0;
-  unsigned short texture_format = 0;
-  unsigned short pixel_type = 0;
-  unsigned char is_hires_tex = 0;
+struct Checksum
+{
+	union
+	{
+		uint64 _checksum; /* checksum hi:palette low:texture */
+		struct
+		{
+			uint32 _texture;
+			uint32 _palette;
+		};
+	};
+
+	Checksum(uint64 checksum) : _checksum(checksum) {}
+	Checksum(uint32 texture, uint32 palette) : _texture(texture), _palette(palette) {}
+
+	operator bool() const {
+		return _checksum != 0;
+	}
+
+	operator uint64() const {
+		return _checksum;
+	}
+};
+
+struct N64FormatSize
+{
+	union
+	{
+		uint16 _formatsize;
+		struct
+		{
+			uint8 _format;
+			uint8 _size;
+		};
+	};
+
+	N64FormatSize(uint16 n64format, uint16 n64size) :
+		_format(static_cast<uint8>(n64format)),
+		_size(static_cast<uint8>(n64size))
+	{}
+
+	uint16 formatsize() const
+	{
+		return _formatsize;
+	}
+
+	bool operator==(const N64FormatSize& _other) const
+	{
+		return _other._formatsize == _formatsize;
+	}
+};
+
+struct GHQTexInfo
+{
+  GHQTexInfo() {}
+  ~GHQTexInfo() {}
+  unsigned char *data{ nullptr };
+  unsigned int width{ 0u };
+  unsigned int height{ 0u };
+  unsigned int format{ 0u };
+  unsigned short texture_format{ 0u };
+  unsigned short pixel_type{ 0u };
+  unsigned char is_hires_tex{ 0u };
+  N64FormatSize n64_format_size{ 0u, 0u };
 };
 
 /* Callback to display hires texture info.
@@ -154,62 +217,6 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #endif
 #endif // OS_WINDOWS
 
-#ifdef TXFILTER_DLL
-typedef unsigned char  uint8;
-typedef unsigned short uint16;
-typedef unsigned long  uint32;
-
-boolean ext_ghq_init(int maxwidth, /* maximum texture width supported by hardware */
-					 int maxheight,/* maximum texture height supported by hardware */
-					 int maxbpp,   /* maximum texture bpp supported by hardware */
-					 int options,  /* options */
-					 int cachesize,/* cache textures to system memory */
-					 const wchar_t *path,   /* plugin directory. must be smaller than MAX_PATH */
-					 const wchar_t *ident,  /* name of ROM. must be no longer than 64 in character. */
-					 dispInfoFuncExt callback /* callback function to display info */
-					 );
-
-void ext_ghq_shutdown(void);
-
-boolean ext_ghq_txfilter(unsigned char *src,        /* input texture */
-						 int srcwidth,              /* width of input texture */
-						 int srcheight,             /* height of input texture */
-						 unsigned short srcformat,  /* format of input texture */
-						 uint64 g64crc,             /* glide64 crc */
-						 GHQTexInfo *info           /* output */
-						 );
-
-boolean ext_ghq_hirestex(uint64 g64crc,             /* glide64 crc */
-						 uint64 r_crc64,            /* checksum hi:palette low:texture */
-						 unsigned short *palette,   /* palette for CI textures */
-						 GHQTexInfo *info           /* output */
-						 );
-
-uint64 ext_ghq_checksum(unsigned char *src, /* input texture */
-						int width,          /* width of texture */
-						int height,         /* height of texture */
-						int size,           /* type of texture pixel */
-						int rowStride,      /* row stride in bytes */
-						unsigned char *palette /* palette */
-						);
-
-boolean ext_ghq_dmptx(unsigned char *src,   /* input texture (must be in 3Dfx Glide format) */
-					  int width,            /* width of texture */
-					  int height,           /* height of texture */
-					  int rowStridePixel,   /* row stride of input texture in pixels */
-					  unsigned short gfmt,  /* glide format of input texture */
-					  unsigned short n64fmt,/* N64 format hi:format low:size */
-					  uint64 r_crc64        /* checksum hi:palette low:texture */
-					  );
-
-boolean ext_ghq_reloadhirestex();
-
-#else
-
-typedef unsigned char  uint8;
-typedef unsigned short uint16;
-typedef unsigned int  uint32;
-
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -224,16 +231,16 @@ txfilter_shutdown(void);
 
 TAPI boolean TAPIENTRY
 txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
-		 uint64 g64crc, GHQTexInfo *info);
+		 uint64 g64crc, N64FormatSize n64FmtSz, GHQTexInfo *info);
 
 TAPI boolean TAPIENTRY
-txfilter_hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *info);
+txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSize n64FmtSz, GHQTexInfo *info);
 
 TAPI uint64 TAPIENTRY
 txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
 
 TAPI boolean TAPIENTRY
-txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64);
+txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum r_crc64);
 
 TAPI boolean TAPIENTRY
 txfilter_reloadhirestex();
@@ -244,7 +251,5 @@ txfilter_dumpcache(void);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* TXFILTER_DLL */
 
 #endif /* __EXT_TXFILTER_H__ */

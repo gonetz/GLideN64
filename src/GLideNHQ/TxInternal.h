@@ -24,16 +24,10 @@
 #ifndef __INTERNAL_H__
 #define __INTERNAL_H__
 
-#include "Ext_TxFilter.h"
-#include "txWidestringWrapper.h"
+#include "TxFilterExport.h"
+#include "txWidestringHelper.h"
 
 #include <Graphics/Parameters.h>
-
-#ifdef WIN32
-#define KBHIT(key) ((GetAsyncKeyState(key) & 0x8001) == 0x8001)
-#else
-#define KBHIT(key) (0)
-#endif
 
 typedef graphics::InternalColorFormatParam ColorFormat;
 

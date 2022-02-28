@@ -3,8 +3,8 @@
 #include "../GLideN64.h"
 #include "../GLideNUI/GLideNUI.h"
 #include "../Config.h"
-#include "../Revision.h"
 #include <DisplayWindow.h>
+#include <Revision.h>
 
 void PluginAPI::DllAbout(/*HWND _hParent*/)
 {
@@ -28,7 +28,7 @@ void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)
 {
 	PluginInfo->Version = 0x103;
 	PluginInfo->Type = PLUGIN_TYPE_GFX;
-	sprintf(PluginInfo->Name, "%s rev.%s", pluginName, PLUGIN_REVISION);
+	sprintf(PluginInfo->Name, "%s", pluginNameWithRevision);
 	PluginInfo->NormalMemory = FALSE;
 	PluginInfo->MemoryBswaped = TRUE;
 }

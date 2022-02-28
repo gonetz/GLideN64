@@ -78,7 +78,7 @@ struct MD5Digest
     }
 };
 
-struct MD5Digest_less : std::binary_function < MD5Digest, MD5Digest, bool >
+struct MD5Digest_less
 {
     bool operator()(const MD5Digest& x, const MD5Digest& y) const
     {

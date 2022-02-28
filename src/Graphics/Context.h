@@ -23,8 +23,8 @@ namespace graphics {
 		ShaderProgramBinary,
 		ImageTextures,
 		IntegerTextures,
-		ClipControl,
-		FramebufferFetch,
+		N64DepthWithFbFetchDepth,
+		FramebufferFetchColor,
 		TextureBarrier,
 		EglImage,
 		EglImageFramebuffer,
@@ -147,6 +147,8 @@ namespace graphics {
 
 		s32 getMaxTextureSize() const;
 
+		f32 getMaxAnisotropy() const;
+
 		struct BindImageTextureParameters {
 			ImageUnitParam imageUnit;
 			ObjectHandle texture;
@@ -246,8 +248,6 @@ namespace graphics {
 
 		ShaderProgram * createGammaCorrectionShader();
 
-		ShaderProgram * createOrientationCorrectionShader();
-
 		ShaderProgram * createFXAAShader();
 
 		TextDrawerShaderProgram * createTextDrawerShader();
@@ -286,6 +286,7 @@ namespace graphics {
 		f32 getMaxLineWidth();
 
 		/*---------------Misc-------------*/
+		s32 getMaxMSAALevel();
 
 		bool isError() const;
 
@@ -298,8 +299,8 @@ namespace graphics {
 		static bool ShaderProgramBinary;
 		static bool ImageTextures;
 		static bool IntegerTextures;
-		static bool ClipControl;
-		static bool FramebufferFetch;
+		static bool FramebufferFetchDepth;
+		static bool FramebufferFetchColor;
 		static bool TextureBarrier;
 		static bool EglImage;
 		static bool EglImageFramebuffer;

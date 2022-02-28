@@ -3,6 +3,7 @@
 #include <vector>
 #include <Graphics/CombinerProgram.h>
 #include <Graphics/ObjectHandle.h>
+#include <Graphics/OpenGLContext/GLFunctions.h>
 #include "glsl_CombinerInputs.h"
 
 namespace opengl {

@@ -35,30 +35,30 @@ bool WindowsWGL::start()
 		hWnd = GetActiveWindow();
 
 	if ((hDC = GetDC(hWnd)) == NULL) {
-		MessageBox(hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK);
+		MessageBoxW(hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK);
 		return false;
 	}
 
 	if ((pixelFormat = ChoosePixelFormat(hDC, &pfd)) == 0) {
-		MessageBox(hWnd, L"Unable to find a suitable pixel format!", pluginNameW, MB_ICONERROR | MB_OK);
+		MessageBoxW(hWnd, L"Unable to find a suitable pixel format!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
 	if ((SetPixelFormat(hDC, pixelFormat, &pfd)) == FALSE) {
-		MessageBox(hWnd, L"Error while setting pixel format!", pluginNameW, MB_ICONERROR | MB_OK);
+		MessageBoxW(hWnd, L"Error while setting pixel format!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
 	if ((hRC = wglCreateContext(hDC)) == NULL) {
-		MessageBox(hWnd, L"Error while creating OpenGL context!", pluginNameW, MB_ICONERROR | MB_OK);
+		MessageBoxW(hWnd, L"Error while creating OpenGL context!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
 	if ((wglMakeCurrent(hDC, hRC)) == FALSE) {
-		MessageBox(hWnd, L"Error while making OpenGL context current!", pluginNameW, MB_ICONERROR | MB_OK);
+		MessageBoxW(hWnd, L"Error while making OpenGL context current!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
@@ -84,7 +84,11 @@ bool WindowsWGL::start()
 			{
 				WGL_CONTEXT_MAJOR_VERSION_ARB, majorVersion,
 				WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
+#ifdef FORCE_UNBUFFERED_DRAWER
+				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+#else
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+#endif
 				0        //End
 			};
 
@@ -98,7 +102,15 @@ bool WindowsWGL::start()
 
 		if (strstr(wglextensions, "WGL_EXT_swap_control") != nullptr) {
 			PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-			wglSwapIntervalEXT(config.video.verticalSync);
+
+			// use adaptive vsync when supported and
+			// when vsync is enabled
+			if (strstr(wglextensions, "WGL_EXT_swap_control_tear") != nullptr &&
+				config.video.verticalSync > 0) {
+				wglSwapIntervalEXT(-1);
+			} else {
+				wglSwapIntervalEXT(config.video.verticalSync);
+			}
 		}
 	}
 
@@ -127,4 +139,3 @@ void WindowsWGL::swapBuffers()
 	else
 		SwapBuffers(hDC);
 }
-

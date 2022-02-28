@@ -14,10 +14,12 @@
 #include <Combiner.h>
 #include <DisplayLoadProgress.h>
 #include <osal_files.h>
+#include <Config.h>
 #include "glsl_Utils.h"
 #include "glsl_ShaderStorage.h"
 #include "glsl_CombinerProgramImpl.h"
-#include "glsl_CombinerProgramUniformFactory.h"
+#include "glsl_CombinerProgramUniformFactoryAccurate.h"
+#include "glsl_CombinerProgramUniformFactoryFast.h"
 
 using namespace glsl;
 
@@ -100,7 +102,6 @@ bool ShaderStorage::_saveCombinerKeys(const graphics::Combiners & _combiners) co
 
 	std::sort(keysData.begin(), keysData.end());
 	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_keysFormatVersion << "\n";
-	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << static_cast<u32>(GBI.isHWLSupported()) << "\n";
 	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << keysData.size() << "\n";
 	for (u64 key : keysData)
 		keysOut << "0x" << std::hex << std::setfill('0') << std::setw(16) << key << "\n";
@@ -202,13 +203,11 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 }
 
 static
-CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is,
-	CombinerProgramUniformFactory & _uniformFactory,
+CombinerProgramImpl * _readCombinerProgramFromStream(std::istream & _is,
+	CombinerKey& _cmbKey,
+	std::unique_ptr<CombinerProgramUniformFactory> & _uniformFactory,
 	opengl::CachedUseProgram * _useProgram)
 {
-	CombinerKey cmbKey;
-	cmbKey.read(_is);
-
 	int inputs;
 	_is.read((char*)&inputs, sizeof(inputs));
 	CombinerInputs cmbInputs(inputs);
@@ -221,15 +220,17 @@ CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is,
 	_is.read(binary.data(), binaryLength);
 
 	GLuint program = glCreateProgram();
-	const bool isRect = cmbKey.isRectKey();
+	const bool isRect = _cmbKey.isRectKey();
 	glsl::Utils::locateAttributes(program, isRect, cmbInputs.usesTexture());
 	glProgramBinary(program, binaryFormat, binary.data(), binaryLength);
-	assert(glsl::Utils::checkProgramLinkStatus(program));
+	if (!glsl::Utils::checkProgramLinkStatus(program, true)) {
+		return nullptr;
+	}
 
 	UniformGroups uniforms;
-	_uniformFactory.buildUniforms(program, cmbInputs, cmbKey, uniforms);
+	_uniformFactory->buildUniforms(program, cmbInputs, _cmbKey, uniforms);
 
-	return new CombinerProgramImpl(cmbKey, program, _useProgram, cmbInputs, std::move(uniforms));
+	return new CombinerProgramImpl(_cmbKey, program, _useProgram, cmbInputs, std::move(uniforms));
 }
 
 bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
@@ -245,12 +246,16 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 
 	u32 version;
 	fin >> std::hex >> version;
-	if (version != m_keysFormatVersion)
+	if (version < 4)
 		return false;
 
-	u32 hwlSupport;
-	fin >> std::hex >> hwlSupport;
-	GBI.setHWLSupported(hwlSupport != 0);
+	const bool useGlobalHWLSuport = version == 4;
+
+	if (useGlobalHWLSuport) {
+		u32 hwlSupport = 0;
+		fin >> std::hex >> hwlSupport;
+		GBI.setHWLSupported(hwlSupport != 0);
+	}
 
 	displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
 
@@ -260,10 +265,13 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 	const f32 step = 100.0f / szCombiners;
 	f32 progress = 0.0f;
 	f32 percents = percent;
-	u64 key;
+	u64 mux;
 	for (u32 i = 0; i < szCombiners; ++i) {
-		fin >> std::hex >> key;
-		graphics::CombinerProgram * pCombiner = Combiner_Compile(CombinerKey(key, false));
+		fin >> std::hex >> mux;
+		CombinerKey key(mux, false);
+		if (!useGlobalHWLSuport)
+			GBI.setHWLSupported(key.isHWLSupported());
+		graphics::CombinerProgram * pCombiner = Combiner_Compile(key);
 		pCombiner->update(true);
 		_combiners[pCombiner->getKey()] = pCombiner;
 		progress += step;
@@ -330,7 +338,14 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 			return _loadFromCombinerKeys(_combiners);
 
 		displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
-		CombinerProgramUniformFactory uniformFactory(m_glinfo);
+
+		std::unique_ptr<CombinerProgramUniformFactory> uniformFactory;
+
+		if (config.generalEmulation.enableInaccurateTextureCoordinates) {
+			uniformFactory = std::make_unique<CombinerProgramUniformFactoryFast>(m_glinfo);
+		} else {
+			uniformFactory = std::make_unique<CombinerProgramUniformFactoryAccurate>(m_glinfo);
+		}
 
 		fin.read((char*)&len, sizeof(len));
 		const f32 percent = len / 100.0f;
@@ -338,9 +353,21 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 		f32 progress = 0.0f;
 		f32 percents = percent;
 		for (u32 i = 0; i < len; ++i) {
-			CombinerProgramImpl * pCombiner = _readCominerProgramFromStream(fin, uniformFactory, m_useProgram);
-			pCombiner->update(true);
-			_combiners[pCombiner->getKey()] = pCombiner;
+			CombinerKey cmbKey;
+			cmbKey.read(fin);
+
+			CombinerProgramImpl * pCombiner = _readCombinerProgramFromStream(fin, cmbKey, uniformFactory, m_useProgram);
+
+			if (pCombiner != nullptr) {
+				pCombiner->update(true);
+				_combiners[pCombiner->getKey()] = pCombiner;
+			} else {
+				LOG(LOG_ERROR, "Shader is not a valid binary compiling from key instead");
+				graphics::CombinerProgram *pCombinerFromKey = Combiner_Compile(cmbKey);
+				pCombinerFromKey->update(true);
+				_combiners[cmbKey] = pCombinerFromKey;
+			}
+
 			progress += step;
 			if (progress > percents) {
 				displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", f32(i + 1) * 100.f / f32(len) );

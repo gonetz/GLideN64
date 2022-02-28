@@ -4750,6 +4750,34 @@ private:
 	}
 };
 
+class GlFlushCommand : public OpenGlCommand
+{
+public:
+    GlFlushCommand() :
+            OpenGlCommand(true, true, "glFlush")
+    {
+    }
+
+    static std::shared_ptr<OpenGlCommand> get()
+    {
+        static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+        auto ptr = getFromPool<GlFlushCommand>(poolId);
+        ptr->set();
+        return ptr;
+    }
+
+    void commandToExecute() override
+    {
+        ptrFlush();
+    }
+
+private:
+    void set()
+    {
+
+    }
+};
+
 class GlCopyTexImage2DCommand : public OpenGlCommand
 {
 public:
@@ -5090,6 +5118,52 @@ private:
 
 	int m_screenWidth;
 	int m_screenHeight;
+	int m_bitsPerPixel;
+	m64p_video_mode m_mode;
+	m64p_video_flags m_flags;
+	m64p_error* m_returnValue;
+};
+
+class CoreVideoSetVideoModeWithRateCommand : public OpenGlCommand
+{
+public:
+	CoreVideoSetVideoModeWithRateCommand() :
+		OpenGlCommand(true, false, "CoreVideo_SetVideoModeWithRate", false)
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(int screenWidth, int screenHeight, int refreshRate, int bitsPerPixel, m64p_video_mode mode,
+		m64p_video_flags flags, m64p_error& returnValue)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<CoreVideoSetVideoModeWithRateCommand>(poolId);
+		ptr->set(screenWidth, screenHeight, refreshRate, bitsPerPixel, mode, flags, returnValue);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		*m_returnValue = ::CoreVideo_SetVideoModeWithRate(m_screenWidth, m_screenHeight, m_refreshRate, m_bitsPerPixel, m_mode, m_flags);
+
+		initGLFunctions();
+	}
+
+private:
+	void set(int screenWidth, int screenHeight, int refreshRate, int bitsPerPixel, m64p_video_mode mode,
+		m64p_video_flags flags, m64p_error& returnValue)
+	{
+		m_screenWidth = screenWidth;
+		m_screenHeight = screenHeight;
+		m_refreshRate = refreshRate;
+		m_bitsPerPixel = bitsPerPixel;
+		m_mode = mode;
+		m_flags = flags;
+		m_returnValue = &returnValue;
+	}
+
+	int m_screenWidth;
+	int m_screenHeight;
+	int m_refreshRate;
 	int m_bitsPerPixel;
 	m64p_video_mode m_mode;
 	m64p_video_flags m_flags;

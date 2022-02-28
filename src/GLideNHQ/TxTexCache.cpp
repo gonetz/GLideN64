@@ -53,7 +53,7 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, con
 	}
 }
 
-bool TxTexCache::add(uint64 checksum, GHQTexInfo *info)
+bool TxTexCache::add(Checksum checksum, GHQTexInfo *info)
 {
 	const bool res = TxCache::add(checksum, info);
 	if (res)

@@ -11,5 +11,9 @@ cmake [-DCMAKE_BUILD_TYPE=Debug] [-DVEC4_OPT=On] [-DCRC_OPT=On] [-DX86_OPT=On] [
 -DNOHQ=On - optional parameter. set to build without realtime texture enhancer library (GLideNHQ).
 -DUSE_SYSTEM_LIBS=On - optional parameter. set to use system provided libraries for libpng and zlib.
 -DMUPENPLUSAPI=On - required parameter. currently cmake build works only for mupen64plus version of the plugin.
+-MUPENPLUSAPI_GLIDENUI=On - optional parameter. set it if you need GLideNUI for Mupen64Plus
 -DODROID=On - set if you need to build on an Odroid board.
 -DVERO4K=On - set if you need to build on the OSMC Vero4k.
+-DANDROID=On - set if targeting an Android device
+-DMESA=On - set to disable Raspberry Pi autodetection
+-DGL_PROFILE=On - set to turn on GL profiling

@@ -12,17 +12,6 @@
 #include "Log.h"
 #include "MemoryStatus.h"
 
-/*
-#include "ColorBufferToRDRAM_GL.h"
-#include "ColorBufferToRDRAM_BufferStorageExt.h"
-#elif defined(OS_ANDROID) && defined (GLES2)
-#include "ColorBufferToRDRAM_GL.h"
-#include "ColorBufferToRDRAM_GLES.h"
-#else
-#include "ColorBufferToRDRAMStub.h"
-#endif
-*/
-
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include <Graphics/ColorBufferReader.h>
@@ -32,16 +21,8 @@
 using namespace graphics;
 
 ColorBufferToRDRAM::ColorBufferToRDRAM()
-	: m_FBO(0)
-	, m_pTexture(nullptr)
-	, m_pCurFrameBuffer(nullptr)
-	, m_frameCount(-1)
-	, m_startAddress(-1)
-	, m_lastBufferWidth(-1)
+	: m_pCurFrameBuffer(nullptr)
 {
-	m_allowedRealWidths[0] = 320;
-	m_allowedRealWidths[1] = 480;
-	m_allowedRealWidths[2] = 640;
 }
 
 u32 ColorBufferToRDRAM::m_blueNoiseIdx = 0;
@@ -52,93 +33,15 @@ ColorBufferToRDRAM::~ColorBufferToRDRAM()
 
 void ColorBufferToRDRAM::init()
 {
-	m_FBO = gfxContext.createFramebuffer();
 }
 
 void ColorBufferToRDRAM::destroy() {
-	_destroyFBTexure();
 
-	if (m_FBO.isNotNull()) {
-		gfxContext.deleteFramebuffer(m_FBO);
-		m_FBO.reset();
-	}
-}
-
-void ColorBufferToRDRAM::_initFBTexture(void)
-{
-	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-
-	m_pTexture = textureCache().addFrameBufferTexture(Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D);
-	m_pTexture->format = G_IM_FMT_RGBA;
-	m_pTexture->size = 2;
-	m_pTexture->clampS = 1;
-	m_pTexture->clampT = 1;
-	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
-	m_pTexture->maskS = 0;
-	m_pTexture->maskT = 0;
-	m_pTexture->mirrorS = 0;
-	m_pTexture->mirrorT = 0;
-	//The actual VI width is not used for texture width because most texture widths
-	//cause slowdowns in the glReadPixels call, at least on Android
-	m_pTexture->width = m_lastBufferWidth;
-	m_pTexture->height = VI_GetMaxBufferHeight(m_lastBufferWidth);
-	m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormat.colorFormatBytes;
-
-
-	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
-
-	// Skip this since texture is initialized in the EGL color buffer reader
-	if (!Context::EglImage)
-	{
-		Context::InitTextureParams params;
-		params.handle = m_pTexture->name;
-		params.target = textureTarget::TEXTURE_2D;
-		params.width = m_pTexture->width;
-		params.height = m_pTexture->height;
-		params.internalFormat = fbTexFormat.colorInternalFormat;
-		params.format = fbTexFormat.colorFormat;
-		params.dataType = fbTexFormat.colorType;
-		gfxContext.init2DTexture(params);
-	}
-
-	{
-		Context::TexParameters params;
-		params.handle = m_pTexture->name;
-		params.target = Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
-		params.textureUnitIndex = textureIndices::Tex[0];
-		params.minFilter = textureParameters::FILTER_LINEAR;
-		params.magFilter = textureParameters::FILTER_LINEAR;
-		gfxContext.setTextureParameters(params);
-	}
-	{
-		Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = ObjectHandle(m_FBO);
-		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
-		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = Context::EglImageFramebuffer ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
-		bufTarget.textureHandle = m_pTexture->name;
-		gfxContext.addFrameBufferRenderTarget(bufTarget);
-	}
-
-	// check if everything is OK
-	assert(!gfxContext.isFramebufferError());
-
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
-}
-
-void ColorBufferToRDRAM::_destroyFBTexure(void)
-{
-	m_bufferReader.reset();
-
-	if (m_pTexture != nullptr) {
-		textureCache().removeFrameBufferTexture(m_pTexture);
-		m_pTexture = nullptr;
-	}
 }
 
 bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 {
-	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
+	if (VI.width == 0)
 		return false;
 
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
@@ -152,9 +55,6 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 	if (_startAddress < pBuffer->m_startAddress)
 		_startAddress = pBuffer->m_startAddress;
 
-	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
-		return true;
-
 	const u32 numPixels = pBuffer->m_width * pBuffer->m_height;
 	if (numPixels == 0)
 		return false;
@@ -164,15 +64,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 	if (bufferHeight == 0)
 		return false;
 
-	if(m_pTexture == nullptr ||
-		m_pTexture->width != _getRealWidth(pBuffer->m_width) ||
-		m_pTexture->height != VI_GetMaxBufferHeight(_getRealWidth(pBuffer->m_width)))
-	{
-		_destroyFBTexure();
-
-		m_lastBufferWidth = _getRealWidth(pBuffer->m_width);
-		_initFBTexture();
-	}
+	CachedTexture* colorBufferTexture = pBuffer->getColorFbTexture();
 
 	m_pCurFrameBuffer = pBuffer;
 
@@ -190,10 +82,10 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 		readBuffer = m_pCurFrameBuffer->m_FBO;
 	}
 
-	if (m_pCurFrameBuffer->m_scale != 1.0f) {
+	if (!m_pCurFrameBuffer->isAuxiliary()) {
 		u32 x0 = 0;
 		u32 width;
-		if (config.frameBufferEmulation.nativeResFactor == 0) {
+		if (config.frameBufferEmulation.nativeResFactor == 0 && m_pCurFrameBuffer->m_scale != 1.0f) {
 			const u32 screenWidth = wnd.getWidth();
 			width = screenWidth;
 			if (wnd.isAdjustScreen()) {
@@ -217,23 +109,21 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 		blitParams.dstY0 = 0;
 		blitParams.dstX1 = m_pCurFrameBuffer->m_width;
 		blitParams.dstY1 = bufferHeight;
-		blitParams.dstWidth = m_pTexture->width;
-		blitParams.dstHeight = m_pTexture->height;
-		blitParams.filter = textureParameters::FILTER_LINEAR;
+		blitParams.dstWidth = colorBufferTexture->width;
+		blitParams.dstHeight = colorBufferTexture->height;
+		blitParams.filter = m_pCurFrameBuffer->m_scale == 1.0f ? textureParameters::FILTER_NEAREST : textureParameters::FILTER_LINEAR;
 		blitParams.tex[0] = pInputTexture;
 		blitParams.combiner = CombinerInfo::get().getTexrectDownscaleCopyProgram();
 		blitParams.readBuffer = readBuffer;
-		blitParams.drawBuffer = m_FBO;
+		blitParams.drawBuffer = pBuffer->getColorFbFbo();
 		blitParams.mask = blitMask::COLOR_BUFFER;
 		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 
-		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, m_FBO);
+		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, pBuffer->getColorFbFbo());
 	} else {
 		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, readBuffer);
 	}
 
-	m_frameCount = curFrame;
-	m_startAddress = _startAddress;
 	return true;
 }
 
@@ -312,7 +202,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	const u32 y1 = (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
 	const u32 height = std::min(max_height, 1u + y1 - y0);
 
-	const u8* pPixels = m_bufferReader->readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
+	const u8* pPixels = m_pCurFrameBuffer->readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
 	frameBufferList().setCurrentDrawBuffer();
 	if (pPixels == nullptr)
 		return;
@@ -320,52 +210,24 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_src = (u32*)pPixels;
 		u32 *ptr_dst = (u32*)(RDRAM + _startAddress);
-
-		if (!FBInfo::fbInfo.isSupported() && config.frameBufferEmulation.copyFromRDRAM != 0) {
-			memset(ptr_dst, 0, numPixels * 4);
-		}
-
-		writeToRdram<u32, u32>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA32, 0, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		writeToRdram<u32, u32>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA32, valueTester<u32, 0>, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	} else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_16b) {
 		u32 *ptr_src = (u32*)pPixels;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
 		m_blueNoiseIdx++;
-
-		if (!FBInfo::fbInfo.isSupported() && config.frameBufferEmulation.copyFromRDRAM != 0) {
-			memset(ptr_dst, 0, numPixels * 2);
-		}
-
-		writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, 0, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, valueTester<u32, 0>, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	} else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
 		u8 *ptr_src = (u8*)pPixels;
 		u8 *ptr_dst = RDRAM + _startAddress;
-
-		if (!FBInfo::fbInfo.isSupported() && config.frameBufferEmulation.copyFromRDRAM != 0) {
-			memset(ptr_dst, 0, numPixels);
-		}
-
-		writeToRdram<u8, u8>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoR8, 0, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		writeToRdram<u8, u8>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoR8, dummyTester<u8>, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 
 	m_pCurFrameBuffer->m_copiedToRdram = true;
 	m_pCurFrameBuffer->copyRdram();
-	m_pCurFrameBuffer->m_cleared = false;
 
-	m_bufferReader->cleanUp();
+	m_pCurFrameBuffer->cleanUp();
 
 	gDP.changed |= CHANGED_SCISSOR;
-}
-
-u32 ColorBufferToRDRAM::_getRealWidth(u32 _viWidth)
-{
-	u32 index = 0;
-	const u32 maxIndex = static_cast<u32>(m_allowedRealWidths.size()) - 1;
-	while (index < maxIndex && _viWidth > m_allowedRealWidths[index])
-	{
-		++index;
-	}
-
-	return m_allowedRealWidths[index];
 }
 
 void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
@@ -374,7 +236,7 @@ void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 		return;
 	if (!_prepareCopy(_address))
 		return;
-	if (config.frameBufferEmulation.copyToRDRAM == Config::CopyToRDRAM::ctDisable)
+	if (config.frameBufferEmulation.copyToRDRAM == Config::CopyToRDRAM::ctDisable && config.frameBufferEmulation.fbInfoDisabled != 0)
 		return;
 
 	const u32 numBytes = (m_pCurFrameBuffer->m_width*m_pCurFrameBuffer->m_height) << m_pCurFrameBuffer->m_size >> 1;
@@ -419,6 +281,4 @@ void copyWhiteToRDRAM(FrameBuffer * _pBuffer)
 	}
 	_pBuffer->m_copiedToRdram = true;
 	_pBuffer->copyRdram();
-
-	_pBuffer->m_cleared = false;
 }

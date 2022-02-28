@@ -28,7 +28,7 @@ void ColorBufferReaderWithPixelBuffer::_destroyBuffers()
 
 void ColorBufferReaderWithPixelBuffer::_initBuffers()
 {
-	m_numPBO = config.frameBufferEmulation.copyToRDRAM;
+	m_numPBO = std::max(1u, config.frameBufferEmulation.copyToRDRAM);
 	if (m_numPBO > _maxPBO)
 		m_numPBO = _maxPBO;
 

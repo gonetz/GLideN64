@@ -20,6 +20,10 @@ ColorBufferReaderWithEGLImage::ColorBufferReaderWithEGLImage(CachedTexture *_pTe
 ColorBufferReaderWithEGLImage::~ColorBufferReaderWithEGLImage()
 {
 	m_hardwareBuffer.release();
+
+	if (m_image != nullptr) {
+		eglDestroyImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), m_image);
+	}
 }
 
 void ColorBufferReaderWithEGLImage::_initBuffers()
@@ -36,9 +40,11 @@ void ColorBufferReaderWithEGLImage::_initBuffers()
 		m_image = eglCreateImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_NO_CONTEXT,
 			EGL_NATIVE_BUFFER_ANDROID, m_hardwareBuffer.getClientBuffer(), eglImgAttrs);
 
-		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_EXTERNAL_OES), m_pTexture->name);
-		glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, m_image);
-		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_EXTERNAL_OES), ObjectHandle());
+		if (m_image != nullptr) {
+			m_bindTexture->bind(graphics::Parameter(0), textureTarget::TEXTURE_EXTERNAL, m_pTexture->name);
+			glEGLImageTargetTexture2DOES(GLenum(textureTarget::TEXTURE_EXTERNAL), m_image);
+			m_bindTexture->bind(graphics::Parameter(0), textureTarget::TEXTURE_EXTERNAL, ObjectHandle());
+		}
 	}
 }
 
@@ -55,10 +61,10 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 		m_hardwareBuffer.lock(AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, &gpuData);
 		m_bufferLocked = true;
 		_heightOffset = static_cast<u32>(_params.y0);
-		_stride = m_pTexture->width;
+		_stride = m_hardwareBuffer.getStride();
 	} else {
 		gpuData = m_pixelData.data();
-		glReadPixels(_params.x0, _params.y0, _params.width, _params.height, format, type, gpuData);
+		glReadPixels(_params.x0, _params.y0,  m_pTexture->width, _params.height, format, type, gpuData);
 		_heightOffset = 0;
 		_stride = m_pTexture->width;
 	}

@@ -23,7 +23,7 @@ void LoadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(CFG_SAVE_AND_CLOSE, "Save and Close"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(CFG_SAVE, "Save"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(CFG_CLOSE, "Close"));
-	
+
 	//Video Tab
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_GROUP, "Video"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_FULL_SCREEN_RES, "Full screen resolution:"));
@@ -84,6 +84,8 @@ void LoadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_N64_STYLE_MIP_MAPPING_TOOLTIP, "The N64 uses a unique method of mip-mapping that's difficult to reproduce correctly on PCs. When checked, this option emulates N64-accurate mip-mapping. When unchecked, some games have sharper distant textures.\n\n[Recommended: Checked]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_HWLIGHTING, "Enable per-pixel lighting (better quality, HLE only)"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_HWLIGHTING_TOOLTIP, "In N64 games lighting is calculated per vertex. This option enables Phong shading, which provides smoother and more realistic lighting.\n\n[Recommended: Your preference]"));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_PIXEL_COVERAGE, "Enable pixel coverage calculation"));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_PIXEL_COVERAGE_TOOLTIP, "Enables approximated pixel coverage calculation. N64 uses pixel coverage for anti-aliasing and in some special blending modes. Some games have wire-frame mode aka 'pen and ink' mode. This mode also needs pixel coverage calculated.\n\n[Recommended: Checked, unless performance is hurt]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_SHADERS_STORAGE, "Store compiled shaders for performance (recommended)"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_SHADERS_STORAGE_TOOLTIP, "Use persistent storage for compiled shader programs.\nEach game uses a set of combiners. A combiner is an equation that defines how to build output color from various color inputs. GLideN64 translates shaders, and compiles shader programs on the fly. Shaders are large and complex. If the game uses several new combiners, compiling new shaders will take time and result in stuttering. When this option is checked, these shaders are saved so they're not recompiled the next time you run the game.\n\n[Recommended: Checked]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_INTERNAL_RES, "Internal resolution"));
@@ -142,7 +144,7 @@ void LoadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_COMPARE_TOOLTIP, "The N64 uses a unique method of calculating depth to the camera. When enabled, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. Experimental!\nFast mode requires OpenGL 4.2 and fragment shader interlock extensions.\nCompatible mode requires only core OpenGL 4.2 Can be slow!\n[Recommended: Sometimes checked, for several games]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_DISABLE, "Disable"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_FAST, "Fast"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_COMPATIBLE, "Compatible"));   
+	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_COMPATIBLE, "Compatible"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_FORCE_DEPTH_BUFFER_CLEAR, "Force depth buffer clear"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_FORCE_DEPTH_BUFFER_CLEAR_TOOLTIP, "Enable force depth buffer clear. A hack. Necessary for Eikou no Saint Andrews.\n\n[Recommended: off, except for Eikou no Saint Andrews]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_RENDER_FRAMEBUFFER, "Render N64 frame buffer to output"));
@@ -180,10 +182,6 @@ void LoadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ALTERNATIVE_CRC, "Alternative CRC calculation (for old Rice Video packs)"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ALTERNATIVE_CRC_TOOLTIP, "This option emulates a palette CRC calculation bug in Rice Video. If you have problems loading textures, try checking or unchecking this option.\n\n[Recommended: Mostly unchecked, checked for old texture packs]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_USE_FILE_STORAGE_TOOLTIP, "This option enables alternative storage for hi-res textures. Normally memory cache is used. It keeps all hi-res textures in RAM and thus limited by available RAM size. File storage keeps texture cache on HDD. It is slower than memory cache, but has virtually no limits on cache size. Disable \"Compress texture cache\" option for better performance."));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DUMP, "Press 'd' to dump N64 textures (for texture artists)"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DUMP_TOOLTIP, "This option dumps textures on screen to a texture pack folder.\nHotkey:\nUse D to toggle texture dumping on or off"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_RELOAD, "Press 'r' to reload hi-res textures (for texture artists)"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_RELOAD_TOOLTIP, "This option allows texture artists to reload hi-res textures while the game is running to instantly see how they look —big time saver\nHotkey:\nUse R to reload textures from the texture pack"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SIZE_OF_MEMORY_CACHE, "Size of memory cache for enhanced textures:"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SIZE_OF_MEMORY_CACHE_TOOLTIP, "Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.\n\n[Recommended: PC and game dependent]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SAVE_ENHANCED, "Save enhanced texture cache to hard disk"));
@@ -372,7 +370,7 @@ LanguageList GetLanguageList(const char * path)
 	if (hFindFile != INVALID_HANDLE_VALUE) {
 		do {
 			std::string langFile = pluginFolder + FindData.cFileName;
-			LanguageFile file; 
+			LanguageFile file;
 
 			file.Filename = FindData.cFileName;
 			file.LanguageName = GetLangString(langFile.c_str(), LANGUAGE_NAME);

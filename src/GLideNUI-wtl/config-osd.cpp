@@ -252,6 +252,7 @@ void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
 	CButton(GetDlgItem(IDC_CHK_PERCENT)).SetCheck(config.onScreenDisplay.percent != 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_INTERNAL_RESOLUTION)).SetCheck(config.onScreenDisplay.internalResolution != 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_RENDERING_RESOLUTION)).SetCheck(config.onScreenDisplay.renderingResolution != 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_STATISTICS)).SetCheck(config.onScreenDisplay.statistics != 0 ? BST_CHECKED : BST_UNCHECKED);
 
 	if (m_FontsLoaded)
 		SelCurrentFont();
@@ -271,6 +272,7 @@ void COsdTab::SaveSettings()
 	config.onScreenDisplay.percent = CButton(GetDlgItem(IDC_CHK_PERCENT)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.onScreenDisplay.internalResolution = CButton(GetDlgItem(IDC_INTERNAL_RESOLUTION)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.onScreenDisplay.renderingResolution = CButton(GetDlgItem(IDC_RENDERING_RESOLUTION)).GetCheck() == BST_CHECKED ? 1 : 0;
+	config.onScreenDisplay.statistics = CButton(GetDlgItem(IDC_STATISTICS)).GetCheck() == BST_CHECKED ? 1 : 0;
 
 	std::string SelectedFont = FromUTF16(GetSelectedFont().c_str());
 	if (!SelectedFont.empty())

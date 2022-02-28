@@ -34,7 +34,7 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 {
 	if (_strPath == NULL)
 		return;
-	::GetModuleFileName((HINSTANCE)&__ImageBase, _strPath, PLUGIN_PATH_SIZE);
+	::GetModuleFileNameW((HINSTANCE)&__ImageBase, _strPath, PLUGIN_PATH_SIZE);
 	std::wstring pluginPath(_strPath);
 	std::replace(pluginPath.begin(), pluginPath.end(), L'\\', L'/');
 	std::wstring::size_type pos = pluginPath.find_last_of(L"/");

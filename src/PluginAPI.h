@@ -2,6 +2,9 @@
 #define COMMONPLUGINAPI_H
 
 #ifdef MUPENPLUSAPI
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include "m64p_plugin.h"
 #else
 #include "windows/GLideN64_windows.h"
@@ -45,6 +48,9 @@ public:
 	void FindPluginPath(wchar_t * _strPath);
 	void GetUserDataPath(wchar_t * _strPath);
 	void GetUserCachePath(wchar_t * _strPath);
+#ifdef M64P_GLIDENUI
+	void GetUserConfigPath(wchar_t * _strPath);
+#endif // M64P_GLIDENUI
 	bool isRomOpen() const { return m_bRomOpen; }
 
 #ifndef MUPENPLUSAPI
@@ -71,6 +77,9 @@ public:
 	void ReadScreen2(void * _dest, int * _width, int * _height, int _front);
 
 	m64p_error PluginStartup(m64p_dynlib_handle _CoreLibHandle);
+#ifdef M64P_GLIDENUI
+	m64p_error PluginConfig();
+#endif // M64P_GLIDENUI
 	m64p_error PluginShutdown();
 	m64p_error PluginGetVersion(
 		m64p_plugin_type * _PluginType,

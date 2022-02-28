@@ -12,8 +12,8 @@ bool Context::DepthFramebufferTextures = false;
 bool Context::ShaderProgramBinary = false;
 bool Context::ImageTextures = false;
 bool Context::IntegerTextures = false;
-bool Context::ClipControl = false;
-bool Context::FramebufferFetch = false;
+bool Context::FramebufferFetchDepth = false;
+bool Context::FramebufferFetchColor = false;
 bool Context::TextureBarrier = false;
 bool Context::EglImage = false;
 bool Context::EglImageFramebuffer = false;
@@ -38,8 +38,8 @@ void Context::init()
 	ShaderProgramBinary = m_impl->isSupported(SpecialFeatures::ShaderProgramBinary);
 	ImageTextures = m_impl->isSupported(SpecialFeatures::ImageTextures);
 	IntegerTextures = m_impl->isSupported(SpecialFeatures::IntegerTextures);
-	ClipControl = m_impl->isSupported(SpecialFeatures::ClipControl);
-	FramebufferFetch = m_impl->isSupported(SpecialFeatures::FramebufferFetch);
+	FramebufferFetchDepth = m_impl->isSupported(SpecialFeatures::N64DepthWithFbFetchDepth);
+	FramebufferFetchColor = m_impl->isSupported(SpecialFeatures::FramebufferFetchColor);
 	TextureBarrier = m_impl->isSupported(SpecialFeatures::TextureBarrier);
 	EglImage = m_impl->isSupported(SpecialFeatures::EglImage);
 	EglImageFramebuffer = m_impl->isSupported(SpecialFeatures::EglImageFramebuffer);
@@ -170,6 +170,11 @@ s32 Context::getTextureUnpackAlignment() const
 s32 Context::getMaxTextureSize() const
 {
 	return m_impl->getMaxTextureSize();
+}
+
+f32 Context::getMaxAnisotropy() const
+{
+	return m_impl->getMaxAnisotropy();
 }
 
 void Context::bindImageTexture(const BindImageTextureParameters & _params)
@@ -312,11 +317,6 @@ ShaderProgram * Context::createGammaCorrectionShader()
 	return m_impl->createGammaCorrectionShader();
 }
 
-ShaderProgram * Context::createOrientationCorrectionShader()
-{
-	return m_impl->createOrientationCorrectionShader();
-}
-
 ShaderProgram * Context::createFXAAShader()
 {
 	return m_impl->createFXAAShader();
@@ -350,6 +350,11 @@ void Context::drawLine(f32 _width, SPVertex * _vertices)
 f32 Context::getMaxLineWidth()
 {
 	return m_impl->getMaxLineWidth();
+}
+
+s32 Context::getMaxMSAALevel()
+{
+	return m_impl->getMaxMSAALevel();
 }
 
 bool Context::isError() const

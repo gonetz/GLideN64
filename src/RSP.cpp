@@ -298,16 +298,13 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"VIGILANTE 8") != nullptr)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != nullptr)
-		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
+		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD | hack_fbTextureOffset;
 	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
 	else if (strstr(RSP.romname, (const char *)"GOLDENEYE") != nullptr)
 		config.generalEmulation.hacks |= hack_clearAloneDepthBuffer;
 	else if (strstr(RSP.romname, (const char *)"STARCRAFT 64") != nullptr)
 		config.generalEmulation.hacks |= hack_StarCraftBackgrounds;
-	else if (strstr(RSP.romname, (const char *)"POKEMON STADIUM 2") != nullptr ||
-			 strstr(RSP.romname, (const char *)"Bottom of the 9th") != nullptr)
-		config.generalEmulation.hacks |= hack_texrect_shade_alpha;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr)
 		config.generalEmulation.hacks |= hack_subscreen | hack_ZeldaMonochrome;
@@ -348,6 +345,11 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_TonyHawk;
 	else if (strstr(RSP.romname, (const char *)"NITRO64") != nullptr)
 		config.generalEmulation.hacks |= hack_WCWNitro;
+	else if (strstr(RSP.romname, (const char *)"MarioTennis") != nullptr)
+		config.generalEmulation.hacks |= hack_fbTextureOffset;
+	else if (strstr(RSP.romname, (const char *)"Extreme G 2") != nullptr ||
+		strstr(RSP.romname, (const char *)"\xb4\xb8\xbd\xc4\xd8\xb0\xd1\x47\x32") != nullptr)
+		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 
 	api().FindPluginPath(RSP.pluginpath);
 

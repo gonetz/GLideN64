@@ -1,19 +1,25 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.9)
 
 project( osal )
 
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(UNIX)
-  set(OSAL_SOURCES osal_files_unix.c)
-  add_definitions(
-    -DNDEBUG
-    -DOS_LINUX
-  )
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(OSAL_SOURCES osal_files_unix.c osal_keys_linux.c)
+    add_definitions(
+      -DOS_LINUX -DNDEBUG
+    )
+  else()
+    set(OSAL_SOURCES osal_files_unix.c osal_keys_unix.c)
+    add_definitions(
+     -DNDEBUG
+    )
+  endif()
 endif(UNIX)
 
 if(WIN32)
-  set(OSAL_SOURCES osal_files_win32.c)
+  set(OSAL_SOURCES osal_files_win32.c osal_keys_win.c)
   add_definitions(
 	-DOS_WINDOWS
 	-D_CRT_SECURE_NO_WARNINGS
@@ -22,17 +28,12 @@ endif(WIN32)
 
 # Build type
 
-if( NOT CMAKE_BUILD_TYPE)
-	set( CMAKE_BUILD_TYPE Release)
-endif( NOT CMAKE_BUILD_TYPE)
-
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set( CMAKE_BUILD_TYPE Debug)
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
 	set( DEBUG_BUILD TRUE)
 	add_definitions(
 		-DDEBUG
 	)
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions( -D__MSC__)
@@ -47,10 +48,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQ
     SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -static ${PIC_FLAGS} " )
 endif()
 
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
   add_library( osald STATIC ${OSAL_SOURCES})
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-if( CMAKE_BUILD_TYPE STREQUAL "Release")
+else( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
   add_library( osal STATIC ${OSAL_SOURCES})
-endif( CMAKE_BUILD_TYPE STREQUAL "Release")
+endif( GLIDEN64_BUILD_TYPE STREQUAL "Debug")

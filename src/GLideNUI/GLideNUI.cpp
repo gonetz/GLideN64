@@ -12,6 +12,7 @@
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
+Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
 #endif
 
 //#define RUN_DIALOG_IN_THREAD
@@ -20,7 +21,7 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool & _accepted)
+int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
@@ -29,21 +30,28 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool &
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
 		loadCustomRomSettings(strIniFileName, _romName);
 
-	int argc = 0;
-	char * argv = 0;
-	QApplication a(argc, &argv);
+	std::unique_ptr<QApplication> pQApp;
+	QCoreApplication* pApp = QCoreApplication::instance();
+
+	if (pApp == nullptr) {
+		int argc = 0;
+		char * argv = 0;
+		pQApp.reset(new QApplication(argc, &argv));
+		pApp = pQApp.get();
+	}
 
 	QTranslator translator;
 	if (translator.load(getTranslationFile(), strIniFileName))
-		a.installTranslator(&translator);
+		pApp->installTranslator(&translator);
 
-	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
+	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
 
 	w.setIniPath(strIniFileName);
 	w.setRomName(_romName);
 	w.setTitle();
 	w.show();
-	const int res = a.exec();
+
+	int res = pQApp ? pQApp->exec() : w.exec();
 	_accepted = w.isAccepted();
 	return res;
 }
@@ -67,13 +75,13 @@ int openAboutDialog(const wchar_t * _strFileName)
 	return a.exec();
 }
 
-bool runConfigThread(const wchar_t * _strFileName, const char * _romName) {
+bool runConfigThread(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
 	bool accepted = false;
 #ifdef RUN_DIALOG_IN_THREAD
-	std::thread configThread(openConfigDialog, _strFileName, std::ref(accepted));
+	std::thread configThread(openConfigDialog, _strFileName, _maxMSAALevel, std::ref(accepted));
 	configThread.join();
 #else
-	openConfigDialog(_strFileName, _romName, accepted);
+	openConfigDialog(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy, accepted);
 #endif
 	return accepted;
 
@@ -89,9 +97,21 @@ int runAboutThread(const wchar_t * _strFileName) {
 	return 0;
 }
 
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName)
+#ifdef M64P_GLIDENUI
+EXPORT bool CALL IsPathWriteable(const wchar_t * dir)
 {
-	return runConfigThread(_strFileName, _romName);
+	return isPathWriteable(QString::fromWCharArray(dir));
+}
+
+EXPORT void CALL CopyConfigFiles(const wchar_t * _srcDir, const wchar_t * _targetDir)
+{
+	return copyConfigFiles(QString::fromWCharArray(_srcDir), QString::fromWCharArray(_targetDir));
+}
+#endif // M64P_GLIDENUI
+
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
+{
+	return runConfigThread(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy);
 }
 
 EXPORT int CALL RunAbout(const wchar_t * _strFileName)

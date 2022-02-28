@@ -2,6 +2,8 @@
 #include <memory>
 #include <Combiner.h>
 #include <Graphics/OpenGLContext/opengl_GLInfo.h>
+#include "glsl_CombinerProgramUniformFactory.h"
+#include "glsl_ShaderPart.h"
 
 namespace graphics {
 	class CombinerProgram;
@@ -12,95 +14,123 @@ namespace opengl {
 }
 
 namespace glsl {
-
-	class ShaderPart;
 	class CombinerInputs;
-	class CombinerProgramUniformFactory;
+}
 
-	class CombinerProgramBuilder
-	{
-	public:
-		CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram);
-		~CombinerProgramBuilder();
+namespace glsl {
 
-		graphics::CombinerProgram * buildCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
+class TextureConvert {
+public:
+	void setMode(u32 _mode) {
+		m_mode = _mode;
+	}
 
-		const ShaderPart * getVertexShaderHeader() const;
+	bool getBilerp1() const {
+		return (m_mode & 1) != 0;
+	}
 
-		const ShaderPart * getFragmentShaderHeader() const;
+	bool getBilerp0() const {
+		return (m_mode & 2) != 0;
+	}
 
-		const ShaderPart * getFragmentShaderEnd() const;
+	bool useYUVCoversion() const {
+		return (m_mode & 3) != 3;
+	}
 
-		bool isObsolete() const;
+	bool useTextureFiltering() const {
+		return (m_mode & 3) != 0;
+	}
 
-	private:
-		CombinerInputs compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
+private:
+	u32 m_mode;
+};
 
-		typedef std::unique_ptr<ShaderPart> ShaderPartPtr;
-		ShaderPartPtr m_blender1;
-		ShaderPartPtr m_blender2;
-		ShaderPartPtr m_blenderAlpha;
-		ShaderPartPtr m_legacyBlender;
-		ShaderPartPtr m_clamp;
-		ShaderPartPtr m_signExtendColorC;
-		ShaderPartPtr m_signExtendAlphaC;
-		ShaderPartPtr m_signExtendColorABD;
-		ShaderPartPtr m_signExtendAlphaABD;
-		ShaderPartPtr m_alphaTest;
-		ShaderPartPtr m_callDither;
+class CombinerProgramBuilder
+{
+public:
+	using ShaderPartPtr = std::unique_ptr<ShaderPart>;
 
-		ShaderPartPtr m_vertexHeader;
-		ShaderPartPtr m_vertexEnd;
-		ShaderPartPtr m_vertexRect;
-		ShaderPartPtr m_vertexTexturedRect;
-		ShaderPartPtr m_vertexTriangle;
-		ShaderPartPtr m_vertexTexturedTriangle;
+	CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram,
+		std::unique_ptr<CombinerProgramUniformFactory> _uniformFactory);
+	virtual ~CombinerProgramBuilder();
 
-		ShaderPartPtr m_fragmentHeader;
-		ShaderPartPtr m_fragmentGlobalVariablesTex;
-		ShaderPartPtr m_fragmentGlobalVariablesNotex;
-		ShaderPartPtr m_fragmentHeaderNoise;
-		ShaderPartPtr m_fragmentHeaderWriteDepth;
-		ShaderPartPtr m_fragmentHeaderCalcLight;
-		ShaderPartPtr m_fragmentHeaderMipMap;
-		ShaderPartPtr m_fragmentHeaderTextureEngine;
-		ShaderPartPtr m_fragmentHeaderReadMSTex;
-		ShaderPartPtr m_fragmentHeaderDither;
-		ShaderPartPtr m_fragmentHeaderDepthCompare;
-		ShaderPartPtr m_fragmentHeaderReadTex;
-		ShaderPartPtr m_fragmentHeaderReadTexCopyMode;
-		ShaderPartPtr m_fragmentMain;
-		ShaderPartPtr m_fragmentMain2Cycle;
-		ShaderPartPtr m_fragmentBlendMux;
-		ShaderPartPtr m_fragmentReadTex0;
-		ShaderPartPtr m_fragmentReadTex1;
-		ShaderPartPtr m_fragmentTextureEngineTex0;
-		ShaderPartPtr m_fragmentTextureEngineTex1;
-		ShaderPartPtr m_fragmentReadTexCopyMode;
-		ShaderPartPtr m_fragmentReadTexMipmap;
-		ShaderPartPtr m_fragmentCallN64Depth;
-		ShaderPartPtr m_fragmentRenderTarget;
-		ShaderPartPtr m_shaderFragmentMainEnd;
+	graphics::CombinerProgram * buildCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
-		ShaderPartPtr m_shaderNoise;
-		ShaderPartPtr m_shaderDither;
-		ShaderPartPtr m_shaderWriteDepth;
-		ShaderPartPtr m_shaderMipmap;
-		ShaderPartPtr m_shaderCalcLight;
-		ShaderPartPtr m_shaderReadtex;
-		ShaderPartPtr m_shaderReadtexCopyMode;
-		ShaderPartPtr m_shaderN64DepthCompare;
-		ShaderPartPtr m_shaderN64DepthRender;
-		ShaderPartPtr m_shaderTextureEngine;
+	virtual const ShaderPart * getVertexShaderHeader() const = 0;
 
-		std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
+	virtual const ShaderPart * getFragmentShaderHeader() const = 0;
 
-		GLuint  m_vertexShaderRect;
-		GLuint  m_vertexShaderTriangle;
-		GLuint  m_vertexShaderTexturedRect;
-		GLuint  m_vertexShaderTexturedTriangle;
-		opengl::CachedUseProgram * m_useProgram;
-		u32 m_combinerOptionsBits;
-	};
+	virtual const ShaderPart * getFragmentShaderEnd() const = 0;
+
+	virtual bool isObsolete() const = 0;
+
+	static u32 s_cycleType;
+	static TextureConvert s_textureConvert;
+
+protected:
+	virtual const ShaderPart * getVertexShaderTexturedRect() const = 0;
+	virtual const ShaderPart * getVertexShaderTexturedTriangle() const = 0;
+
+private:
+	CombinerInputs compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
+
+	virtual void _writeSignExtendAlphaC(std::stringstream& ssShader) const = 0;
+	virtual void _writeSignExtendAlphaABD(std::stringstream& ssShader) const = 0;
+	virtual void _writeAlphaTest(std::stringstream& ssShader) const = 0;
+	virtual void _writeSignExtendColorC(std::stringstream& ssShader) const = 0;
+	virtual void _writeSignExtendColorABD(std::stringstream& ssShader) const = 0;
+	virtual void _writeClamp(std::stringstream& ssShader) const = 0;
+	virtual void _writeCallDither(std::stringstream& ssShader) const = 0;
+	virtual void _writeBlender1(std::stringstream& ssShader) const = 0;
+	virtual void _writeBlender2(std::stringstream& ssShader) const = 0;
+	virtual void _writeBlenderAlpha(std::stringstream& ssShader) const = 0;
+	virtual void _writeLegacyBlender(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeader(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentGlobalVariablesTex(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderDither(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderNoise(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderWriteDepth(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderDepthCompare(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderReadMSTex(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderClampWrapMirrorEngine(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderMipMap(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderReadTex(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderReadTexCopyMode(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentGlobalVariablesNotex(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderCalcLight(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentMain2Cycle(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentMain(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentBlendMux(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderCoverage(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentCorrectTexCoords(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentClampWrapMirrorEngineTex0(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentClampWrapMirrorEngineTex1(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentReadTexMipmap(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentReadTex0(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentReadTex1(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentReadTexCopyMode(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentCallN64Depth(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentRenderTarget(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderFragmentMainEnd(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderCalcLight(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderClampWrapMirrorEngine(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderMipmap(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderReadtex(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderReadtexCopyMode(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderNoise(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderDither(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderWriteDepth(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderN64DepthCompare(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderN64DepthRender(std::stringstream& ssShader) const = 0;
+
+	virtual GLuint _getVertexShaderRect() const = 0;
+	virtual GLuint _getVertexShaderTriangle() const = 0;
+	virtual GLuint _getVertexShaderTexturedRect() const = 0;
+	virtual GLuint _getVertexShaderTexturedTriangle() const = 0;
+
+	std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
+	opengl::CachedUseProgram * m_useProgram;
+	bool m_useCoverage = false;
+};
 
 }

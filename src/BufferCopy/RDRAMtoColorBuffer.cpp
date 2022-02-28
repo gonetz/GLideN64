@@ -97,6 +97,8 @@ void RDRAMtoColorBuffer::addAddress(u32 _address, u32 _size)
 template <typename TSrc>
 bool _copyBufferFromRdram(u32 _address, u32* _dst, u32(*converter)(TSrc _c, bool _bCFB), u32 _xor, u32 _x0, u32 _y0, u32 _width, u32 _height, bool _fullAlpha)
 {
+	if ((_address & 1) != 0)
+		return false;
 	TSrc * src = reinterpret_cast<TSrc*>(RDRAM + _address);
 	const u32 bound = (RDRAMSize + 1 - _address) >> (sizeof(TSrc) / 2);
 	TSrc col;
@@ -177,7 +179,6 @@ u32 RGBA32ToABGR32(u32 col, bool _fullAlpha)
 void RDRAMtoColorBuffer::_copyFromRDRAM(u32 _height, bool _fullAlpha)
 {
 	Cleaner cleaner(this);
-	ValueKeeper<u32> otherMode(gSP.clipRatio, 1U);
 	const u32 address = m_pCurBuffer->m_startAddress;
 	const u32 width = m_pCurBuffer->m_width;
 	const u32 height = _height;

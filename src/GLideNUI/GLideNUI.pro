@@ -20,7 +20,8 @@ SOURCES += \
 	FullscreenResolutions_windows.cpp \
 	Settings.cpp \
 	ScreenShot.cpp \
-	AboutDialog.cpp
+	AboutDialog.cpp \
+	QtKeyToHID.cpp
 
 HEADERS += \
 	ConfigDialog.h \

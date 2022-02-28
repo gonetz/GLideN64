@@ -74,6 +74,8 @@ namespace opengl {
 
 		s32 getMaxTextureSize() const override;
 
+		f32 getMaxAnisotropy() const override;
+
 		void bindImageTexture(const graphics::Context::BindImageTextureParameters & _params) override;
 
 		u32 convertInternalTextureFormat(u32 _format) const override;
@@ -134,8 +136,6 @@ namespace opengl {
 
 		graphics::ShaderProgram * createGammaCorrectionShader() override;
 
-		graphics::ShaderProgram * createOrientationCorrectionShader() override;
-
 		graphics::ShaderProgram * createFXAAShader() override;
 
 		graphics::TextDrawerShaderProgram * createTextDrawerShader() override;
@@ -151,6 +151,8 @@ namespace opengl {
 		f32 getMaxLineWidth() override;
 
 		bool isSupported(graphics::SpecialFeatures _feature) const override;
+
+		s32 getMaxMSAALevel() override;
 
 		bool isError() const override;
 
