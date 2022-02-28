@@ -10,7 +10,7 @@ TxHiResNoCache::TxHiResNoCache(int maxwidth,
 			   int options,
 			   const wchar_t *cachePath,
 			   const wchar_t *texPackPath,
-        	   const wchar_t *fullTexPath,
+			   const wchar_t *fullTexPath,
 			   const wchar_t *ident,
 			   dispInfoFuncExt callback)
 	: TxHiResLoader(maxwidth, maxheight, maxbpp, options)
@@ -86,14 +86,14 @@ bool TxHiResNoCache::get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *
 		}
 		return _loadedTex.end();
 	};
-    {
-        auto loadedTexMap = findTex(checksum);
-        if (loadedTexMap != _loadedTex.end()) {
-            DBG_INFO(80, wst("TxNoCache::get: cached chksum:%08X %08X found\n"), chksum, palchksum);
-            *info = loadedTexMap->second;
-            return true;
-        }
-    }
+	{
+		auto loadedTexMap = findTex(checksum);
+		if (loadedTexMap != _loadedTex.end()) {
+			DBG_INFO(80, wst("TxNoCache::get: cached chksum:%08X %08X found\n"), chksum, palchksum);
+			*info = loadedTexMap->second;
+			return true;
+		}
+	}
 
 	DBG_INFO(80, wst("TxNoCache::get: loading chksum:%08X %08X\n"), chksum, palchksum);
 
