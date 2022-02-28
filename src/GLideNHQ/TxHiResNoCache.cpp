@@ -86,11 +86,14 @@ bool TxHiResNoCache::get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *
 		}
 		return _loadedTex.end();
 	};
-	if (auto loadedTexMap = findTex(checksum); loadedTexMap != _loadedTex.end()) {
-		DBG_INFO(80, wst("TxNoCache::get: cached chksum:%08X %08X found\n"), chksum, palchksum);
-		*info = loadedTexMap->second;
-		return true;
-	}
+    {
+        auto loadedTexMap = findTex(checksum);
+        if (loadedTexMap != _loadedTex.end()) {
+            DBG_INFO(80, wst("TxNoCache::get: cached chksum:%08X %08X found\n"), chksum, palchksum);
+            *info = loadedTexMap->second;
+            return true;
+        }
+    }
 
 	DBG_INFO(80, wst("TxNoCache::get: loading chksum:%08X %08X\n"), chksum, palchksum);
 
