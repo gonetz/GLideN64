@@ -940,16 +940,32 @@ public:
 	ShaderFragmentRenderTarget(const opengl::GLInfo & _glinfo)
 	{
 		if (config.generalEmulation.enableFragmentDepthWrite != 0) {
-			m_part =
-				"  if (uRenderTarget != 0) {					\n"
-				"    if (uRenderTarget > 1) {					\n"
-				"      ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
-				"      if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
-				"    }											\n"
-				"    fragDepth = fragColor.r;				\n"
-				"  }											\n"
-				"  gl_FragDepth = fragDepth;	\n"
-			;
+			if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0)
+				m_part =
+					"  if (uRenderTarget == 1) {					\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  } else if (uRenderTarget == 2) {				\n"
+					"    ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+					"    if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  } else if (uRenderTarget == 3) {				\n"
+					"    ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+					"    if (texelFetch(uDepthTex, coord, 0).r > 0.0) discard;	\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  }											\n"
+					"  gl_FragDepth = fragDepth;					\n"
+				;
+			else
+				m_part =
+					"  if (uRenderTarget == 1) {					\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  } else if (uRenderTarget == 2) {				\n"
+					"    ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+					"    if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  }											\n"
+					"  gl_FragDepth = fragDepth;	\n"
+				;
 		}
 	}
 };

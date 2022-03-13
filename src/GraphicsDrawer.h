@@ -163,6 +163,16 @@ public:
 
 	void clearStatistics() { m_statistics.clear(); }
 
+	enum class BgDepthCopyMode {
+		eNone = 0,
+		eCopyDone,
+		eBg1cyc,
+		eBgCopy
+	};
+
+	void setBgDepthCopyMode(BgDepthCopyMode mode);
+	BgDepthCopyMode getBgDepthCopyMode() const;
+
 	struct Statistics {
 		u32 fillRects = 0;
 		u32 texRects = 0;
@@ -207,7 +217,7 @@ private:
 	typedef std::list<std::string> OSDMessages;
 	void _removeOSDMessage(OSDMessages::iterator _iter, Milliseconds _interval);
 
-	DrawingState m_drawingState;
+	DrawingState m_drawingState{ DrawingState::Non };
 	TexturedRectParams m_texrectParams;
 
 	struct {
@@ -218,14 +228,15 @@ private:
 	} triangles;
 
 	std::vector<SPVertex> m_dmaVertices;
-	u32 m_dmaVerticesNum;
+	u32 m_dmaVerticesNum{ 0u };
 
 	RectVertex m_rect[4];
 
-	u32 m_modifyVertices;
-	f32 m_maxLineWidth;
-	bool m_bFlatColors;
-	bool m_bBGMode;
+	u32 m_modifyVertices{ 0u };
+	f32 m_maxLineWidth{ 1.0f };
+	bool m_bFlatColors{ false };
+	bool m_bBGMode{ false };
+	BgDepthCopyMode m_depthCopyMode{ BgDepthCopyMode::eNone };
 	TexrectDrawer m_texrectDrawer;
 	OSDMessages m_osdMessages;
 	mutable Statistics m_statistics;
