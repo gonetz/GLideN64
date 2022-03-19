@@ -604,9 +604,9 @@ public:
 		int renderTarget = 0;
 		auto bgCopyMode = dwnd().getDrawer().getBgDepthCopyMode();
 		if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eBg1cyc)
-			renderTarget = 1;
-		else if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eBgCopy)
 			renderTarget = 3;
+		else if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eBgCopy)
+			renderTarget = 4;
 		else if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eCopyDone)
 			int renderTarget = 0;
 		else if (isCurrentColorImageDepthImage())

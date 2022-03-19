@@ -694,6 +694,47 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 		// It will be copy depth buffer
 		dbList.saveBuffer(gDP.colorImage.address);
 
+		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
+			DepthBuffer * pFromDepthBuffer = dbList.findBuffer(gSP.bgImage.address);
+			if (pFromDepthBuffer == nullptr)
+				return;
+
+			DepthBuffer * pToDepthBuffer = dbList.findBuffer(gDP.colorImage.address);
+			if (pFromDepthBuffer == nullptr)
+				return;
+
+			if (Context::FramebufferFetchDepth) {
+				FrameBuffer * pFrameBuffer = fbList.findBuffer(gDP.colorImage.address);
+				if (pFrameBuffer == nullptr)
+					return;
+				Context::FrameBufferRenderTarget targetParams;
+				targetParams.bufferHandle = pFrameBuffer->m_FBO;
+				targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT1;
+				targetParams.textureHandle = pFromDepthBuffer->m_pDepthImageZTexture->name;
+				targetParams.textureTarget = textureTarget::TEXTURE_2D;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT2;
+				targetParams.textureHandle = pToDepthBuffer->m_pDepthImageZTexture->name;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				gfxContext.setDrawBuffers(3);
+			} else if (Context::ImageTextures) {
+				Context::BindImageTextureParameters bindParams;
+				bindParams.imageUnit = textureImageUnits::DepthZ;
+				bindParams.texture = pFromDepthBuffer->m_pDepthImageZTexture->name;
+				bindParams.accessMode = textureImageAccessMode::READ_WRITE;
+				bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
+				gfxContext.bindImageTexture(bindParams);
+
+				bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
+				bindParams.texture = pToDepthBuffer->m_pDepthImageZTexture->name;
+				gfxContext.bindImageTexture(bindParams);
+			}
+			return;
+		}
+
 		FrameBuffer * pCopyDepthFrameBuffer = fbList.findBuffer(gSP.bgImage.address);
 		if (pCopyDepthFrameBuffer == nullptr)
 			return;
