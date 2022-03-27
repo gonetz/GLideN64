@@ -12,4 +12,5 @@ inline
 void removeColon(tx_wstring& _s)
 {
 	std::replace(_s.begin(), _s.end(), L':', L'-');
+	std::replace(_s.begin(), _s.end(), L'/', L'-');
 }
