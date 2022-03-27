@@ -716,10 +716,18 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 				gfxContext.addFrameBufferRenderTarget(targetParams);
 
 				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT2;
+				targetParams.textureHandle = pFromDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT3;
 				targetParams.textureHandle = pToDepthBuffer->m_pDepthImageZTexture->name;
 				gfxContext.addFrameBufferRenderTarget(targetParams);
 
-				gfxContext.setDrawBuffers(3);
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT4;
+				targetParams.textureHandle = pToDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				gfxContext.setDrawBuffers(5);
 			} else if (Context::ImageTextures) {
 				Context::BindImageTextureParameters bindParams;
 				bindParams.imageUnit = textureImageUnits::DepthZ;
@@ -729,7 +737,15 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 				gfxContext.bindImageTexture(bindParams);
 
 				bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
+				bindParams.texture = pFromDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.bindImageTexture(bindParams);
+
+				bindParams.imageUnit = textureImageUnits::DepthZCopy;
 				bindParams.texture = pToDepthBuffer->m_pDepthImageZTexture->name;
+				gfxContext.bindImageTexture(bindParams);
+
+				bindParams.imageUnit = textureImageUnits::DepthDeltaZCopy;
+				bindParams.texture = pToDepthBuffer->m_pDepthImageDeltaZTexture->name;
 				gfxContext.bindImageTexture(bindParams);
 			}
 			return;

@@ -695,8 +695,13 @@ public:
 
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.n64DepthWithFbFetch) {
 			m_part +=
-				"layout(location = 1) inout highp vec4 depthZ;	\n"
-				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
+				"layout(location = 1) inout highp vec4 depthZ;			\n"
+				"layout(location = 2) inout highp vec4 depthDeltaZ;		\n"
+				;
+			if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0u)
+				m_part +=
+				"layout(location = 3) inout highp vec4 depthZCopy;		\n"
+				"layout(location = 4) inout highp vec4 depthDeltaZCopy;	\n"
 				;
 		}
 	}
@@ -786,8 +791,13 @@ public:
 				;
 			if (_glinfo.imageTextures & !_glinfo.n64DepthWithFbFetch) {
 				m_part +=
-					"layout(binding = 2, r32f) highp uniform restrict image2D uDepthImageZ;		\n"
+					"layout(binding = 2, r32f) highp uniform restrict image2D uDepthImageZ;			\n"
 					"layout(binding = 3, r32f) highp uniform restrict image2D uDepthImageDeltaZ;	\n"
+					;
+				if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0u)
+					m_part +=
+					"layout(binding = 4, r32f) highp uniform restrict image2D uDepthImageZCopy;		\n"
+					"layout(binding = 5, r32f) highp uniform restrict image2D uDepthImageDeltaZCopy;\n"
 					;
 			}
 		}
@@ -1311,16 +1321,20 @@ public:
 				// Zelda MM depth buffer copy
 				if (_glinfo.imageTextures && !_glinfo.n64DepthWithFbFetch) {
 					m_part +=
-						"  if (uRenderTarget == 3) { \n"
+						"  if (uRenderTarget == 3) {							\n"
 						"    highp vec4 copyZ = imageLoad(uDepthImageZ,coord);	\n"
-						"    imageStore(uDepthImageDeltaZ, coord, copyZ);		\n"
+						"    imageStore(uDepthImageZCopy, coord, copyZ);		\n"
+						"    copyZ = imageLoad(uDepthImageDeltaZ, coord);		\n"
+						"    imageStore(uDepthImageDeltaZCopy, coord, copyZ);	\n"
 						"    return true;										\n"
 						"  }													\n"
 						"  if (uRenderTarget == 4) {							\n"
-						"    highp vec4 testZ = imageLoad(uDepthImageDeltaZ,coord);	\n"
+						"    highp vec4 testZ = imageLoad(uDepthImageZCopy,coord);	\n"
 						"    if (testZ.r > 0.0) return false;					\n"
 						"    highp vec4 copyZ = imageLoad(uDepthImageZ, coord);	\n"
-						"    imageStore(uDepthImageDeltaZ, coord, copyZ);		\n"
+						"    imageStore(uDepthImageZCopy, coord, copyZ);		\n"
+						"    copyZ = imageLoad(uDepthImageDeltaZ, coord);		\n"
+						"    imageStore(uDepthImageDeltaZCopy, coord, copyZ);	\n"
 						"    return true;										\n"
 						"  }													\n"
 						;
@@ -1328,12 +1342,14 @@ public:
 				else {
 					m_part +=
 						"  if (uRenderTarget == 3) {							\n"
-						"    depthDeltaZ.r = depthZ.r;							\n"
+						"    depthZCopy.r = depthZ.r;							\n"
+						"    depthDeltaZCopy.r = depthDeltaZ.r;					\n"
 						"    return true;										\n"
 						"  }													\n"
 						"  if (uRenderTarget == 4) {							\n"
-						"    if (depthDeltaZ.r > 0.0) return false;				\n"
-						"    depthDeltaZ.r = depthZ.r;							\n"
+						"    if (depthZCopy.r > 0.0) return false;				\n"
+						"    depthZCopy.r = depthZ.r;							\n"
+						"    depthDeltaZCopy.r = depthDeltaZ.r;					\n"
 						"    return true;										\n"
 						"  }													\n"
 						;
