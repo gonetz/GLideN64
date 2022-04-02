@@ -359,7 +359,7 @@ bool ContextImpl::blitFramebuffers(const graphics::Context::BlitFramebuffersPara
 
 void ContextImpl::setDrawBuffers(u32 _num)
 {
-	GLenum targets[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+	GLenum targets[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
 	glDrawBuffers(_num, targets);
 }
 

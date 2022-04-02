@@ -28,12 +28,6 @@
 using namespace graphics;
 
 GraphicsDrawer::GraphicsDrawer()
-: m_drawingState(DrawingState::Non)
-, m_dmaVerticesNum(0)
-, m_modifyVertices(0)
-, m_maxLineWidth(1.0f)
-, m_bFlatColors(false)
-, m_bBGMode(false)
 {
 	memset(m_rect, 0, sizeof(m_rect));
 }
@@ -620,6 +614,16 @@ void GraphicsDrawer::setBlendMode(bool _forceLegacyBlending) const
 	_ordinaryBlending();
 }
 
+void GraphicsDrawer::setBgDepthCopyMode(BgDepthCopyMode mode)
+{
+	m_depthCopyMode = mode;
+}
+
+GraphicsDrawer::BgDepthCopyMode GraphicsDrawer::getBgDepthCopyMode() const
+{
+	return m_depthCopyMode;
+}
+
 void GraphicsDrawer::_updateTextures() const
 {
 	//For some reason updating the texture cache on the first frame of LOZ:OOT causes a nullptr Pointer exception...
@@ -670,10 +674,121 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 
 	cmbInfo.updateParameters();
 
-	if (!config.generalEmulation.enableFragmentDepthWrite)
+	if (config.generalEmulation.enableFragmentDepthWrite == 0u)
 		return;
 
-	if (isCurrentColorImageDepthImage() &&
+	auto setDepthCopyParameters = []() {
+		gfxContext.enable(enable::DEPTH_TEST, true);
+		gfxContext.setDepthCompare(compare::ALWAYS);
+		gfxContext.enableDepthWrite(true);
+		gDP.changed |= CHANGED_RENDERMODE;
+	};
+
+	if (m_depthCopyMode >= BgDepthCopyMode::eBg1cyc) {
+		DepthBufferList & dbList = depthBufferList();
+		FrameBufferList & fbList = frameBufferList();
+
+		// The game copies content of depth buffer into current color buffer
+		// OpenGL has different format for color and depth buffers, so this trick can't be performed directly
+		// To do that, depth buffer with address of current color buffer created and attached to the current FBO
+		// It will be copy depth buffer
+		dbList.saveBuffer(gDP.colorImage.address);
+
+		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
+			DepthBuffer * pFromDepthBuffer = dbList.findBuffer(gSP.bgImage.address);
+			if (pFromDepthBuffer == nullptr)
+				return;
+
+			DepthBuffer * pToDepthBuffer = dbList.findBuffer(gDP.colorImage.address);
+			if (pFromDepthBuffer == nullptr)
+				return;
+
+			if (Context::FramebufferFetchDepth) {
+				FrameBuffer * pFrameBuffer = fbList.findBuffer(gDP.colorImage.address);
+				if (pFrameBuffer == nullptr)
+					return;
+				Context::FrameBufferRenderTarget targetParams;
+				targetParams.bufferHandle = pFrameBuffer->m_FBO;
+				targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT1;
+				targetParams.textureHandle = pFromDepthBuffer->m_pDepthImageZTexture->name;
+				targetParams.textureTarget = textureTarget::TEXTURE_2D;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT2;
+				targetParams.textureHandle = pFromDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT3;
+				targetParams.textureHandle = pToDepthBuffer->m_pDepthImageZTexture->name;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT4;
+				targetParams.textureHandle = pToDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.addFrameBufferRenderTarget(targetParams);
+
+				gfxContext.setDrawBuffers(5);
+			} else if (Context::ImageTextures) {
+				Context::BindImageTextureParameters bindParams;
+				bindParams.imageUnit = textureImageUnits::DepthZ;
+				bindParams.texture = pFromDepthBuffer->m_pDepthImageZTexture->name;
+				bindParams.accessMode = textureImageAccessMode::READ_WRITE;
+				bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
+				gfxContext.bindImageTexture(bindParams);
+
+				bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
+				bindParams.texture = pFromDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.bindImageTexture(bindParams);
+
+				bindParams.imageUnit = textureImageUnits::DepthZCopy;
+				bindParams.texture = pToDepthBuffer->m_pDepthImageZTexture->name;
+				gfxContext.bindImageTexture(bindParams);
+
+				bindParams.imageUnit = textureImageUnits::DepthDeltaZCopy;
+				bindParams.texture = pToDepthBuffer->m_pDepthImageDeltaZTexture->name;
+				gfxContext.bindImageTexture(bindParams);
+			}
+			return;
+		}
+
+		FrameBuffer * pCopyDepthFrameBuffer = fbList.findBuffer(gSP.bgImage.address);
+		if (pCopyDepthFrameBuffer == nullptr)
+			return;
+
+		DepthBuffer * pCopyDepthBuffer = dbList.findBuffer(gSP.bgImage.address);
+		if (pCopyDepthBuffer == nullptr)
+			return;
+
+		CachedTexture * pCopyDepthTex = pCopyDepthBuffer->resolveDepthBufferTexture(pCopyDepthFrameBuffer);
+		if (pCopyDepthTex == nullptr)
+			return;
+
+		Context::TexParameters params;
+		params.handle = pCopyDepthTex->name;
+		params.target = textureTarget::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[0];
+		params.maxMipmapLevel = 0;
+		params.minFilter = textureParameters::FILTER_NEAREST;
+		params.magFilter = textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(params);
+
+		if (m_depthCopyMode == BgDepthCopyMode::eBgCopy) {
+			FrameBuffer * pCurDepthFrameBuffer = fbList.findBuffer(gDP.depthImageAddress);
+			if (pCurDepthFrameBuffer == nullptr)
+				return;
+			CachedTexture * pCurDepthTexture = pCurDepthFrameBuffer->m_pDepthBuffer->copyDepthBufferTexture(pCurDepthFrameBuffer);
+			if (pCurDepthTexture == nullptr)
+				return;
+
+			params.handle = pCurDepthTexture->name;
+			params.textureUnitIndex = textureIndices::DepthTex;
+			gfxContext.setTextureParameters(params);
+		}
+
+		setDepthCopyParameters();
+		gDP.changed |= CHANGED_TMEM;
+	} else if (m_depthCopyMode != BgDepthCopyMode::eCopyDone &&
+		isCurrentColorImageDepthImage() &&
 		config.generalEmulation.enableFragmentDepthWrite != 0 &&
 		config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 		// Current render target is depth buffer.
@@ -699,10 +814,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 			gfxContext.enable(enable::BLEND, true);
 			gfxContext.setBlending(blend::ZERO, blend::ONE);
 		}
-		gfxContext.enable(enable::DEPTH_TEST, true);
-		gfxContext.setDepthCompare(compare::ALWAYS);
-		gfxContext.enableDepthWrite(true);
-		gDP.changed |= CHANGED_RENDERMODE;
+		setDepthCopyParameters();
 	}
 }
 

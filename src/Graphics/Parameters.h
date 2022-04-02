@@ -53,6 +53,8 @@ namespace graphics {
 		extern BufferAttachmentParam COLOR_ATTACHMENT0;
 		extern BufferAttachmentParam COLOR_ATTACHMENT1;
 		extern BufferAttachmentParam COLOR_ATTACHMENT2;
+		extern BufferAttachmentParam COLOR_ATTACHMENT3;
+		extern BufferAttachmentParam COLOR_ATTACHMENT4;
 		extern BufferAttachmentParam DEPTH_ATTACHMENT;
 	}
 
@@ -79,6 +81,8 @@ namespace graphics {
 	namespace textureImageUnits {
 		extern ImageUnitParam DepthZ;
 		extern ImageUnitParam DepthDeltaZ;
+		extern ImageUnitParam DepthZCopy;
+		extern ImageUnitParam DepthDeltaZCopy;
 	}
 
 	namespace textureImageAccessMode {

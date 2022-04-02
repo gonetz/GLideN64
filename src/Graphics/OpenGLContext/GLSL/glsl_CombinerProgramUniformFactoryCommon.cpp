@@ -602,9 +602,15 @@ public:
 	void update(bool _force) override
 	{
 		int renderTarget = 0;
-		if (isCurrentColorImageDepthImage()) {
+		auto bgCopyMode = dwnd().getDrawer().getBgDepthCopyMode();
+		if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eBg1cyc)
+			renderTarget = 3;
+		else if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eBgCopy)
+			renderTarget = 4;
+		else if (bgCopyMode == GraphicsDrawer::BgDepthCopyMode::eCopyDone)
+			int renderTarget = 0;
+		else if (isCurrentColorImageDepthImage())
 			renderTarget = isDepthCompareEnabled() ? 2 : 1;
-		}
 		uRenderTarget.set(renderTarget, _force);
 	}
 

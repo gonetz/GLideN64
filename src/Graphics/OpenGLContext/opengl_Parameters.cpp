@@ -53,6 +53,8 @@ namespace graphics {
 		BufferAttachmentParam COLOR_ATTACHMENT0(GL_COLOR_ATTACHMENT0);
 		BufferAttachmentParam COLOR_ATTACHMENT1(GL_COLOR_ATTACHMENT1);
 		BufferAttachmentParam COLOR_ATTACHMENT2(GL_COLOR_ATTACHMENT2);
+		BufferAttachmentParam COLOR_ATTACHMENT3(GL_COLOR_ATTACHMENT3);
+		BufferAttachmentParam COLOR_ATTACHMENT4(GL_COLOR_ATTACHMENT4);
 		BufferAttachmentParam DEPTH_ATTACHMENT(GL_DEPTH_ATTACHMENT);
 	}
 
@@ -79,6 +81,8 @@ namespace graphics {
 	namespace textureImageUnits {
 		ImageUnitParam DepthZ(2U);
 		ImageUnitParam DepthDeltaZ(3U);
+		ImageUnitParam DepthZCopy(4U);
+		ImageUnitParam DepthDeltaZCopy(5U);
 	}
 
 	namespace textureImageAccessMode {

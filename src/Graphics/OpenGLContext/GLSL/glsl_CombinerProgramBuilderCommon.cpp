@@ -695,8 +695,13 @@ public:
 
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.n64DepthWithFbFetch) {
 			m_part +=
-				"layout(location = 1) inout highp vec4 depthZ;	\n"
-				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
+				"layout(location = 1) inout highp vec4 depthZ;			\n"
+				"layout(location = 2) inout highp vec4 depthDeltaZ;		\n"
+				;
+			if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0u)
+				m_part +=
+				"layout(location = 3) inout highp vec4 depthZCopy;		\n"
+				"layout(location = 4) inout highp vec4 depthDeltaZCopy;	\n"
 				;
 		}
 	}
@@ -786,8 +791,13 @@ public:
 				;
 			if (_glinfo.imageTextures & !_glinfo.n64DepthWithFbFetch) {
 				m_part +=
-					"layout(binding = 2, r32f) highp uniform restrict image2D uDepthImageZ;		\n"
+					"layout(binding = 2, r32f) highp uniform restrict image2D uDepthImageZ;			\n"
 					"layout(binding = 3, r32f) highp uniform restrict image2D uDepthImageDeltaZ;	\n"
+					;
+				if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0u)
+					m_part +=
+					"layout(binding = 4, r32f) highp uniform restrict image2D uDepthImageZCopy;		\n"
+					"layout(binding = 5, r32f) highp uniform restrict image2D uDepthImageDeltaZCopy;\n"
 					;
 			}
 		}
@@ -940,16 +950,33 @@ public:
 	ShaderFragmentRenderTarget(const opengl::GLInfo & _glinfo)
 	{
 		if (config.generalEmulation.enableFragmentDepthWrite != 0) {
-			m_part =
-				"  if (uRenderTarget != 0) {					\n"
-				"    if (uRenderTarget > 1) {					\n"
-				"      ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
-				"      if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
-				"    }											\n"
-				"    fragDepth = fragColor.r;				\n"
-				"  }											\n"
-				"  gl_FragDepth = fragDepth;	\n"
-			;
+			if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0)
+				// Zelda MM depth buffer copy
+				m_part =
+					"  if (uRenderTarget == 1 || uRenderTarget == 3) {\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  } else if (uRenderTarget == 2) {				\n"
+					"    ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+					"    if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  } else if (uRenderTarget == 4) {				\n"
+					"    ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+					"    if (texelFetch(uDepthTex, coord, 0).r > 0.0) discard;	\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  }											\n"
+					"  gl_FragDepth = fragDepth;					\n"
+				;
+			else
+				m_part =
+					"  if (uRenderTarget == 1) {					\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  } else if (uRenderTarget == 2) {				\n"
+					"    ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+					"    if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+					"    fragDepth = fragColor.r;					\n"
+					"  }											\n"
+					"  gl_FragDepth = fragDepth;	\n"
+				;
 		}
 	}
 };
@@ -1285,10 +1312,52 @@ public:
 	{
 		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 			m_part =
-				"bool depth_render(highp float Z, highp float curZ)						\n"
-				"{														\n"
-				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
-				"  if (uEnableDepthCompare != 0) {						\n"
+				"bool depth_render(highp float Z, highp float curZ)			\n"
+				"{															\n"
+				"  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
+				;
+
+			if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0u) {
+				// Zelda MM depth buffer copy
+				if (_glinfo.imageTextures && !_glinfo.n64DepthWithFbFetch) {
+					m_part +=
+						"  if (uRenderTarget == 3) {							\n"
+						"    highp vec4 copyZ = imageLoad(uDepthImageZ,coord);	\n"
+						"    imageStore(uDepthImageZCopy, coord, copyZ);		\n"
+						"    copyZ = imageLoad(uDepthImageDeltaZ, coord);		\n"
+						"    imageStore(uDepthImageDeltaZCopy, coord, copyZ);	\n"
+						"    return true;										\n"
+						"  }													\n"
+						"  if (uRenderTarget == 4) {							\n"
+						"    highp vec4 testZ = imageLoad(uDepthImageZCopy,coord);	\n"
+						"    if (testZ.r > 0.0) return false;					\n"
+						"    highp vec4 copyZ = imageLoad(uDepthImageZ, coord);	\n"
+						"    imageStore(uDepthImageZCopy, coord, copyZ);		\n"
+						"    copyZ = imageLoad(uDepthImageDeltaZ, coord);		\n"
+						"    imageStore(uDepthImageDeltaZCopy, coord, copyZ);	\n"
+						"    return true;										\n"
+						"  }													\n"
+						;
+				}
+				else {
+					m_part +=
+						"  if (uRenderTarget == 3) {							\n"
+						"    depthZCopy.r = depthZ.r;							\n"
+						"    depthDeltaZCopy.r = depthDeltaZ.r;					\n"
+						"    return true;										\n"
+						"  }													\n"
+						"  if (uRenderTarget == 4) {							\n"
+						"    if (depthZCopy.r > 0.0) return false;				\n"
+						"    depthZCopy.r = depthZ.r;							\n"
+						"    depthDeltaZCopy.r = depthDeltaZ.r;					\n"
+						"    return true;										\n"
+						"  }													\n"
+						;
+				}
+			}
+
+			m_part +=
+				"  if (uEnableDepthCompare != 0) {							\n"
 				;
 			if (_glinfo.imageTextures && !_glinfo.n64DepthWithFbFetch) {
 				m_part +=
@@ -1296,14 +1365,14 @@ public:
 					;
 			}
 			m_part +=
-				"    highp float bufZ = depthZ.r;						\n"
-				"    if (curZ >= bufZ) return false;					\n"
-				"  }													\n"
+				"    highp float bufZ = depthZ.r;							\n"
+				"    if (curZ >= bufZ) return false;						\n"
+				"  }														\n"
 				;
 			if (_glinfo.n64DepthWithFbFetch) {
 				m_part +=
-					"  depthZ.r = Z;	\n"
-					"  depthDeltaZ.r = 0.0;	\n"
+					"  depthZ.r = Z;										\n"
+					"  depthDeltaZ.r = 0.0;									\n"
 					;
 			} else if (_glinfo.imageTextures) {
 				m_part +=
@@ -1315,8 +1384,8 @@ public:
 			}
 
 			m_part +=
-				"  return true;											\n"
-				"}														\n"
+				"  return true;												\n"
+				"}															\n"
 				;
 		}
 	}
