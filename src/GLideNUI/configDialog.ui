@@ -3644,17 +3644,39 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="fontPreviewNoteLabel">
-                 <property name="text">
-                  <string>The font preview only shows the regular style for the font family. Some styles like bold and italic display only in game.</string>
-                 </property>
-                 <property name="wordWrap">
+                <widget class="QPlainTextEdit" name="fontPreviewNotePlainTextEdit">
+                 <property name="readOnly">
                   <bool>true</bool>
+                 </property>
+                 <property name="plainText">
+                  <string>1. The font preview only shows the regular style for the font family. Some styles like bold and italic display only in game.
+
+2. If the desired font is not listed above:
+* navigate to your installation where GLideN64.ini is located, and open it with a text editor.
+* find your active profile [Default = User],
+* change the value of &quot;font\name=NAME.ttf&quot; to &quot;font\name=Full Name of Font.ttf&quot;
+   do not include the path to where the font is located before the name.
+* save the file.
+
+The font's full name can be found in Settings&gt;Personalization&gt;Fonts</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
              <spacer name="verticalSpacer_3">
