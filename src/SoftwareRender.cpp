@@ -227,11 +227,11 @@ f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements, gra
 
 	const u32 inc = _mode == graphics::drawmode::TRIANGLES ? 3 : 1;
 	for (u32 i = 0; i < _numElements; i += inc) {
-		for (u32 j = 0; j < 3; ++j) {
+		for (u32 j = 0; j < inc; ++j) {
 			vsrc[j] = &_pVertices[i + j];
 		}
 
-		if (isClockwise(vsrc)) {
+		if (_mode == graphics::drawmode::TRIANGLES && isClockwise(vsrc)) {
 			for (int k = 0; k < 3; ++k) {
 				maxY = std::max(maxY, vsrc[k]->y);
 				vdraw[k].x = floatToFixed16(vsrc[k]->x);
@@ -239,8 +239,8 @@ f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements, gra
 				vdraw[k].z = floatToFixed16(vsrc[k]->z);
 			}
 		} else {
-			for (int k = 0; k < 3; ++k) {
-				const u32 idx = 3 - k - 1;
+			for (int k = 0; k < inc; ++k) {
+				const u32 idx = inc - k - 1;
 				maxY = std::max(maxY, vsrc[idx]->y);
 				vdraw[k].x = floatToFixed16(vsrc[idx]->x);
 				vdraw[k].y = floatToFixed16(vsrc[idx]->y);
