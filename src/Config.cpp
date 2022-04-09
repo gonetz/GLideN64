@@ -100,6 +100,7 @@ void Config::resetToDefaults()
 	textureFilter.txForce16bpp = 0;
 	textureFilter.txCacheCompression = 1;
 	textureFilter.txSaveCache = 1;
+	textureFilter.txDump = 0;
 
 	textureFilter.txEnhancedTextureFileStorage = 0;
 	textureFilter.txHiresTextureFileStorage = 0;
