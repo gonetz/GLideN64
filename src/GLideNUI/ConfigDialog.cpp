@@ -133,6 +133,10 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	}
 
 	// Video settings
+	ui->fullScreenRadioButton->toggle();
+	ui->borderlessRadioButton->setChecked(config.video.borderless != 0u);
+	ui->fullScreenRadioButton->setChecked(config.video.borderless == 0u);
+
 	QStringList windowedModesList;
 	int windowedModesCurrent = -1;
 	for (unsigned int i = 0; i < numWindowedModes; ++i) {
@@ -530,6 +534,8 @@ void ConfigDialog::accept(bool justSave) {
 		config.video.windowedWidth = windowedResolutionDimensions[0].trimmed().toInt();
 		config.video.windowedHeight = windowedResolutionDimensions[1].trimmed().toInt();
 	}
+
+	config.video.borderless = ui->borderlessRadioButton->isChecked() ? 1 : 0;
 
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);

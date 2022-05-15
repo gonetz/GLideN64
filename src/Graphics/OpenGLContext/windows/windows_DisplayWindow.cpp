@@ -109,18 +109,20 @@ void DisplayWindowWindows::_changeWindow()
 	static HMENU	windowedMenu;
 
 	if (!m_bFullscreen) {
-		DEVMODE fullscreenMode;
-		memset( &fullscreenMode, 0, sizeof(DEVMODE) );
-		fullscreenMode.dmSize = sizeof(DEVMODE);
-		fullscreenMode.dmPelsWidth = config.video.fullscreenWidth;
-		fullscreenMode.dmPelsHeight = config.video.fullscreenHeight;
-		fullscreenMode.dmBitsPerPel = 32;
-		fullscreenMode.dmDisplayFrequency = config.video.fullscreenRefresh;
-		fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+		if (config.video.borderless == 0u) {
+			DEVMODE fullscreenMode;
+			memset(&fullscreenMode, 0, sizeof(DEVMODE));
+			fullscreenMode.dmSize = sizeof(DEVMODE);
+			fullscreenMode.dmPelsWidth = config.video.fullscreenWidth;
+			fullscreenMode.dmPelsHeight = config.video.fullscreenHeight;
+			fullscreenMode.dmBitsPerPel = 32;
+			fullscreenMode.dmDisplayFrequency = config.video.fullscreenRefresh;
+			fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
-		if (ChangeDisplaySettings( &fullscreenMode, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL) {
-			MessageBoxW( NULL, L"Failed to change display mode", pluginNameW, MB_ICONERROR | MB_OK );
-			return;
+			if (ChangeDisplaySettings(&fullscreenMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+				MessageBoxW(NULL, L"Failed to change display mode", pluginNameW, MB_ICONERROR | MB_OK);
+				return;
+			}
 		}
 
 		ShowCursor( FALSE );
@@ -170,8 +172,14 @@ bool DisplayWindowWindows::_resizeWindow()
 	windowRect = statusRect = toolRect = { 0 };
 
 	if (m_bFullscreen) {
-		m_screenWidth = config.video.fullscreenWidth;
-		m_screenHeight = config.video.fullscreenHeight;
+		DEVMODE deviceMode;
+		if (config.video.borderless != 0u && EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &deviceMode) != 0) {
+			m_screenWidth = static_cast<u32>(deviceMode.dmPelsWidth);
+			m_screenHeight = static_cast<u32>(deviceMode.dmPelsHeight);
+		} else {
+			m_screenWidth = config.video.fullscreenWidth;
+			m_screenHeight = config.video.fullscreenHeight;
+		}
 		m_heightOffset = 0;
 		_setBufferSize();
 
