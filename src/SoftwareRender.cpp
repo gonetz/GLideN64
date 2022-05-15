@@ -216,7 +216,7 @@ int calcDzDx2(const SPVertex ** _vsrc)
 	return 0;
 }
 
-f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements, graphics::DrawModeParam _mode)
+f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numVtx, graphics::DrawModeParam _mode)
 {
 	vertexi vdraw[3];
 	const SPVertex * vsrc[3];
@@ -225,10 +225,18 @@ f32 renderScreenSpaceTriangles(const SPVertex *_pVertices, u32 _numElements, gra
 		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 		gDP.otherMode.depthUpdate != 0);
 
-	const u32 inc = _mode == graphics::drawmode::TRIANGLES ? 3 : 1;
-	for (u32 i = 0; i < _numElements; i += inc) {
+	u32 nTris = 0, inc = 0;
+	if (_mode == graphics::drawmode::TRIANGLES) {
+		nTris = _numVtx / 3;
+		inc = 3;
+	} else if (_mode == graphics::drawmode::TRIANGLE_STRIP) {
+		nTris = _numVtx - 2;
+		inc = 1;
+	}
+
+	for (u32 i = 0; i < nTris; ++i) {
 		for (u32 j = 0; j < 3; ++j) {
-			vsrc[j] = &_pVertices[i + j];
+			vsrc[j] = &_pVertices[i * inc + j];
 		}
 
 		if (isClockwise(vsrc)) {
