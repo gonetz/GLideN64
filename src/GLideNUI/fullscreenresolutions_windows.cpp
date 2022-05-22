@@ -177,3 +177,59 @@ void getFullscreenRefreshRate(int _idx, unsigned int & _rate)
 {
 	_rate = fullscreen.refreshRate[_idx];
 }
+
+namespace {
+struct Monitors
+{
+	std::vector<HMONITOR> hMonitors;
+	std::vector<RECT> rcMonitors;
+	std::vector<std::wstring> nameDevices;
+
+	static BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC /*hdc*/, LPRECT lprcMonitor, LPARAM pData)
+	{
+		auto pMonitors = reinterpret_cast<Monitors*>(pData);
+		pMonitors->hMonitors.push_back(hMon);
+		pMonitors->rcMonitors.push_back(*lprcMonitor);
+		return TRUE;
+	}
+
+	Monitors()
+	{
+		EnumDisplayMonitors(0, 0, MonitorEnum, (LPARAM)this);
+		MONITORINFOEX minfo;
+		minfo.cbSize = sizeof(MONITORINFOEX);
+		for (auto hMon : hMonitors)
+			if (GetMonitorInfo(hMon, &minfo))
+				nameDevices.emplace_back(minfo.szDevice);
+			else
+				nameDevices.emplace_back();
+		}
+};
+}
+
+std::vector<DisplayInfo> getDisplayInfo()
+{
+	Monitors monitors;
+	DISPLAY_DEVICE dd, ddm;
+	dd.cb = sizeof(DISPLAY_DEVICE);
+	ddm.cb = sizeof(DISPLAY_DEVICE);
+	DWORD devIdx = 0;
+	std::vector<DisplayInfo> res;
+	while (EnumDisplayDevices(NULL, devIdx++, &dd, EDD_GET_DEVICE_INTERFACE_NAME)) {
+		if ((dd.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP) == 0)
+			continue;
+
+		EnumDisplayDevices(dd.DeviceName, 0, &ddm, EDD_GET_DEVICE_INTERFACE_NAME);
+		QString monName = QString::fromWCharArray(ddm.DeviceString);
+		for (size_t i = 0; i < monitors.nameDevices.size(); ++i) {
+			if (monitors.nameDevices[i] == dd.DeviceName) {
+				monName = QString(monName + " (%1x%2)").arg(
+					QString::number(std::abs(monitors.rcMonitors[i].right - monitors.rcMonitors[i].left)),
+					QString::number(std::abs(monitors.rcMonitors[i].top - monitors.rcMonitors[i].bottom)));
+				break;
+			}
+		}
+		res.push_back({ monName, QString::fromWCharArray(dd.DeviceName) });
+	}
+	return res;
+}

@@ -30,6 +30,7 @@ struct Config
 		u32 multisampling, maxMultiSampling;
 		u32 verticalSync;
 		u32 threadedVideo;
+		wchar_t deviceName[32];
 	} video;
 
 	struct

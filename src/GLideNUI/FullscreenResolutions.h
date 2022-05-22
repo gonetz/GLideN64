@@ -10,5 +10,6 @@ void fillFullscreenRefreshRateList(int _resolutionIdx, QStringList & _listRefres
 void getFullscreenResolutions(int _idx, unsigned int & _width, unsigned int & _height);
 void getFullscreenRefreshRate(int _idx, unsigned int & _rate);
 
-#endif // FULLSCREENRESOLUTIONS_H
+std::vector<DisplayInfo> getDisplayInfo();
 
+#endif // FULLSCREENRESOLUTIONS_H

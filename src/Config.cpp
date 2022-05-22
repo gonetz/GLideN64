@@ -28,6 +28,7 @@ void Config::resetToDefaults()
 	video.multisampling = 0;
 	video.maxMultiSampling = 0;
 	video.verticalSync = 0;
+	video.deviceName[0] = L'\0';
 
 #if defined(OS_ANDROID)
 	video.threadedVideo = 1;
