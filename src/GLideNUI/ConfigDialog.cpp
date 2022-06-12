@@ -133,6 +133,33 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	}
 
 	// Video settings
+#ifdef M64P_GLIDENUI
+	ui->fullScreenRadioButton->setChecked(true);
+	ui->fullScreenRadioButton->setVisible(false);
+	ui->borderlessRadioButton->setVisible(false);;
+	ui->borderlessComboBox->setVisible(false);
+#else
+	ui->fullScreenRadioButton->toggle();
+	ui->borderlessRadioButton->setChecked(config.video.borderless != 0u);
+	ui->fullScreenRadioButton->setChecked(config.video.borderless == 0u);
+	ui->fullscreenResolutionLabel->setVisible(false);
+	m_displayInfo = getDisplayInfo();
+	if (m_displayInfo.size() > 1)
+	{
+		int borderlessDeviceCurrent = -1;
+		ui->borderlessComboBox->clear();
+		for (size_t i = 0; i < m_displayInfo.size(); ++i) {
+			ui->borderlessComboBox->addItem(m_displayInfo[i].m_displayName);
+			if (m_displayInfo[i].m_deviceName.toStdWString() == config.video.deviceName)
+				borderlessDeviceCurrent = i;
+		}
+		if (borderlessDeviceCurrent > -1)
+			ui->borderlessComboBox->setCurrentIndex(borderlessDeviceCurrent);
+	}
+	else
+		ui->borderlessComboBox->setVisible(false);
+#endif
+
 	QStringList windowedModesList;
 	int windowedModesCurrent = -1;
 	for (unsigned int i = 0; i < numWindowedModes; ++i) {
@@ -530,6 +557,12 @@ void ConfigDialog::accept(bool justSave) {
 		config.video.windowedWidth = windowedResolutionDimensions[0].trimmed().toInt();
 		config.video.windowedHeight = windowedResolutionDimensions[1].trimmed().toInt();
 	}
+
+#ifndef M64P_GLIDENUI
+	config.video.borderless = ui->borderlessRadioButton->isChecked() ? 1 : 0;
+	const size_t deviceIdx = m_displayInfo.size() > 1 ? ui->borderlessComboBox->currentIndex() : 0u;
+	config.video.deviceName[m_displayInfo[deviceIdx].m_deviceName.toWCharArray(config.video.deviceName)] = L'\0';
+#endif
 
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);

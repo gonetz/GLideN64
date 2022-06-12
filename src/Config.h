@@ -23,12 +23,14 @@ struct Config
 	struct
 	{
 		u32 fullscreen;
+		u32 borderless;
 		u32 windowedWidth, windowedHeight;
 		u32 fullscreenWidth, fullscreenHeight, fullscreenRefresh;
 		u32 fxaa;
 		u32 multisampling, maxMultiSampling;
 		u32 verticalSync;
 		u32 threadedVideo;
+		wchar_t deviceName[32];
 	} video;
 
 	struct

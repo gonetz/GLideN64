@@ -1641,13 +1641,8 @@ void GraphicsDrawer::drawOSD()
 	}
 
 	if (config.onScreenDisplay.renderingResolution) {
-		FrameBuffer * pBuffer = frameBufferList().getCurrent();
-		if (pBuffer != nullptr && VI.width != 0) {
-			const float aspect = float(VI.height) / float(VI.width);
-			const u32 height = u32(pBuffer->m_pTexture->width * aspect);
-			sprintf(buf, "Rendering Resolution %ux%u", pBuffer->m_pTexture->width, height);
-			_drawOSD(buf, x, y);
-		}
+		sprintf(buf, "Rendering Resolution %ux%u", wnd.getScreenWidth(), wnd.getScreenHeight());
+		_drawOSD(buf, x, y);
 	}
 
 	if (config.onScreenDisplay.internalResolution) {

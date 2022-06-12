@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>597</width>
-    <height>612</height>
+    <height>661</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,7 +76,24 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QLabel" name="fullScreenResolutionLabel">
+                <widget class="QRadioButton" name="borderlessRadioButton">
+                 <property name="text">
+                  <string>Borderless window</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="borderlessComboBox"/>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="fullScreenRadioButton">
+                 <property name="text">
+                  <string>Full screen resolution:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="fullscreenResolutionLabel">
                  <property name="text">
                   <string>Full screen resolution:</string>
                  </property>
@@ -4079,10 +4096,74 @@ The font's full name can be found in Settings&gt;Personalization&gt;Fonts</strin
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>fullScreenRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fullScreenResolutionComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fullScreenRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fullScreenRefreshRateLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fullScreenRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fullScreenRefreshRateComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fullScreenRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>borderlessComboBox</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>

@@ -115,3 +115,8 @@ void getFullscreenRefreshRate(int _idx, unsigned int &_rate)
 {
 	_rate = fullscreen.refreshRate[_idx];
 }
+
+std::vector<DisplayInfo> getDisplayInfo()
+{
+	return {};
+}

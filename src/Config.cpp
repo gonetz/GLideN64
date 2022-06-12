@@ -21,12 +21,14 @@ void Config::resetToDefaults()
 	video.fullscreen = 0;
 	video.fullscreenWidth = video.windowedWidth = 640;
 #endif
+	video.borderless = 0u;
 	video.fullscreenHeight = video.windowedHeight = 480;
 	video.fullscreenRefresh = 60;
 	video.fxaa = 0;
 	video.multisampling = 0;
 	video.maxMultiSampling = 0;
 	video.verticalSync = 0;
+	video.deviceName[0] = L'\0';
 
 #if defined(OS_ANDROID)
 	video.threadedVideo = 1;

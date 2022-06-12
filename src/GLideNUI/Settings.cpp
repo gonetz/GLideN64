@@ -27,12 +27,15 @@ void _loadSettings(QSettings & settings)
 	config.video.fullscreenHeight = settings.value("fullscreenHeight", config.video.fullscreenHeight).toInt();
 	config.video.windowedWidth = settings.value("windowedWidth", config.video.windowedWidth).toInt();
 	config.video.windowedHeight = settings.value("windowedHeight", config.video.windowedHeight).toInt();
+	config.video.borderless = settings.value("borderless", config.video.borderless).toInt();
 	config.video.fullscreenRefresh = settings.value("fullscreenRefresh", config.video.fullscreenRefresh).toInt();
 	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
 	config.video.maxMultiSampling = settings.value("maxMultiSampling", config.video.maxMultiSampling).toInt();
 	config.video.fxaa= settings.value("fxaa", config.video.fxaa).toInt();
 	config.video.verticalSync = settings.value("verticalSync", config.video.verticalSync).toInt();
 	config.video.threadedVideo = settings.value("threadedVideo", config.video.threadedVideo).toInt();
+	QString deviceName = QString::fromWCharArray(config.video.deviceName);
+	config.video.deviceName[settings.value("deviceName", deviceName).toString().toWCharArray(config.video.deviceName)] = L'\0';
 	settings.endGroup();
 
 	settings.beginGroup("texture");
@@ -174,12 +177,14 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
 	settings.setValue("windowedWidth", config.video.windowedWidth);
 	settings.setValue("windowedHeight", config.video.windowedHeight);
+	settings.setValue("borderless", config.video.borderless);
 	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
 	settings.setValue("multisampling", config.video.multisampling);
 	settings.setValue("maxMultiSampling", config.video.maxMultiSampling);
 	settings.setValue("fxaa", config.video.fxaa);
 	settings.setValue("verticalSync", config.video.verticalSync);
 	settings.setValue("threadedVideo", config.video.threadedVideo);
+	settings.setValue("deviceName", QString::fromWCharArray(config.video.deviceName));
 	settings.endGroup();
 
 	settings.beginGroup("texture");
@@ -450,6 +455,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(video, fullscreenHeight);
 	WriteCustomSetting(video, windowedWidth);
 	WriteCustomSetting(video, windowedHeight);
+	WriteCustomSetting(video, borderless);
 	WriteCustomSetting(video, fullscreenRefresh);
 	WriteCustomSetting(video, multisampling);
 	WriteCustomSetting(video, fxaa);
