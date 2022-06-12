@@ -13,6 +13,7 @@ struct DisplayInfo
 {
 	QString m_displayName;
 	QString m_deviceName;
+	int     m_leftBound{ 0 };
 };
 
 class QAbstractButton;

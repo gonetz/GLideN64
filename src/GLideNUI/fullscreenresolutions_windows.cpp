@@ -221,15 +221,21 @@ std::vector<DisplayInfo> getDisplayInfo()
 
 		EnumDisplayDevices(dd.DeviceName, 0, &ddm, EDD_GET_DEVICE_INTERFACE_NAME);
 		QString monName = QString::fromWCharArray(ddm.DeviceString);
+		int leftBound = 0;
 		for (size_t i = 0; i < monitors.nameDevices.size(); ++i) {
 			if (monitors.nameDevices[i] == dd.DeviceName) {
 				monName = QString(monName + " (%1x%2)").arg(
 					QString::number(std::abs(monitors.rcMonitors[i].right - monitors.rcMonitors[i].left)),
 					QString::number(std::abs(monitors.rcMonitors[i].top - monitors.rcMonitors[i].bottom)));
+				leftBound = static_cast<int>(monitors.rcMonitors[i].left);
 				break;
 			}
 		}
-		res.push_back({ monName, QString::fromWCharArray(dd.DeviceName) });
+		res.push_back({ monName, QString::fromWCharArray(dd.DeviceName), leftBound });
 	}
+
+	std::sort(res.begin(), res.end(), [](DisplayInfo const& a, DisplayInfo const& b) {
+		return a.m_leftBound < b.m_leftBound; });
+
 	return res;
 }
