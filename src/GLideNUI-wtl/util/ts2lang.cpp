@@ -206,7 +206,8 @@ int main()
 		{ "it_IT", L"Italiano" },
 		{ "ja_JP", L"日本語" },
 		{ "pl_PL", L"Polski" },
-		{ "pt_BR", L"Português do Brasil" }
+		{ "pt_BR", L"Português do Brasil" },
+		{ "zh_CN", L"简体中文" }
 	};
 
 	if (src.FindFirst())
