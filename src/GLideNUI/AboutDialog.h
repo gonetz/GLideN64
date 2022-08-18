@@ -1,5 +1,5 @@
-#ifndef UI_ABOUTDIALOG_H
-#define UI_ABOUTDIALOG_H
+#ifndef _UI_ABOUTDIALOG_H
+#define _UI_ABOUTDIALOG_H
 
 #include <QDialog>
 
@@ -20,4 +20,4 @@ private:
 	Ui::AboutDialog *ui;
 };
 
-#endif // UI_ABOUTDIALOG_H
+#endif // _UI_ABOUTDIALOG_H

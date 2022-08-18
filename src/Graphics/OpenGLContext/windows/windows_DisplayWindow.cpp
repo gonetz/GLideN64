@@ -11,11 +11,17 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
+#include <EGL/eglext.h>
+
+extern "C"
+{
+	EGLAPI EGLDisplay EGLAPIENTRY eglGetPlatformDisplayEXT(EGLenum platform, void* native_display, const EGLint* attrib_list);
+}
 
 class DisplayWindowWindows : public DisplayWindow
 {
 public:
-	DisplayWindowWindows() : hRC(NULL), hDC(NULL) {}
+	DisplayWindowWindows() : eglDisplay(NULL), eglSurface(NULL), hDC(NULL) {}
 
 private:
 	bool _start() override;
@@ -29,8 +35,11 @@ private:
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override {}
 	graphics::ObjectHandle _getDefaultFramebuffer() override;
 
-	HGLRC	hRC;
 	HDC		hDC;
+
+	EGLDisplay eglDisplay;
+	EGLSurface eglSurface;
+	EGLContext eglContext;
 };
 
 DisplayWindow & DisplayWindow::get()
@@ -72,77 +81,93 @@ bool DisplayWindowWindows::_start()
 		return false;
 	}
 
-	if ((pixelFormat = ChoosePixelFormat(hDC, &pfd )) == 0) {
-		MessageBox( hWnd, L"Unable to find a suitable pixel format!", pluginNameW, MB_ICONERROR | MB_OK );
+	EGLint dispOptions[] = { EGL_NONE }; // 0x3451, 1, 
+	eglDisplay = eglGetPlatformDisplayEXT(0x3202, hDC, dispOptions);
+	EGLint eglVersionMajor, eglVersionMinor;
+
+	if (!eglInitialize(eglDisplay, &eglVersionMajor, &eglVersionMinor))
+	{
+		MessageBox(hWnd, L"eglInitialize failed", pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
 
-	if ((SetPixelFormat(hDC, pixelFormat, &pfd )) == FALSE) {
-		MessageBox( hWnd, L"Error while setting pixel format!", pluginNameW, MB_ICONERROR | MB_OK );
+	if (!eglBindAPI(EGL_OPENGL_ES_API))
+	{
+		MessageBox(hWnd, L"eglBindAPI failed", pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
 
-	if ((hRC = wglCreateContext(hDC)) == NULL) {
-		MessageBox( hWnd, L"Error while creating OpenGL context!", pluginNameW, MB_ICONERROR | MB_OK );
+	EGLint configAttributes[] =
+	{
+		EGL_BUFFER_SIZE, 0,
+		EGL_RED_SIZE, 8,
+		EGL_GREEN_SIZE, 8,
+		EGL_BLUE_SIZE, 8,
+		EGL_ALPHA_SIZE, 8,
+		EGL_DEPTH_SIZE, 24,
+		EGL_LEVEL, 0,
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+		EGL_SAMPLE_BUFFERS, 0,
+		EGL_SAMPLES, 0,
+		EGL_STENCIL_SIZE, 0,
+		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+		EGL_TRANSPARENT_TYPE, EGL_NONE,
+		EGL_NONE
+	};
+
+	EGLint numConfigs;
+	EGLConfig windowConfig;
+	if (!eglChooseConfig(eglDisplay, configAttributes, &windowConfig, 1, &numConfigs))
+	{
+		MessageBox(hWnd, L"eglChooseConfig failed", pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
 
-	if ((wglMakeCurrent(hDC, hRC)) == FALSE) {
-		MessageBox( hWnd, L"Error while making OpenGL context current!", pluginNameW, MB_ICONERROR | MB_OK );
+	EGLint surfaceAttributes[] = { 0x33A5, EGL_TRUE, EGL_NONE };
+	eglSurface = eglCreateWindowSurface(eglDisplay, windowConfig, hWnd, surfaceAttributes);
+	if (!eglSurface)
+	{
+		MessageBox(hWnd, L"eglCreateWindowSurface failed", pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
 
-	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB =
-		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-
-	if (wglGetExtensionsStringARB != NULL) {
-		const char * wglextensions = wglGetExtensionsStringARB(hDC);
-
-		if (strstr(wglextensions, "WGL_ARB_create_context_profile") != nullptr) {
-			PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB =
-				(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-
-			GLint majorVersion = 0;
-			glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-			GLint minorVersion = 0;
-			glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-
-			const int attribList[] =
-			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, majorVersion,
-				WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
-				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-				0        //End
-			};
-
-			HGLRC coreHrc = wglCreateContextAttribsARB(hDC, 0, attribList);
-			if (coreHrc != NULL) {
-				wglDeleteContext(hRC);
-				wglMakeCurrent(hDC, coreHrc);
-				hRC = coreHrc;
-			}
-		}
-
-		if (strstr(wglextensions, "WGL_EXT_swap_control") != nullptr) {
-			PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-			wglSwapIntervalEXT(config.video.verticalSync);
-		}
+	EGLint contextAttributes[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+	eglContext = eglCreateContext(eglDisplay, windowConfig, NULL, contextAttributes);
+	if (!eglContext)
+	{
+		MessageBox(hWnd, L"eglContext failed", pluginNameW, MB_ICONERROR | MB_OK);
+		_stop();
+		return false;
 	}
+
+	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
+
+	eglSwapInterval(eglDisplay, config.video.verticalSync);
 
 	return _resizeWindow();
 }
 
 void DisplayWindowWindows::_stop()
 {
-	wglMakeCurrent( NULL, NULL );
+	eglMakeCurrent(eglDisplay, NULL, NULL, NULL);
 
-	if (hRC != NULL) {
-		wglDeleteContext(hRC);
-		hRC = NULL;
+	if (eglContext != NULL) {
+		eglDestroyContext(eglDisplay, eglContext);
+		eglContext = NULL;
+	}
+
+	if (eglSurface != NULL) {
+		eglDestroySurface(eglDisplay, eglSurface);
+		eglSurface = NULL;
+	}
+
+	if (eglDisplay != NULL) {
+		eglTerminate(eglDisplay);
+		eglDisplay = NULL;
 	}
 
 	if (hDC != NULL) {
@@ -153,10 +178,7 @@ void DisplayWindowWindows::_stop()
 
 void DisplayWindowWindows::_swapBuffers()
 {
-	if (hDC == NULL)
-		SwapBuffers( wglGetCurrentDC() );
-	else
-		SwapBuffers( hDC );
+	eglSwapBuffers(eglDisplay, eglSurface);
 }
 
 void DisplayWindowWindows::_saveScreenshot()

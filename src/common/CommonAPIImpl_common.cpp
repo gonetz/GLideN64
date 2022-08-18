@@ -154,7 +154,8 @@ void PluginAPI::ProcessDList()
 {
 	LOG(LOG_APIFUNC, "ProcessDList\n");
 #ifdef RSPTHREAD
-	_callAPICommand(ProcessDListCommand());
+	ProcessDListCommand cmd;
+	_callAPICommand(cmd);
 #else
 	RSP_ProcessDList();
 #endif
@@ -164,7 +165,8 @@ void PluginAPI::ProcessRDPList()
 {
 	LOG(LOG_APIFUNC, "ProcessRDPList\n");
 #ifdef RSPTHREAD
-	_callAPICommand(ProcessRDPListCommand());
+	ProcessRDPListCommand cmd;
+	_callAPICommand(cmd);
 #else
 	RDP_ProcessRDPList();
 #endif
@@ -175,12 +177,12 @@ void PluginAPI::RomClosed()
 	LOG(LOG_APIFUNC, "RomClosed\n");
 	m_bRomOpen = false;
 #ifdef RSPTHREAD
-	_callAPICommand(RomClosedCommand(
-					&m_rspThreadMtx,
-					&m_pluginThreadMtx,
-					&m_rspThreadCv,
-					&m_pluginThreadCv)
-	);
+	RomClosedCommand cmd(
+		&m_rspThreadMtx,
+		&m_pluginThreadMtx,
+		&m_rspThreadCv,
+		&m_pluginThreadCv);
+	_callAPICommand(cmd);
 	delete m_pRspThread;
 	m_pRspThread = nullptr;
 #else
@@ -217,7 +219,8 @@ void PluginAPI::UpdateScreen()
 {
 	LOG(LOG_APIFUNC, "UpdateScreen\n");
 #ifdef RSPTHREAD
-	_callAPICommand(ProcessUpdateScreenCommand());
+	ProcessUpdateScreenCommand cmd;
+	_callAPICommand(cmd);
 #else
 	VI_UpdateScreen();
 #endif
@@ -275,7 +278,8 @@ void PluginAPI::FBWrite(unsigned int _addr, unsigned int _size)
 void PluginAPI::FBRead(unsigned int _addr)
 {
 #ifdef RSPTHREAD
-	_callAPICommand(FBReadCommand(_addr));
+	FBReadCommand cmd(_addr);
+	_callAPICommand(cmd);
 #else
 	FBInfo::fbInfo.Read(_addr);
 #endif
@@ -295,7 +299,8 @@ void PluginAPI::FBWList(FrameBufferModifyEntry * _plist, unsigned int _size)
 void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
 {
 #ifdef RSPTHREAD
-	_callAPICommand(ReadScreenCommand(_dest, _width, _height));
+	ReadScreenCommand cmd(_dest, _width, _height);
+	_callAPICommand(cmd);
 #else
 	dwnd().readScreen(_dest, _width, _height);
 #endif

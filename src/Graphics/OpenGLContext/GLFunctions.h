@@ -229,6 +229,8 @@ extern PFNGLBLENDCOLORPROC g_glBlendColor;
 #define glDisablei(...) CHECKED_GL_FUNCTION(g_glDisablei, __VA_ARGS__)
 #define glEGLImageTargetTexture2DOES(...) CHECKED_GL_FUNCTION(g_glEGLImageTargetTexture2DOES, __VA_ARGS__)
 
+#define glGetTranslatedShaderSourceANGLE(...) CHECKED_GL_FUNCTION(g_glGetTranslatedShaderSourceANGLE, __VA_ARGS__)
+
 extern PFNGLCREATESHADERPROC g_glCreateShader;
 extern PFNGLCOMPILESHADERPROC g_glCompileShader;
 extern PFNGLSHADERSOURCEPROC g_glShaderSource;
@@ -327,6 +329,9 @@ extern PFNGLTEXTUREBARRIERNVPROC g_glTextureBarrierNV;
 extern PFNGLCLEARBUFFERFVPROC g_glClearBufferfv;
 extern PFNGLENABLEIPROC g_glEnablei;
 extern PFNGLDISABLEIPROC g_glDisablei;
+
+typedef void (APIENTRYP PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC) (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source);
+extern PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC g_glGetTranslatedShaderSourceANGLE;
 
 typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, void* image);
 extern PFNGLEGLIMAGETARGETTEXTURE2DOESPROC g_glEGLImageTargetTexture2DOES;

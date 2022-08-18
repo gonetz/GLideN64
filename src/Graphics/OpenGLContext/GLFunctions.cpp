@@ -2,7 +2,7 @@
 
 #ifdef OS_WINDOWS
 
-#define glGetProcAddress wglGetProcAddress
+#define glGetProcAddress eglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
 
 #elif defined(VERO4K) || defined(ODROID) || defined(VC)
@@ -59,10 +59,12 @@ static void* IOSGLGetProcAddress (const char *name)
 
 //GL Fucntions
 
-#ifdef OS_WINDOWS
+#if defined(OS_WINDOWS) && !defined(EGL)
 PFNGLACTIVETEXTUREPROC g_glActiveTexture;
 PFNGLBLENDCOLORPROC g_glBlendColor;
-#elif defined(EGL) || defined(OS_IOS)
+#endif
+
+#if defined(EGL) || defined(OS_IOS)
 PFNGLBLENDFUNCPROC g_glBlendFunc;
 PFNGLPIXELSTOREIPROC g_glPixelStorei;
 PFNGLCLEARCOLORPROC g_glClearColor;
@@ -196,6 +198,7 @@ PFNGLTEXTUREBARRIERNVPROC g_glTextureBarrierNV;
 PFNGLCLEARBUFFERFVPROC g_glClearBufferfv;
 PFNGLENABLEIPROC g_glEnablei;
 PFNGLDISABLEIPROC g_glDisablei;
+PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC g_glGetTranslatedShaderSourceANGLE;
 PFNGLEGLIMAGETARGETTEXTURE2DOESPROC g_glEGLImageTargetTexture2DOES;
 
 void initGLFunctions()
@@ -210,7 +213,9 @@ void initGLFunctions()
 #ifdef OS_WINDOWS
 	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
 	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
-#elif defined(EGL) || defined(OS_IOS)
+#endif
+
+#if defined(EGL) || defined(OS_IOS)
 	GL_GET_PROC_ADR(PFNGLBLENDFUNCPROC, glBlendFunc);
 	GL_GET_PROC_ADR(PFNGLPIXELSTOREIPROC, glPixelStorei);
 	GL_GET_PROC_ADR(PFNGLCLEARCOLORPROC, glClearColor);
@@ -346,4 +351,5 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLENABLEIPROC, glEnablei);
 	GL_GET_PROC_ADR(PFNGLDISABLEIPROC, glDisablei);
 	GL_GET_PROC_ADR(PFNGLEGLIMAGETARGETTEXTURE2DOESPROC, glEGLImageTargetTexture2DOES);
+	GL_GET_PROC_ADR(PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC, glGetTranslatedShaderSourceANGLE);
 }

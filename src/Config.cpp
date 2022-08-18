@@ -45,7 +45,7 @@ void Config::resetToDefaults()
 	generalEmulation.polygonOffsetFactor = 0.0f;
 	generalEmulation.polygonOffsetUnits = 0.0f;
 #else
-	generalEmulation.enableFragmentDepthWrite = 1;
+	generalEmulation.enableFragmentDepthWrite = 0;
 #endif
 
 	graphics2D.correctTexrectCoords = tcDisable;
