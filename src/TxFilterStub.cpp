@@ -20,7 +20,7 @@ txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
 }
 
 TAPI boolean TAPIENTRY
-txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSize n64FmtSz, GHQTexInfo *info);
+txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSize n64FmtSz, GHQTexInfo *info)
 {
 	return 0;
 }
