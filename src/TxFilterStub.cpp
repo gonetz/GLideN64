@@ -1,5 +1,5 @@
 #include "GLideNHQ/TxFilterExport.h"
-//signing commit
+
 TAPI boolean TAPIENTRY
 txfilter_init(int maxwidth, int maxheight, int maxbpp, int options, int cachesize,
 	const wchar_t *txCachePath, const wchar_t *txDumpPath, const wchar_t * texPackPath,
