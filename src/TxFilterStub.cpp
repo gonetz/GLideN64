@@ -14,13 +14,13 @@ txfilter_shutdown(void)
 
 TAPI boolean TAPIENTRY
 txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
-		 uint64 g64crc, GHQTexInfo *info)
+		 uint64 g64crc, N64FormatSize n64FmtSz, GHQTexInfo *info)
 {
 	return 0;
 }
 
 TAPI boolean TAPIENTRY
-txfilter_hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *info)
+txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSize n64FmtSz, GHQTexInfo *info)
 {
 	return 0;
 }
@@ -32,7 +32,7 @@ txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, ui
 }
 
 TAPI boolean TAPIENTRY
-txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64)
+txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum r_crc64)
 {
 	return 0;
 }
