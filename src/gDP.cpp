@@ -560,6 +560,9 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		const u32 line = gDP.loadTile->line;
 		const u32 qwpr = bpr >> 3;
 		for (u32 y = 0; y < height; ++y) {
+			if (address >= RDRAMSize)
+				break;
+
 			if (address + bpl > RDRAMSize)
 				UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, RDRAMSize - address);
 			else
@@ -568,8 +571,6 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 				DWordInterleaveWrap(reinterpret_cast<u32*>(TMEM), tmemAddr << 1, 0x3FF, qwpr);
 
 			address += gDP.textureImage.bpl;
-			if (address >= RDRAMSize)
-				break;
 			tmemAddr += line;
 		}
 	}
