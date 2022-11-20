@@ -11,7 +11,7 @@ jobs:
         run: |
           sudo apt-get -qq update
           sudo apt-get -y upgrade
-          sudo apt-get -y install build-essential libgl1-mesa-dev qt5-default
+          sudo apt-get -y install build-essential libgl1-mesa-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
