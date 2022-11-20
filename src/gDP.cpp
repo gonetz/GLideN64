@@ -489,8 +489,13 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	gDP.loadTile->loadType = LOADTYPE_TILE;
 	gDP.loadTile->imageAddress = gDP.textureImage.address;
 
-	if (gDP.loadTile->lrs < gDP.loadTile->uls || gDP.loadTile->lrt < gDP.loadTile->ult)
+	DebugMsg(DEBUG_NORMAL, "gDPLoadTile( %i, %i, %i, %i, %i );\n",
+		tile, gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt);
+
+	if (gDP.loadTile->lrs < gDP.loadTile->uls || gDP.loadTile->lrt < gDP.loadTile->ult) {
+		DebugMsg(DEBUG_ERROR, "gDPLoadTile is skipped because of wrong tile sizes.\n");
 		return;
+	}
 
 	const u32 width = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) & 0x03FF;
 	const u32 height = (gDP.loadTile->lrt - gDP.loadTile->ult + 1) & 0x03FF;
@@ -529,8 +534,10 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		// 32 bit texture loaded into lower and upper half of TMEM, thus actual bytes doubled.
 		info.bytes *= 2;
 
-	if (gDP.loadTile->line == 0)
+	if (gDP.loadTile->line == 0) {
+		DebugMsg(DEBUG_ERROR, "gDPLoadTile is skipped because tile line is zero.\n");
 		return;
+	}
 
 	if (gDP.loadTile->masks == 0)
 		gDP.loadTile->loadWidth = max(gDP.loadTile->loadWidth, info.width);
@@ -553,16 +560,18 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (CheckForFrameBufferTexture(address, info.width, bpl2*height2))
 		return;
 
+	if (address >= RDRAMSize) {
+		DebugMsg(DEBUG_ERROR, "gDPLoadTile is skipped because load address is greater than RDRAM size.\n");
+		return;
+	}
+
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadTile32b(gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt);
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
 		const u32 line = gDP.loadTile->line;
 		const u32 qwpr = bpr >> 3;
-		for (u32 y = 0; y < height; ++y) {
-			if (address >= RDRAMSize)
-				break;
-
+		for (u32 y = 0; y < height && address < RDRAMSize; ++y) {
 			if (address + bpl > RDRAMSize)
 				UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, RDRAMSize - address);
 			else
@@ -574,9 +583,6 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 			tmemAddr += line;
 		}
 	}
-
-	DebugMsg( DEBUG_NORMAL, "gDPLoadTile( %i, %i, %i, %i, %i );\n",
-			tile, gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt );
 }
 
 //****************************************************************
