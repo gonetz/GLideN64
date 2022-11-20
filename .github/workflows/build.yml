@@ -59,7 +59,7 @@ jobs:
       QT_BUILD_x64: qt-5_15-x64-msvc2017-static
     steps:
       - uses: actions/checkout@v3
-      - uses: microsoft/setup-msbuild@v1.0.3
+      - uses: microsoft/setup-msbuild@v1.1
       - uses: msys2/setup-msys2@v2
         with:
           update: true
