@@ -5,6 +5,9 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   Linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ["GLideN64 (x64 Mupen64Plus-CLI)", "GLideN64 (x64 Mupen64Plus-Qt)"]
     steps:
       - uses: actions/checkout@v3
       - name: Install Packages
@@ -16,6 +19,7 @@ jobs:
         run: |
           echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Build GLideN64 (x64 Mupen64Plus-CLI)
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-CLI)' }}
         run: |
           mkdir -p build/linux-mupen64plus-cli
           pushd build/linux-mupen64plus-cli
@@ -25,6 +29,7 @@ jobs:
           cp build/linux-mupen64plus-cli/plugin/Release/*.so build/linux-mupen64plus-cli/
           cp ini/GLideN64.custom.ini build/linux-mupen64plus-cli/
       - name: Build GLideN64 (x64 Mupen64Plus-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-Qt)' }}
         run: |
           mkdir -p build/linux-mupen64plus-qt
           pushd build/linux-mupen64plus-qt
@@ -35,6 +40,7 @@ jobs:
           cp ini/GLideN64.custom.ini build/linux-mupen64plus-qt/
           cp translations/release/*.qm build/linux-mupen64plus-qt/
       - name: Upload GLideN64 (x64 Mupen64Plus-CLI)
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-CLI)' }}
         uses: actions/upload-artifact@v3
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Linux-Mupen64Plus-CLI-x64
@@ -42,6 +48,7 @@ jobs:
             build/linux-mupen64plus-cli/*.so
             build/linux-mupen64plus-cli/GLideN64.custom.ini
       - name: Upload GLideN64 (x64 Mupen64Plus-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-Qt)' }}
         uses: actions/upload-artifact@v3
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Linux-Mupen64Plus-Qt-x64
@@ -51,6 +58,9 @@ jobs:
             build/linux-mupen64plus-qt/*.qm
   Windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        image: ["GLideN64 (x64 Project64-Qt)", "GLideN64 (x86 Project64-Qt)", "GLideN64 (x64 Project64-WTL)", "GLideN64 (x86 Project64-WTL)", "GLideN64 (x64 Mupen64Plus-CLI)", "GLideN64 (x86 Mupen64Plus-CLI)", "GLideN64 (x64 Mupen64Plus-Qt)"]
     env:
       QTDIR_x86: C:\Static_Qt_x86
       QTDIR_x64: C:\Static_Qt_x64
@@ -83,6 +93,7 @@ jobs:
           echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
       - name: Prepare Qt Builds
+        if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' || matrix.image == 'GLideN64 (x86 Project64-Qt)' || matrix.image == 'GLideN64 (x64 Mupen64Plus-Qt)' }}
         run: |
           curl -L -o %QT_BUILD_x86%.7z %QT_BUILD_BASE_URL%/%QT_BUILD_x86%.7z
           curl -L -o %QT_BUILD_x64%.7z %QT_BUILD_BASE_URL%/%QT_BUILD_x64%.7z
@@ -90,6 +101,7 @@ jobs:
           7z x -o%QTDIR_x64% %QT_BUILD_x64%.7z
         shell: cmd
       - name: Build GLideN64 (x64 Project64-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' }}
         run: |
           set QTDIR=%QTDIR_x64%\%QT_BUILD_x64%
           msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=x64
@@ -98,6 +110,7 @@ jobs:
           copy translations\release\*.qm %PJ64PluginsDirQT_x64%
         shell: cmd
       - name: Build GLideN64 (x86 Project64-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x86 Project64-Qt)' }}
         run: |
           set QTDIR=%QTDIR_x86%\%QT_BUILD_x86%
           msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=Win32
@@ -106,6 +119,7 @@ jobs:
           copy translations\release\*.qm %PJ64PluginsDirQT%
         shell: cmd
       - name: Build GLideN64 (x64 Project64-WTL)
+        if: ${{ matrix.image == 'GLideN64 (x64 Project64-WTL)' }}
         run: |
           msbuild projects/msvc/GLideNUI-wtl.vcxproj /m /p:Configuration=Release;Platform=x64
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl;Platform=x64
@@ -114,6 +128,7 @@ jobs:
           copy translations\wtl\*.Lang %PJ64PluginsDirWTL_x64%\translations
         shell: cmd
       - name: Build GLideN64 (x86 Project64-WTL)
+        if: ${{ matrix.image == 'GLideN64 (x86 Project64-WTL)' }}
         run: |
           msbuild projects/msvc/GLideNUI-wtl.vcxproj /m /p:Configuration=Release;Platform=Win32
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl;Platform=Win32
@@ -122,16 +137,19 @@ jobs:
           copy translations\wtl\*.Lang %PJ64PluginsDirWTL%\translations
         shell: cmd
       - name: Build GLideN64 (x64 Mupen64Plus-CLI)
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-CLI)' }}
         run: |
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=x64
           copy ini\GLideN64.custom.ini %Mupen64PluginsDir_x64%\
         shell: cmd
       - name: Build GLideN64 (x86 Mupen64Plus-CLI)
+        if: ${{ matrix.image == 'GLideN64 (x86 Mupen64Plus-CLI)' }}
         run: |
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=Win32
           copy ini\GLideN64.custom.ini %Mupen64PluginsDir%\
         shell: cmd
       - name: Build GLideN64 (x64 Mupen64Plus-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-Qt)' }}
         run: |
           mkdir -p build/windows-mupen64plus-qt
           pushd build/windows-mupen64plus-qt
@@ -143,6 +161,7 @@ jobs:
         shell: msys2 {0}
       - name: Upload GLideN64 (x64 Project64-Qt)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-Qt-x64
           path: |
@@ -151,6 +170,7 @@ jobs:
             build\windows-project64-qt-x64\*.qm
       - name: Upload GLideN64 (x86 Project64-Qt)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x86 Project64-Qt)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-Qt-x86
           path: |
@@ -159,6 +179,7 @@ jobs:
             build\windows-project64-qt\*.qm
       - name: Upload GLideN64 (x64 Project64-WTL)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x64 Project64-WTL)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-WTL-x64
           path: |
@@ -167,6 +188,7 @@ jobs:
             build\windows-project64-wtl-x64\translations\*.Lang
       - name: Upload GLideN64 (x86 Project64-WTL)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x86 Project64-WTL)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-WTL-x86
           path: |
@@ -175,6 +197,7 @@ jobs:
             build\windows-project64-wtl\translations\*.Lang
       - name: Upload GLideN64 (x64 Mupen64Plus-CLI)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-CLI)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Mupen64Plus-CLI-x64
           path: |
@@ -182,6 +205,7 @@ jobs:
             build\windows-mupen64plus-cli-x64\GLideN64.custom.ini
       - name: Upload GLideN64 (x86 Mupen64Plus-CLI)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x86 Mupen64Plus-CLI)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Mupen64Plus-CLI-x86
           path: |
@@ -189,6 +213,7 @@ jobs:
             build\windows-mupen64plus-cli\GLideN64.custom.ini
       - name: Upload GLideN64 (x64 Mupen64Plus-Qt)
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.image == 'GLideN64 (x64 Mupen64Plus-Qt)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Mupen64Plus-Qt-x64
           path: |
