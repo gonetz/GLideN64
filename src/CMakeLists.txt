@@ -515,7 +515,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQ
     message("Found compiler version " ${G++_VERSION})
     message(SEND_ERROR "You need at least Clang 3.3 to compile GLideN64!")
   endif()
-  set(GCC_CPP11_COMPILE_FLAGS "-std=c++11")
+  set(GCC_CPP11_COMPILE_FLAGS "-std=c++11 -pthread")
   set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(GCC_STATIC_LINK_FLAGS "-static-libgcc")
