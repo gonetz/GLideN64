@@ -700,7 +700,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 				return;
 
 			DepthBuffer * pToDepthBuffer = dbList.findBuffer(gDP.colorImage.address);
-			if (pFromDepthBuffer == nullptr)
+			if (pToDepthBuffer == nullptr)
 				return;
 
 			if (Context::FramebufferFetchDepth) {
