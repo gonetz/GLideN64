@@ -1150,7 +1150,9 @@ bool FrameBufferList::RdpUpdate::update(RdpUpdateResult & _result)
 	const s32 x1 = _SHIFTR( *REG.VI_H_START, 16, 10 );
 	const s32 y1 = _SHIFTR( *REG.VI_V_START, 16, 10 );
 	const s32 x2 = _SHIFTR( *REG.VI_H_START, 0, 10 );
-	const s32 y2 = _SHIFTR( *REG.VI_V_START, 0, 10 );
+	s32 y2 = _SHIFTR( *REG.VI_V_START, 0, 10 );
+	if (y2 < y1)
+		y2 = ispal ? 44 + 576 : 34 + 480;
 
 	const s32 delta_x = x2 - x1;
 	const s32 delta_y = y2 - y1;

@@ -41,9 +41,14 @@ void VI_UpdateSize()
 //	const u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
 //	const u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
 
+	VI.PAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
+
 	// These are in half-lines, so shift an extra bit
-	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 0, 10 );
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 16, 10 );
+	u32 vEnd = _SHIFTR(*REG.VI_V_START, 0, 10);
+	if (vEnd < vStart)
+		vEnd = VI.PAL ? 44 + 576 : 34 + 480;
+
 	const bool interlacedPrev = VI.interlaced;
 	if (VI.width > 0)
 		VI.widthPrev = VI.width;
@@ -66,13 +71,11 @@ void VI_UpdateSize()
 	} //else if (hEnd != 0 && *REG.VI_WIDTH != 0)
 		//VI.width = min((u32)floorf((hEnd - hStart)*xScale + 0.5f), *REG.VI_WIDTH);
 
-	VI.PAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (VI.PAL && (vEnd - vStart) > 478) {
 		VI.height = (u32)(VI.real_height*1.0041841f);
 		if (VI.height > 576)
 			VI.height = VI.real_height = 576;
-	}
-	else {
+	} else {
 		VI.height = (u32)(VI.real_height*1.0126582f);
 		if (VI.height > 480)
 			VI.height = VI.real_height = 480;
