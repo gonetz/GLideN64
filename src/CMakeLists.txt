@@ -5,6 +5,7 @@ option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
 option(ODROID "Set to ON if targeting an Odroid" ${ODROID})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
 option(MUPENPLUSAPI_GLIDENUI "Set to ON for GLideNUI for Mupen64Plus" ${MUPENPLUSAPI_GLIDENUI})
+option(GLIDENUI_QT6 "Set to ON to use Qt6 for GLideNUI" ${GLIDENUI_QT6})
 option(MESA "Set to ON to disable Raspberry Pi autodetection" ${MESA})
 option(VERO4K "Set to ON if targeting a Vero4k" ${VERO4K})
 option(ANDROID "Set to ON if targeting an Android device" ${ANDROID})
@@ -162,10 +163,17 @@ if(MUPENPLUSAPI_GLIDENUI OR NOT MUPENPLUSAPI)
   set(CMAKE_AUTORCC ON)
   set(CMAKE_AUTOUIC ON)
 
-  find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
-  set(GLIDENUI_LIBRARIES
-      Qt5::Widgets Qt5::Core Qt5::Gui
-  )
+  if (GLIDENUI_QT6)
+    find_package(Qt6 COMPONENTS Core Widgets Gui REQUIRED)
+    set(GLIDENUI_LIBRARIES
+        Qt6::Widgets Qt6::Core Qt6::Gui
+    )
+  else(GLIDENUI_QT6)
+    find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+    set(GLIDENUI_LIBRARIES
+        Qt5::Widgets Qt5::Core Qt5::Gui
+    )
+  endif(GLIDENUI_QT6)
   if (MUPENPLUSAPI)
     list(APPEND GLideNUI_SOURCES
       GLideNUI/fullscreenresolutions_mupen64plus.cpp
