@@ -836,8 +836,8 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 			QMessageBox::RestoreDefaults | QMessageBox::Cancel, this
 			);
 		msgBox.setDefaultButton(QMessageBox::Cancel);
-		msgBox.setButtonText(QMessageBox::RestoreDefaults, tr("Restore Defaults"));
-		msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
+		msgBox.button(QMessageBox::RestoreDefaults)->setText(tr("Restore Defaults"));
+		msgBox.button(QMessageBox::Cancel)->setText(tr("Cancel"));
 		if (msgBox.exec() == QMessageBox::RestoreDefaults) {
 			const u32 enableCustomSettings = config.generalEmulation.enableCustomSettings;
 			resetSettings(m_strIniPath);
@@ -1125,8 +1125,8 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 	QMessageBox msgBox(QMessageBox::Warning, tr("Remove Profile"),
 		msg, QMessageBox::Yes | QMessageBox::Cancel, this);
 	msgBox.setDefaultButton(QMessageBox::Cancel);
-	msgBox.setButtonText(QMessageBox::Yes, tr("Remove"));
-	msgBox.setButtonText(QMessageBox::No, tr("Cancel"));
+	msgBox.button(QMessageBox::Yes)->setText(tr("Remove"));
+	msgBox.button(QMessageBox::Cancel)->setText(tr("Cancel"));
 	if (msgBox.exec() == QMessageBox::Yes) {
 		removeProfile(m_strIniPath, profile);
 		ui->profilesComboBox->blockSignals(true);
