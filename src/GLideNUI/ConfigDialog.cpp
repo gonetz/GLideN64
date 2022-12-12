@@ -1056,7 +1056,7 @@ void ConfigDialog::setTitle()
 	setWindowTitle(tr("GLideN64 Settings"));
 }
 
-void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profile)
+void ConfigDialog::on_profilesComboBox_currentTextChanged(const QString &profile)
 {
 	ui->settingsDestProfileRadioButton->setChecked(true);
 	if (profile == tr("New...")) {
