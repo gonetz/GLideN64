@@ -197,6 +197,11 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
 	fillFullscreenResolutionsList(fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
+#ifdef M64P_GLIDENUI
+	if (fullscreenModesList.isEmpty() && fullscreenRatesList.isEmpty()) {
+		ui->fullScreenResolutionFrame->setVisible(false);
+	}
+#endif
 	ui->fullScreenResolutionComboBox->clear();
 	ui->fullScreenResolutionComboBox->insertItems(0, fullscreenModesList);
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
