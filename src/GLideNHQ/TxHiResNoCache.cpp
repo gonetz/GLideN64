@@ -177,10 +177,8 @@ bool TxHiResNoCache::_createFileIndexInDir(tx_wstring directory, bool update)
 			break;
 		}
 
-		/* skip hidden files */
-		if (wccmp(foundfilename, wst("."))) {
+		if (!checkFolderName(foundfilename))
 			continue;
-		}
 
 		texturefilename.assign(directory);
 		texturefilename += OSAL_DIR_SEPARATOR_STR;

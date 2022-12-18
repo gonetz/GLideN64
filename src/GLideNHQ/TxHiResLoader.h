@@ -21,8 +21,9 @@
 class TxHiResLoader
 {
 protected:
-	uint32_t checkFileName(char* ident, char* fname, uint32_t* pChksum, uint32_t* pPalchksum, uint32_t* pFmt, uint32_t* pSiz);
-	uint8_t* loadFileInfoTex(char* fname, int siz, int* pWidth, int* pHeight, uint32_t fmt, ColorFormat* pFormat);
+	bool checkFolderName(const wchar_t *folderName) const;
+	uint32_t checkFileName(char* ident, char* fname, uint32_t* pChksum, uint32_t* pPalchksum, uint32_t* pFmt, uint32_t* pSiz) const;
+	uint8_t* loadFileInfoTex(char* fname, int siz, int* pWidth, int* pHeight, uint32_t fmt, ColorFormat* pFormat) const;
 
 	std::unique_ptr<TxImage> _txImage;
 	std::unique_ptr<TxQuantize> _txQuantize;
