@@ -30,9 +30,20 @@ TxHiResLoader::TxHiResLoader(int maxwidth,
 
 }
 
+bool TxHiResLoader::checkFolderName(const wchar_t *folderName) const
+{
+	static tx_wstring skipFolderPrefix(wst("~!~"));
+	tx_wstring folder(folderName);
+	if (folder.compare(0, 1, wst(".")) == 0)
+		/* skip hidden files */
+		return false;
+
+	return folder.compare(0, skipFolderPrefix.length(), skipFolderPrefix) != 0;
+}
+
 uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 	uint32_t* pChksum, uint32_t* pPalchksum,
-	uint32_t* pFmt, uint32_t* pSiz)
+	uint32_t* pFmt, uint32_t* pSiz) const
 {
 #define CRCFMTSIZ_LEN 13
 #define CRCWILDCARD_LEN 15
@@ -42,7 +53,7 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 	const char* pfilename;
 	uint32_t length = 0, filename_type = 0;
 	bool hasWildcard = false;
-	const char supported_ends[][20] = {
+	static const char supported_ends[][20] = {
 		"all.png",
 #ifdef OS_WINDOWS
 		"allcibyrgba.png",
@@ -155,7 +166,7 @@ uint32_t TxHiResLoader::checkFileName(char* ident, char* filename,
 uint8_t* TxHiResLoader::loadFileInfoTex(char* fname,
 	int siz, int* pWidth, int* pHeight,
 	uint32_t fmt,
-	ColorFormat* pFormat)
+	ColorFormat* pFormat) const
 {
 	/* Deal with the wackiness some texture packs utilize Rice format.
 	 * Read in the following order: _a.* + _rgb.*, _all.png _ciByRGBA.png,
