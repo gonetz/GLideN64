@@ -63,7 +63,7 @@ bool BufferedLog::needPrint(u32 _mode) const
 	return (m_mode&_mode) != 0;
 }
 
-std::unique_ptr<BufferedLog> g_log;
+static std::unique_ptr<BufferedLog> g_log;
 
 void DebugMsg(u32 _mode, const char * _format, ...)
 {
