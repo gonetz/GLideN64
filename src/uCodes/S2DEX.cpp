@@ -657,6 +657,7 @@ void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
 	const u32 w = std::max(_pObjSprite->imageW >> 5, 1);
 	const u32 h = std::max(_pObjSprite->imageH >> 5, 1);
 
+	gDP.tiles[G_TX_RENDERTILE].textureMode = TEXTUREMODE_NORMAL;
 	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, G_TX_RENDERTILE, _pObjSprite->imagePal, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 0, 0, 0, 0 );
 	gDPSetTileSize( G_TX_RENDERTILE, 0, 0, (w - 1) << 2, (h - 1) << 2 );
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
