@@ -106,7 +106,7 @@ void GLInfo::init() {
 	}
 
 	bool ext_draw_buffers_indexed = isGLESX && (Utils::isExtensionSupported(*this, "GL_EXT_draw_buffers_indexed") || numericVersion >= 32);
-#ifdef EGL
+#if defined(EGL) && !defined(GL_GLEXT_PROTOTYPES)
 	if (isGLESX && bufferStorage)
 		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
 	if (isGLESX && numericVersion < 32) {
@@ -122,6 +122,20 @@ void GLInfo::init() {
 		g_glProgramBinary = (PFNGLPROGRAMBINARYPROC) eglGetProcAddress("glProgramBinaryOES");
 		g_glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC) eglGetProcAddress("glGetProgramBinaryOES");
 		g_glProgramParameteri = nullptr;
+	}
+#else
+	if (isGLESX && numericVersion < 32) {
+		if (ext_draw_buffers_indexed) {
+			IS_GL_FUNCTION_VALID(glEnablei) = true;
+			IS_GL_FUNCTION_VALID(glDisablei) = true;
+		}
+		else {
+			IS_GL_FUNCTION_VALID(glEnablei) = false;
+			IS_GL_FUNCTION_VALID(glDisablei) = false;
+		}
+	}
+	if (isGLES2 && shaderStorage) {
+		IS_GL_FUNCTION_VALID(glProgramParameteri) = false;
 	}
 #endif
 #ifndef OS_ANDROID

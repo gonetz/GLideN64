@@ -69,6 +69,9 @@
     <Filter Include="Source Files\Graphics\OpenGL\mupen64plus">
       <UniqueIdentifier>{77259791-9942-4601-a63f-5a0468e69e49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ANGLE">
+      <UniqueIdentifier>{2149d262-9324-4b6a-ac8b-a76c26eb6c11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -188,9 +191,6 @@
     <ClCompile Include="..\..\src\Graphics\Context.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp">
-      <Filter>Source Files\Graphics\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
@@ -296,9 +296,6 @@
     <ClCompile Include="..\..\src\CRC_OPT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\xxHash\xxhash.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\DebugDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -400,6 +397,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\windows\ScreenShot.cpp">
       <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithEGLImage.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -732,6 +735,39 @@
     </ClInclude>
     <ClInclude Include="..\..\src\MemoryStatus.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithEGLImage.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_1_0_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_2_0_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_3_0_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_3_1_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_3_2_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_ext_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\angle_gl.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\export.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_egl_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ANGLE\entry_points_egl_ext_autogen.h">
+      <Filter>Header Files\ANGLE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

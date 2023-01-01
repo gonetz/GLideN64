@@ -1,5 +1,13 @@
 #include "GLFunctions.h"
 
+#ifdef GL_GLEXT_PROTOTYPES
+GLValidFunctions g_GLValidFunctions;
+
+void initGLFunctions()
+{
+	g_GLValidFunctions = { 0 };
+}
+#else
 #ifdef OS_WINDOWS
 
 #define glGetProcAddress eglGetProcAddress
@@ -353,3 +361,4 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLEGLIMAGETARGETTEXTURE2DOESPROC, glEGLImageTargetTexture2DOES);
 	GL_GET_PROC_ADR(PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC, glGetTranslatedShaderSourceANGLE);
 }
+#endif

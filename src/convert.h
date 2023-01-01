@@ -11,6 +11,10 @@ extern const volatile unsigned char Two2Eight[4];
 extern const volatile unsigned char One2Four[2];
 extern const volatile unsigned char One2Eight[2];
 
+#ifdef WIN32_ASM
+#undef WIN32_ASM
+#endif
+
 void UnswapCopyWrap(const u8 *src, u32 srcIdx, u8 *dest, u32 destIdx, u32 destMask, u32 numBytes);
 
 void DWordInterleaveWrap(u32 *src, u32 srcIdx, u32 srcMask, u32 numQWords);

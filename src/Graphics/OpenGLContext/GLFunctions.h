@@ -33,6 +33,36 @@ typedef double GLdouble;
 #endif
 
 #include <GL/glext.h>
+
+#ifdef GL_GLEXT_PROTOTYPES
+extern "C" void KHRONOS_APIENTRY glBufferStorageEXT(GLenum target, GLsizeiptr size, const void* data, GLbitfield flags);
+#define glBufferStorage glBufferStorageEXT
+
+#define glTextureSubImage2D nullptr
+#define glTextureStorage2D nullptr
+#define glTextureParameteri nullptr
+#define glTextureParameterf nullptr
+#define glTextureBarrierNV nullptr
+#define glTexImage2DMultisample nullptr
+#define glNamedFramebufferTexture nullptr
+#define glCreateTextures nullptr
+#define glCreateFramebuffers nullptr
+#define glTextureBarrier nullptr
+
+struct GLValidFunctions
+{
+	bool glEnablei;
+	bool glDisablei;
+	bool glProgramParameteri;
+};
+
+extern GLValidFunctions g_GLValidFunctions;
+
+#define IS_GL_FUNCTION_VALID(fn) (g_GLValidFunctions.fn)
+#define GET_GL_FUNCTION(fn) &fn
+
+void initGLFunctions();
+#else
 #include <stdexcept>
 #include <sstream>
 #include "Log.h"
@@ -363,5 +393,6 @@ template<typename R, typename F> R checkedWithReturn(F fn, const char* _function
 
 	return returnValue;
 }
+#endif
 
 #endif // GLFUNCTIONS_H

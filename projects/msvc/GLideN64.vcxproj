@@ -173,7 +173,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>WTL_UI;EGL;GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GL_GLEXT_PROTOTYPES;ANGLE_EXPORT=;EGLAPI=;WTL_UI;GL_APICALL=;GL_API=;EGL;GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ZILMAR_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -188,7 +188,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)" )</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
-      <PreprocessorDefinitions>WTL_UI;EGL;MUPENPLUSAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ANGLE_EXPORT=;EGLAPI=;WTL_UI;GL_APICALL=;GL_API=;EGL;MUPENPLUSAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
@@ -200,18 +200,18 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <Link>
-      <AdditionalDependencies>Comdlg32.lib;libEGL.dll.lib;libGLESv2.dll.lib;bin\Win32\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <Link>
-      <AdditionalDependencies>Comdlg32.lib;libEGL.dll.lib;libGLESv2.dll.lib;bin\Win32\Release\lib\GLideNUI-wtl.lib;freetype253MT.lib</AdditionalDependencies>
-      <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Release\lib\GLideNUI-wtl.lib;freetype253MT.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
       <AdditionalIncludeDirectories>../../src/inc/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -258,6 +258,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStorage.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithEGLImage.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp" />
@@ -352,7 +353,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\src\xxHash\xxhash.c" />
     <ClCompile Include="..\..\src\ZilmarPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
@@ -360,6 +360,16 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h" />
+    <ClInclude Include="..\..\src\ANGLE\angle_gl.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_egl_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_egl_ext_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_1_0_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_2_0_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_3_0_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_3_1_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_3_2_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\entry_points_gles_ext_autogen.h" />
+    <ClInclude Include="..\..\src\ANGLE\export.h" />
     <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM.h" />
     <ClInclude Include="..\..\src\BufferCopy\DepthBufferToRDRAM.h" />
     <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />
@@ -403,6 +413,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStorage.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithEGLImage.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
