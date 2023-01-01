@@ -33,21 +33,22 @@ typedef double GLdouble;
 #endif
 
 #include <GL/glext.h>
+#include <cassert>
 
 #ifdef GL_GLEXT_PROTOTYPES
 extern "C" void KHRONOS_APIENTRY glBufferStorageEXT(GLenum target, GLsizeiptr size, const void* data, GLbitfield flags);
 #define glBufferStorage glBufferStorageEXT
 
-#define glTextureSubImage2D nullptr
-#define glTextureStorage2D nullptr
-#define glTextureParameteri nullptr
-#define glTextureParameterf nullptr
-#define glTextureBarrierNV nullptr
-#define glTexImage2DMultisample nullptr
-#define glNamedFramebufferTexture nullptr
-#define glCreateTextures nullptr
-#define glCreateFramebuffers nullptr
-#define glTextureBarrier nullptr
+#define glTextureSubImage2D(...) assert(0 && "glTextureSubImage2D")
+#define glTextureStorage2D(...) assert(0 && "glTextureStorage2D")
+#define glTextureParameteri(...) assert(0 && "glTextureParameteri")
+#define glTextureParameterf(...) assert(0 && "glTextureParameterf")
+#define glTextureBarrierNV(...) assert(0 && "glTextureBarrierNV")
+#define glTexImage2DMultisample(...) assert(0 && "glTexImage2DMultisample")
+#define glNamedFramebufferTexture(...) assert(0 && "glNamedFramebufferTexture")
+#define glCreateTextures(...) assert(0 && "glCreateTextures")
+#define glCreateFramebuffers(...) assert(0 && "glCreateFramebuffers")
+#define glTextureBarrier(...) assert(0 && "glTextureBarrier")
 
 struct GLValidFunctions
 {
