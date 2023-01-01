@@ -18,6 +18,8 @@ extern "C"
 	EGLAPI EGLDisplay EGLAPIENTRY eglGetPlatformDisplayEXT(EGLenum platform, void* native_display, const EGLint* attrib_list);
 }
 
+extern void SaveScreenshot(const wchar_t* _folder, const char* _name, int _width, int _height, const unsigned char* _data);
+
 class DisplayWindowWindows : public DisplayWindow
 {
 public:

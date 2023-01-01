@@ -1,11 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLideN64", "GLideN64.vcxproj", "{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C} = {7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E} = {9E05B70F-A294-44A9-A151-B2CC95AA884E}
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756} = {DA965BCF-2219-47AF-ACE7-EAF76D5D4756}
 	EndProjectSection
 EndProject
@@ -13,7 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGLideNHQ", "libGLideNHQ.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osal", "osal.vcxproj", "{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLideNUI", "GLideNUI.vcxproj", "{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLideNUI-wtl", "GLideNUI-wtl.vcxproj", "{9E05B70F-A294-44A9-A151-B2CC95AA884E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,18 +76,22 @@ Global
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|Win32.Build.0 = Release|Win32
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|x64.ActiveCfg = Release|x64
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|x64.Build.0 = Release|x64
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug_mupenplus|Win32.ActiveCfg = Debug|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug_mupenplus|x64.ActiveCfg = Debug|x64
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|Win32.Build.0 = Debug|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|x64.ActiveCfg = Debug|x64
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|x64.Build.0 = Debug|x64
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release_mupenplus|Win32.ActiveCfg = Release|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release_mupenplus|x64.ActiveCfg = Release|x64
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|Win32.ActiveCfg = Release|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|Win32.Build.0 = Release|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|x64.ActiveCfg = Release|x64
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|x64.Build.0 = Release|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|Win32.ActiveCfg = Debug|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|Win32.Build.0 = Debug|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|x64.ActiveCfg = Debug|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|x64.Build.0 = Debug|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug|Win32.Build.0 = Debug|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug|x64.ActiveCfg = Debug|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug|x64.Build.0 = Debug|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|Win32.ActiveCfg = Release|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|Win32.Build.0 = Release|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|x64.ActiveCfg = Release|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|x64.Build.0 = Release|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release|Win32.ActiveCfg = Release|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release|Win32.Build.0 = Release|Win32
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release|x64.ActiveCfg = Release|x64
+		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

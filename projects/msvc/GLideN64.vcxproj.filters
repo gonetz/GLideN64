@@ -398,6 +398,9 @@
     <ClCompile Include="..\..\src\mupenplus\MemoryStatus_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\windows\ScreenShot.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -730,5 +733,8 @@
     <ClInclude Include="..\..\src\MemoryStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc" />
   </ItemGroup>
 </Project>
