@@ -81,8 +81,8 @@ bool DisplayWindowWindows::_start()
 		return false;
 	}
 
-	EGLint dispOptions[] = { EGL_NONE }; // 0x3451, 1, 
-	eglDisplay = eglGetPlatformDisplayEXT(0x3202, hDC, dispOptions);
+	EGLint dispOptions[] = { EGL_NONE }; // 0x3451, 1,
+	eglDisplay = eglGetDisplay(hDC); //eglGetPlatformDisplayEXT(0x3202, hDC, dispOptions);
 	EGLint eglVersionMajor, eglVersionMinor;
 
 	if (!eglInitialize(eglDisplay, &eglVersionMajor, &eglVersionMinor))
@@ -126,7 +126,7 @@ bool DisplayWindowWindows::_start()
 		return false;
 	}
 
-	EGLint surfaceAttributes[] = { 0x33A5, EGL_TRUE, EGL_NONE };
+	EGLint surfaceAttributes[] = { 0x33A5, EGL_TRUE, EGL_NONE }; // 0x33A5, EGL_TRUE, 
 	eglSurface = eglCreateWindowSurface(eglDisplay, windowConfig, hWnd, surfaceAttributes);
 	if (!eglSurface)
 	{
