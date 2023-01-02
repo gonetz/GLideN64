@@ -29,23 +29,9 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
-#define TXHMODULE HMODULE
-#define DLOPEN(a) LoadLibraryW(a)
-#define DLCLOSE(a) FreeLibrary(a)
-#define DLSYM(a, b) GetProcAddress(a, b)
-#define GETCWD(a, b) GetCurrentDirectoryW(a, b)
-#define CHDIR(a) SetCurrentDirectoryW(a)
 #else
 #include <iostream>
-#include <dlfcn.h>
-#include <unistd.h>
 #define MAX_PATH 4095
-#define TXHMODULE void*
-#define DLOPEN(a) dlopen(a, RTLD_LAZY|RTLD_GLOBAL)
-#define DLCLOSE(a) dlclose(a)
-#define DLSYM(a, b) dlsym(a, b)
-#define GETCWD(a, b) getcwd(b, a)
-#define CHDIR(a) chdir(a)
 #endif
 
 typedef unsigned char  uint8;

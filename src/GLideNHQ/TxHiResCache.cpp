@@ -166,18 +166,6 @@ TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_pa
 
 	LoadResult result = resOk;
 
-#ifdef OS_WINDOWS
-	wchar_t curpath[MAX_PATH];
-	GETCWD(MAX_PATH, curpath);
-	CHDIR(dir_path);
-#else
-	char curpath[MAX_PATH];
-	char cbuf[MAX_PATH];
-	wcstombs(cbuf, dir_path, MAX_PATH);
-	GETCWD(MAX_PATH, curpath);
-	CHDIR(cbuf);
-#endif
-
 	void *dir = osal_search_dir_open(dir_path);
 	const wchar_t *foundfilename;
 	// the path of the texture
@@ -224,10 +212,16 @@ TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_pa
 		/* Rice hi-res textures: begin
 		 */
 		uint32 chksum = 0, fmt = 0, siz = 0, palchksum = 0, length = 0;
+		FULLFNAME_CHARTYPE fullfname[MAX_PATH];
 		char fname[MAX_PATH];
 		char ident[MAX_PATH];
 		FILE *fp = nullptr;
 
+#ifdef _WIN32
+		wcscpy(fullfname, texturefilename.c_str());
+#else
+		wcstombs(fullfname, texturefilename.c_str(), MAX_PATH);
+#endif
 		wcstombs(ident, _ident.c_str(), MAX_PATH);
 		wcstombs(fname, foundfilename, MAX_PATH);
 
@@ -259,7 +253,7 @@ TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_pa
 			}
 		}
 
-		tex = loadFileInfoTex(fname, siz, &width, &height, fmt, &format);
+		tex = loadFileInfoTex(fullfname, fname, siz, &width, &height, fmt, &format);
 		if (tex == nullptr) {
 			/* failed to load file into tex data, skip it */
 			continue;
@@ -308,8 +302,6 @@ TxHiResCache::LoadResult TxHiResCache::_loadHiResTextures(const wchar_t * dir_pa
 	} while (foundfilename != nullptr);
 
 	osal_search_dir_close(dir);
-
-	CHDIR(curpath);
 
 	return result;
 }

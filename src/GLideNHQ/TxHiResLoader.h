@@ -18,12 +18,18 @@
 #include "TxImage.h"
 #include "TxReSample.h"
 
+#ifdef _WIN32
+#define FULLFNAME_CHARTYPE wchar_t
+#else
+#define FULLFNAME_CHARTYPE char
+#endif
+
 class TxHiResLoader
 {
 protected:
 	bool checkFolderName(const wchar_t *folderName) const;
 	uint32_t checkFileName(char* ident, char* fname, uint32_t* pChksum, uint32_t* pPalchksum, uint32_t* pFmt, uint32_t* pSiz) const;
-	uint8_t* loadFileInfoTex(char* fname, int siz, int* pWidth, int* pHeight, uint32_t fmt, ColorFormat* pFormat) const;
+	uint8_t* loadFileInfoTex(FULLFNAME_CHARTYPE* fullfname, char* fname, int siz, int* pWidth, int* pHeight, uint32_t fmt, ColorFormat* pFormat) const;
 
 	std::unique_ptr<TxImage> _txImage;
 	std::unique_ptr<TxQuantize> _txQuantize;
