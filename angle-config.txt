@@ -1,0 +1,15 @@
+# Set build arguments here. See `gn help buildargs`.
+is_component_build = false
+target_cpu = "x86"
+is_debug = false
+is_clang = true
+angle_enable_d3d9 = false
+angle_enable_d3d11 = true
+angle_enable_gl = true
+angle_enable_metal = false
+angle_enable_null = false
+angle_enable_vulkan = true
+angle_enable_essl = true
+angle_enable_glsl = true
+angle_enable_hlsl = true
+angle_enable_swiftshader = false

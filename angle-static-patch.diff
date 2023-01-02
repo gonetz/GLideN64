@@ -1,0 +1,38 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 6e965691e..b23eece6b 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1453,6 +1453,20 @@ angle_static_library("libGLESv2_static") {
+   public_deps = [ ":libANGLE" ]
+ }
+ 
++angle_static_library("libANGLE_static") {
++  sources = libglesv2_sources
++  sources += libegl_sources
++  defines = [
++    "ANGLE_STATIC=1", 
++    "ANGLE_EXPORT=",
++    "EGLAPI=",
++    "GL_APICALL=",
++    "GL_API=",
++  ]
++  complete_static_lib = true
++  public_deps = [ ":libANGLE", "//build/config:shared_library_deps" ] 
++}
++
+ angle_shared_library("libGLESv1_CM") {
+   sources = libglesv1_cm_sources
+   output_name = "libGLESv1_CM${angle_libs_suffix}"
+diff --git a/src/libEGL/libEGL_autogen.cpp b/src/libEGL/libEGL_autogen.cpp
+index be4ce7716..3952c4bad 100644
+--- a/src/libEGL/libEGL_autogen.cpp
++++ b/src/libEGL/libEGL_autogen.cpp
+@@ -51,7 +51,7 @@ void EnsureEGLLoaded()
+     }
+ }
+ #else
+-void EnsureEGLLoaded() {}
++static inline void EnsureEGLLoaded() {}
+ #endif  // defined(ANGLE_USE_EGL_LOADER)
+ }  // anonymous namespace
+ 
