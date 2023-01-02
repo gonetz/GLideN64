@@ -12,8 +12,8 @@ class TxHiResNoCache : public TxHiResLoader
 
 		struct FileIndexEntry
 		{
+			FULLFNAME_CHARTYPE fullfname[MAX_PATH];
 			char fname[MAX_PATH];
-			tx_wstring directory;
 			uint32 siz;
 			uint32 fmt;
 		};

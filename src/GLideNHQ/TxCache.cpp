@@ -66,8 +66,10 @@ public:
 class TxMemoryCache : public TxCacheImpl
 {
 public:
-	TxMemoryCache(uint32 _options, uint64 cacheLimit, dispInfoFuncExt callback);
+	TxMemoryCache(uint32 _options, const wchar_t *cachePath, uint64 cacheLimit, dispInfoFuncExt callback);
 	~TxMemoryCache();
+
+	void buildFullPath();
 
 	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override;
 	bool get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *info) override;
@@ -93,6 +95,9 @@ private:
 	};
 
 	uint32 _options;
+	tx_wstring _cachePath;
+	tx_wstring _filename;
+	std::string _fullPath;
 	dispInfoFuncExt _callback;
 	uint64 _cacheLimit;
 	uint64 _totalSize;
@@ -109,6 +114,7 @@ private:
 };
 
 TxMemoryCache::TxMemoryCache(uint32 options,
+	const wchar_t *cachePath,
 	uint64 cacheLimit,
 	dispInfoFuncExt callback)
 	: _options(options)
@@ -116,6 +122,10 @@ TxMemoryCache::TxMemoryCache(uint32 options,
 	, _callback(callback)
 	, _totalSize(0U)
 {
+	/* save path name */
+	if (cachePath)
+		_cachePath.assign(cachePath);
+
 	/* zlib memory buffers to (de)compress hires textures */
 	if (_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
 		_gzdest0 = TxMemBuf::getInstance()->get(0);
@@ -136,6 +146,14 @@ TxMemoryCache::~TxMemoryCache()
 {
 	/* free memory, clean up, etc */
 	clear();
+}
+
+void TxMemoryCache::buildFullPath()
+{
+	char cbuf[MAX_PATH * 2];
+	tx_wstring filename = _cachePath + OSAL_DIR_SEPARATOR_STR + _filename;
+	wcstombs(cbuf, filename.c_str(), MAX_PATH * 2);
+	_fullPath = cbuf;
 }
 
 bool TxMemoryCache::add(Checksum checksum, GHQTexInfo* info, int dataSize)
@@ -298,25 +316,17 @@ bool TxMemoryCache::save(const wchar_t *path, const wchar_t *filename, int confi
 	if (_cache.empty())
 		return false;
 
-	/* dump cache to disk */
-	char cbuf[MAX_PATH];
+	assert(_cachePath == path);
+	if (_filename.empty()) {
+		_filename = filename;
+		buildFullPath();
+	} else
+		assert(_filename == filename);
 
+	/* dump cache to disk */
 	osal_mkdirp(path);
 
-#ifdef OS_WINDOWS
-	wchar_t curpath[MAX_PATH];
-	GETCWD(MAX_PATH, curpath);
-	CHDIR(path);
-#else
-	char curpath[MAX_PATH];
-	GETCWD(MAX_PATH, curpath);
-	wcstombs(cbuf, path, MAX_PATH);
-	CHDIR(cbuf);
-#endif
-
-	wcstombs(cbuf, filename, MAX_PATH);
-
-	gzFile gzfp = gzopen(cbuf, "wb1");
+	gzFile gzfp = gzopen(_fullPath.c_str(), "wb1");
 	DBG_INFO(80, wst("gzfp:%x file:%ls\n"), gzfp, filename);
 	if (gzfp) {
 		/* write current version */
@@ -375,30 +385,20 @@ bool TxMemoryCache::save(const wchar_t *path, const wchar_t *filename, int confi
 		gzclose(gzfp);
 	}
 
-	CHDIR(curpath);
-
 	return !_cache.empty();
 }
 
 bool TxMemoryCache::load(const wchar_t *path, const wchar_t *filename, int config, bool force)
 {
 	/* find it on disk */
-	char cbuf[MAX_PATH];
+	assert(_cachePath == path);
+	if (_filename.empty()) {
+		_filename = filename;
+		buildFullPath();
+	} else
+		assert(_filename == filename);
 
-#ifdef OS_WINDOWS
-	wchar_t curpath[MAX_PATH];
-	GETCWD(MAX_PATH, curpath);
-	CHDIR(path);
-#else
-	char curpath[MAX_PATH];
-	GETCWD(MAX_PATH, curpath);
-	wcstombs(cbuf, path, MAX_PATH);
-	CHDIR(cbuf);
-#endif
-
-	wcstombs(cbuf, filename, MAX_PATH);
-
-	gzFile gzfp = gzopen(cbuf, "rb");
+	gzFile gzfp = gzopen(_fullPath.c_str(), "rb");
 	DBG_INFO(80, wst("gzfp:%x file:%ls\n"), gzfp, filename);
 	if (gzfp) {
 		/* yep, we have it. load it into memory cache. */
@@ -455,8 +455,6 @@ bool TxMemoryCache::load(const wchar_t *path, const wchar_t *filename, int confi
 			gzclose(gzfp);
 		}
 	}
-
-	CHDIR(curpath);
 
 	return !_cache.empty();
 }
@@ -969,7 +967,7 @@ TxCache::TxCache(uint32 options,
 		_ident.assign(ident);
 
 	if ((options & FILE_CACHE_MASK) == 0)
-		_pImpl.reset(new TxMemoryCache(options, cachesize, _callback));
+		_pImpl.reset(new TxMemoryCache(options, cachePath, cachesize, _callback));
 	else
 		_pImpl.reset(new TxFileStorage(options, cachePath, _callback));
 }

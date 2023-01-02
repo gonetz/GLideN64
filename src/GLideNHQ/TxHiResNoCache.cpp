@@ -97,26 +97,10 @@ bool TxHiResNoCache::get(Checksum checksum, N64FormatSize n64FmtSz, GHQTexInfo *
 
 	DBG_INFO(80, wst("TxNoCache::get: loading chksum:%08X %08X\n"), chksum, palchksum);
 
-	/* change current dir to directory */
-#ifdef OS_WINDOWS
-	wchar_t curpath[MAX_PATH];
-	GETCWD(MAX_PATH, curpath);
-	CHDIR(entry.directory.c_str());
-#else
-	char curpath[MAX_PATH];
-	char cbuf[MAX_PATH];
-	wcstombs(cbuf, entry.directory.c_str(), MAX_PATH);
-	GETCWD(MAX_PATH, curpath);
-	CHDIR(cbuf);
-#endif
-
 	/* load texture */
 	int width = 0, height = 0;
 	ColorFormat format;
-	uint8_t* tex = TxHiResLoader::loadFileInfoTex(entry.fname, entry.siz, &width, &height, entry.fmt, &format);
-
-	/* restore directory */
-	CHDIR(curpath);
+	uint8_t* tex = TxHiResLoader::loadFileInfoTex(entry.fullfname, entry.fname, entry.siz, &width, &height, entry.fmt, &format);
 
 	if (tex == nullptr) {
 		/* failed to load texture, so return false */
@@ -199,6 +183,11 @@ bool TxHiResNoCache::_createFileIndexInDir(tx_wstring directory, bool update)
 		FileIndexEntry entry;
 		entry.fmt = entry.siz = 0;
 
+#ifdef _WIN32
+		wcscpy(entry.fullfname, texturefilename.c_str());
+#else
+		wcstombs(entry.fullfname, texturefilename.c_str(), MAX_PATH);
+#endif
 		wcstombs(entry.fname, foundfilename, MAX_PATH);
 
 		/* lowercase on windows */
@@ -210,8 +199,6 @@ bool TxHiResNoCache::_createFileIndexInDir(tx_wstring directory, bool update)
 			/* invalid file name, skip it */
 			continue;
 		}
-
-		entry.directory = directory;
 
 		chksum64 = (uint64)palchksum;
 		if (chksum) {
