@@ -116,7 +116,7 @@ void fillFullscreenResolutionsList(StringList & _listResolutions, int & _resolut
 		{ 8,  5, "16:10" },
 		{ 21, 9, "21:9" }
 	};
-	const int numRatios = sizeof(ratios);
+	const int numRatios = sizeof(ratios) / sizeof(*ratios);
 
 	int i = 0;
 	char text[128];
