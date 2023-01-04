@@ -41,7 +41,7 @@ bool getCursorPos(long & _x, long & _y)
 # else // _DEBUG
 		swprintf(caption, 64, L"%s. Revision %s", pluginName, PLUGIN_REVISION);
 # endif // _DEBUG
-		hWnd = FindWindowEx(NULL, NULL, NULL, caption);
+		hWnd = FindWindowExW(NULL, NULL, NULL, caption);
 	}
 	ScreenToClient(hWnd, &pt);
 #endif // MUPENPLUSAPI
