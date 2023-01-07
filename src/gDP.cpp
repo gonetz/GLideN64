@@ -914,16 +914,16 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 	gDP.lastTexRectInfo.dsdx = !flip ? dsdx : dtdy;
 	gDP.lastTexRectInfo.dtdy = !flip ? dtdy : dsdx;
 
-	f32 S = _FIXED2FLOAT(!flip ? s : t, 5);
-	f32 T = _FIXED2FLOAT(!flip ? t : s, 5);
-	f32 DSDX = !flip ? dsdx : dtdy;
-	f32 DTDY = !flip ? dtdy : dsdx;
-	f32 uls = S + (ceilf(ulx) - ulx) * DSDX;
-	f32 lrs = S + (ceilf(lrx) - ulx - 1.0f) * DSDX;
-	f32 ult = T + (ceilf(uly) - uly) * DTDY;
-	f32 lrt = T + (ceilf(lry) - uly - 1.0f) * DTDY;
-
 	if (config.graphics2D.enableTexCoordBounds != 0) {
+		f32 S = _FIXED2FLOAT(!flip ? s : t, 5);
+		f32 T = _FIXED2FLOAT(!flip ? t : s, 5);
+		f32 DSDX = !flip ? dsdx : dtdy;
+		f32 DTDY = !flip ? dtdy : dsdx;
+		f32 uls = S + (ceilf(ulx) - ulx) * DSDX;
+		f32 lrs = S + (ceilf(lrx) - ulx - 1.0f) * DSDX;
+		f32 ult = T + (ceilf(uly) - uly) * DTDY;
+		f32 lrt = T + (ceilf(lry) - uly - 1.0f) * DTDY;
+
 		gDP.m_texCoordBounds.valid = true;
 		gDP.m_texCoordBounds.uls = fmin(uls, lrs);
 		gDP.m_texCoordBounds.ult = fmin(ult, lrt);
