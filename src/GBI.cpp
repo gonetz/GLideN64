@@ -81,7 +81,6 @@ std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 	{ S2DEX_1_05,	false,	true,	false,	0x9df31081 }, // RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo
 	{ T3DUX,		false,	true,	false,	0xbad437f2 }, // T3DUX vers 0.83 for Toukon Road
 	{ F3DJFG,		false,	true,	true,	0xbde9d1fb }, // Jet Force Gemini, Mickey
-	{ F3D_Glover,	false,	true,	false,	0xbf80d3f5 }, // F3D Glover, Sprite2D difference
 	{ T3DUX,		false,	true,	false,	0xd0a1aa3d }, // T3DUX vers 0.85 for Toukon Road 2
 	{ F3DBETA,		false,	true,	true,	0xd17906e2 }, // RSP SW Version: 2.0D, 04-01-96, Wave Race (U)
 	{ F3DZEX2MM,	true,	true,	false,	0xd39a0d4f }, // Animal Forest
@@ -201,7 +200,6 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 		switch (m_pCurrent->type) {
 			case F3D:
-			case F3D_Glover:
 			case Turbo3D:
 				F3D_Init();
 				m_hwlSupported = true;
