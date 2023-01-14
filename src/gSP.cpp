@@ -1987,10 +1987,12 @@ void _loadSpriteImage(const uSprite *_pSprite)
 
 void gSPSprite2DBase(u32 _base)
 {
-	DebugMsg(DEBUG_NORMAL, "gSPSprite2DBase\n");
 	assert(RSP.nextCmd == 0xBE);
 	const u32 address = RSP_SegmentToPhysical( _base );
 	uSprite *pSprite = (uSprite*)&RDRAM[address];
+	DebugMsg(DEBUG_NORMAL, "gSPSprite2DBase. TextureImage( %s, %s, %i, %i, 0x%08X );\n",
+		ImageFormatText[pSprite->imageFmt], ImageSizeText[pSprite->imageSiz],
+		pSprite->imageW, pSprite->imageH, pSprite->imagePtr);
 
 	if (pSprite->tlutPtr != 0) {
 		gDPSetTextureImage( G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, pSprite->tlutPtr );
@@ -2054,6 +2056,10 @@ void gSPSprite2DBase(u32 _base)
 		f32 ult = pSprite->imageY;
 		f32 lrs = uls + pSprite->imageW;
 		f32 lrt = ult + pSprite->imageH;
+		if (scaleY != 1.0f) {
+			lrs -= 1.0f;
+			lrt -= 1.0f;
+		}
 
 		// Hack for WCW Nitro.
 		if ((config.generalEmulation.hacks & hack_WCWNitro) != 0) {
@@ -2100,6 +2106,10 @@ void gSPSprite2DBase(u32 _base)
 
 		if (pSprite->stride > 0)
 			drawer.drawScreenSpaceTriangle(4);
+
+		DebugMsg(DEBUG_NORMAL,
+			"gSPSprite2DDraw ulx: %.02f, uly: %.02f, lrx: %.02f, lry: %.02f, z: %.02f, uls: %.02f, ult: %.02f, lrs: %.02f, lrt: %.02f\n",
+			ulx, uly, lrx, lry, z, uls, ult, lrs, lrt);
 	} while (RSP.nextCmd == 0xBD || RSP.nextCmd == 0xBE);
 }
 
