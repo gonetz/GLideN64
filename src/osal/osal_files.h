@@ -34,19 +34,18 @@ extern "C" {
 #define OSAL_DIR_SEPARATOR_CHAR      L'/'
 
 #if defined(OS_WINDOWS)
-#define EXPORT	__declspec(dllexport)
-#define CALL		__cdecl
 #ifndef PATH_MAX
 #define PATH_MAX _MAX_PATH
 #endif
 #define strdup _strdup
 #else  /* Not WIN32 */
-#define EXPORT 	__attribute__((visibility("default")))
-#define CALL
 #ifndef PATH_MAX
 #define PATH_MAX 260
 #endif
 #endif
+
+#define EXPORT
+#define CALL
 
 // Returns 1 if name contains path to a directory, 0 otherwise
 EXPORT int CALL osal_is_directory(const wchar_t* name);

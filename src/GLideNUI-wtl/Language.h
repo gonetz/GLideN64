@@ -18,7 +18,8 @@ enum languageStringID
 	TAB_FRAME_BUFFER = 1002,
 	TAB_TEXTURE_ENHANCEMENT = 1003,
 	TAB_OSD = 1004,
-	TAB_DEBUG = 1005,
+	TAB_ANGLE = 1005,
+	TAB_DEBUG = 1006,
 	CFG_SAVE_SETTINGS_FOR = 1010,
 	CFG_SETTINGS_PROFILE = 1011,
 	CFG_REMOVE = 1012,
@@ -244,6 +245,11 @@ enum languageStringID
 	ABOUT_AUTHOR_GLES2N64 = 9012,
 	ABOUT_AUTHOR_GLIDEHQ = 9013,
 	ABOUT_AUTHOR_Z64 = 9014,
+
+	/*********************************************************************************
+	* ANGLE																		  *
+	*********************************************************************************/
+	ANGLE_RENDERER = 10000,
 };
 
 struct LanguageFile

@@ -50,31 +50,17 @@ DisplayWindow & DisplayWindow::get()
 	return video;
 }
 
+#define EGL_PLATFORM_ANGLE_ANGLE          0x3202
+#define EGL_PLATFORM_ANGLE_TYPE_ANGLE     0x3203
+
+#define EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE 0x3207
+#define EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE 0x3208
+#define EGL_PLATFORM_ANGLE_D3D11ON12_ANGLE 0x3488
+#define EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE 0x320D
+#define EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE 0x3450
+
 bool DisplayWindowWindows::_start()
 {
-	int pixelFormat;
-
-	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),    // size of this pfd
-		1,                                // version number
-		PFD_DRAW_TO_WINDOW |              // support window
-		PFD_SUPPORT_OPENGL |              // support OpenGL
-		PFD_DOUBLEBUFFER,                 // double buffered
-		PFD_TYPE_RGBA,                    // RGBA type
-		32,								  // color depth
-		0, 0, 0, 0, 0, 0,                 // color bits ignored
-		0,                                // no alpha buffer
-		0,                                // shift bit ignored
-		0,                                // no accumulation buffer
-		0, 0, 0, 0,                       // accum bits ignored
-		32,								  // z-buffer
-		0,                                // no stencil buffer
-		0,                                // no auxiliary buffer
-		PFD_MAIN_PLANE,                   // main layer
-		0,                                // reserved
-		0, 0, 0                           // layer masks ignored
-	};
-
 	if (hWnd == NULL)
 		hWnd = GetActiveWindow();
 
@@ -83,20 +69,25 @@ bool DisplayWindowWindows::_start()
 		return false;
 	}
 
-	EGLint dispOptions[] = { EGL_NONE }; // 0x3451, 1,
-	eglDisplay = eglGetDisplay(hDC); //eglGetPlatformDisplayEXT(0x3202, hDC, dispOptions);
+	int renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+	int directComposition = renderer == EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE ? true : false;
+
+	EGLint dispOptions[] = { EGL_PLATFORM_ANGLE_TYPE_ANGLE, renderer, EGL_NONE };
+	eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, hDC, dispOptions); // eglGetDisplay(hDC);
 	EGLint eglVersionMajor, eglVersionMinor;
 
 	if (!eglInitialize(eglDisplay, &eglVersionMajor, &eglVersionMinor))
 	{
-		MessageBox(hWnd, L"eglInitialize failed", pluginNameW, MB_ICONERROR | MB_OK);
+		int err = eglGetError();
+		MessageBox(hWnd, (L"eglInitialize failed: " + std::to_wstring(err)).c_str(), pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
 
 	if (!eglBindAPI(EGL_OPENGL_ES_API))
 	{
-		MessageBox(hWnd, L"eglBindAPI failed", pluginNameW, MB_ICONERROR | MB_OK);
+		int err = eglGetError();
+		MessageBox(hWnd, (L"eglBindAPI failed: " + std::to_wstring(err)).c_str(), pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
@@ -123,16 +114,23 @@ bool DisplayWindowWindows::_start()
 	EGLConfig windowConfig;
 	if (!eglChooseConfig(eglDisplay, configAttributes, &windowConfig, 1, &numConfigs))
 	{
-		MessageBox(hWnd, L"eglChooseConfig failed", pluginNameW, MB_ICONERROR | MB_OK);
+		int err = eglGetError();
+		MessageBox(hWnd, (L"eglChooseConfig failed: " + std::to_wstring(err)).c_str(), pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
 
-	EGLint surfaceAttributes[] = { 0x33A5, EGL_TRUE, EGL_NONE }; // 0x33A5, EGL_TRUE, 
+	EGLint surfaceAttributes[] = { EGL_NONE, EGL_NONE, EGL_NONE };
+	if (directComposition)
+	{
+		surfaceAttributes[0] = 0x33A5;
+		surfaceAttributes[1] = EGL_TRUE;
+	}
 	eglSurface = eglCreateWindowSurface(eglDisplay, windowConfig, hWnd, surfaceAttributes);
 	if (!eglSurface)
 	{
-		MessageBox(hWnd, L"eglCreateWindowSurface failed", pluginNameW, MB_ICONERROR | MB_OK);
+		int err = eglGetError();
+		MessageBox(hWnd, (L"eglCreateWindowSurface failed: " + std::to_wstring(err)).c_str(), pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}
@@ -141,7 +139,8 @@ bool DisplayWindowWindows::_start()
 	eglContext = eglCreateContext(eglDisplay, windowConfig, NULL, contextAttributes);
 	if (!eglContext)
 	{
-		MessageBox(hWnd, L"eglContext failed", pluginNameW, MB_ICONERROR | MB_OK);
+		int err = eglGetError();
+		MessageBox(hWnd, (L"eglCreateContext failed: " + std::to_wstring(err)).c_str(), pluginNameW, MB_ICONERROR | MB_OK);
 		_stop();
 		return false;
 	}

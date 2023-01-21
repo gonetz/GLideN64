@@ -188,6 +188,16 @@ struct Config
 		u32 dumpMode;
 	} debug;
 
+	enum AngleRenderer {
+		arDirectX11 = 0,
+		arOpenGL = 1,
+		arVulkan = 2
+	};
+
+	struct {
+		u32 renderer;
+	} angle;
+
 	void resetToDefaults();
 	void validate();
 };

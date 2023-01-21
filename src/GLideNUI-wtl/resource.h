@@ -20,6 +20,7 @@
 #define IDD_TAB_OSD                     113
 #define IDD_TAB_DEBUG                   114
 #define IDI_ICON_INFO                   115
+#define IDD_TAB_DEBUG2                  115
 #define IDI_ICON_WARNING                116
 #define IDI_OSD_TOP_LEFT                117
 #define IDI_OSD_TOP                     118
@@ -30,6 +31,10 @@
 #define IDI_OSD_BOTTOM                  123
 #define IDI_OSD_BOTTOM_RIGHT            124
 #define IDD_INPUT_DIALOG                128
+#define IDD_TAB_ANGLE                   129
+#define IDR_RCDATA_CUSTOM_DEFAULT       133
+#define IDR_RCDATA2                     134
+#define IDR_RCDATA_DEFAULT              134
 #define IDC_ABOUT_TITLE                 1001
 #define IDC_TABS                        1002
 #define IDC_CONTRIBUTORS                1003
@@ -213,17 +218,21 @@
 #define IDC_TXT_AUTHORS                 1184
 #define IDC_TXT_AUTHOR_GLN64            1185
 #define IDC_TXT_                        1186
+#define IDC_RADIO_DIRECT3D              1186
 #define IDC_TXT_AUTHOR_GLES2N64         1187
+#define IDC_RENDERER                    1187
 #define IDC_TXT_AUTHOR_GLIDEHQ          1188
+#define IDC_RADIO_OPENGL                1188
 #define IDC_TXT_AUTHOR_Z64              1189
+#define IDC_RADIO_VULKAN                1189
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1184
+#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_COMMAND_VALUE         40002
+#define _APS_NEXT_CONTROL_VALUE         1188
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

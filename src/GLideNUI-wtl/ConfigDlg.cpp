@@ -8,6 +8,7 @@
 #include "config-framebuffer.h"
 #include "config-texture.h"
 #include "config-osd.h"
+#include "config-angle.h"
 #include "config-debug.h"
 #include "util/util.h"
 #include "InputDialog.h"
@@ -65,6 +66,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	m_VideoTab = new CVideoTab(*this, *m_FrameBufferTab, m_strIniPath.c_str());
 	m_EmulationTab = new CEmulationTab(*this);
 	m_OsdTab = new COsdTab();
+	m_AngleTab = new CAngleTab();
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
 	AddTab(TAB_VIDEO, m_VideoTab);
@@ -72,6 +74,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	AddTab(TAB_FRAME_BUFFER, m_FrameBufferTab);
 	AddTab(TAB_TEXTURE_ENHANCEMENT, new CTextureEnhancementTab);
 	AddTab(TAB_OSD, m_OsdTab);
+	AddTab(TAB_ANGLE, m_AngleTab);
 #ifdef DEBUG_DUMP
 	AddTab(TAB_DEBUG, new CDebugTab);
 #endif

@@ -93,6 +93,9 @@
     <ClCompile Include="..\..\src\GLideNUI-wtl\util\StdString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI-wtl\config-angle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI-wtl\About.h">
@@ -248,6 +251,9 @@
     <ClInclude Include="..\..\src\GLideNUI-wtl\util\StdString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI-wtl\config-angle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\src\GLideNUI\Resources\Icon.ico">
@@ -294,5 +300,13 @@
     <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ini\GLideN64.custom.ini">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\ini\GLideN64.ini">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

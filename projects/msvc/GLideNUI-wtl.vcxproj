@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI-wtl\About.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI-wtl\config-angle.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\config-debug.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\config-emulation.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\config-framebuffer.cpp" />
@@ -121,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI-wtl\About.h" />
+    <ClInclude Include="..\..\src\GLideNUI-wtl\config-angle.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\config-debug.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\config-emulation.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\config-framebuffer.h" />
@@ -189,6 +191,10 @@
     <Image Include="..\..\src\GLideNUI\TopRight.ico" />
     <Image Include="..\..\src\GLideNUI\Up.ico" />
     <Image Include="..\..\src\GLideNUI\Warning.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ini\GLideN64.custom.ini" />
+    <None Include="..\..\ini\GLideN64.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

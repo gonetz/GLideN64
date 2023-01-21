@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 6e965691e..b23eece6b 100644
+index 6e965691e..57608b911 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -1453,6 +1453,20 @@ angle_static_library("libGLESv2_static") {
+@@ -1453,6 +1453,21 @@ angle_static_library("libGLESv2_static") {
    public_deps = [ ":libANGLE" ]
  }
  
@@ -15,6 +15,7 @@ index 6e965691e..b23eece6b 100644
 +    "EGLAPI=",
 +    "GL_APICALL=",
 +    "GL_API=",
++    "ANGLE_PLATFORM_EXPORT=",
 +  ]
 +  complete_static_lib = true
 +  public_deps = [ ":libANGLE", "//build/config:shared_library_deps" ] 

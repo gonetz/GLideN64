@@ -10,6 +10,7 @@ class CFrameBufferTab;
 class CVideoTab;
 class CEmulationTab;
 class COsdTab;
+class CAngleTab;
 
 class CConfigDlg :
 	public CDialogImpl<CConfigDlg>
@@ -73,6 +74,7 @@ protected:
 	CVideoTab * m_VideoTab;
 	CEmulationTab * m_EmulationTab;
 	COsdTab * m_OsdTab;
+	CAngleTab * m_AngleTab;
 	uint32_t m_TabLeft, m_ProfileLeft;
 	bool m_Saved;
 };

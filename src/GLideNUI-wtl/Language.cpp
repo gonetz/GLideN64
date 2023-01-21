@@ -15,6 +15,7 @@ void LoadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TAB_FRAME_BUFFER, "Frame buffer"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TAB_TEXTURE_ENHANCEMENT, "Texture enhancement"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TAB_OSD, "OSD"));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(TAB_ANGLE, "ANGLE"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(TAB_DEBUG, "Debug"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(CFG_SAVE_SETTINGS_FOR, "Save settings for:"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(CFG_SETTINGS_PROFILE, "Settings profile:"));

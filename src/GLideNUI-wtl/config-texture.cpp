@@ -235,9 +235,12 @@ void CTextureEnhancementTab::SaveSettings()
 	config.textureFilter.txFilterIgnoreBG = CButton(GetDlgItem(IDC_CHK_IGNORE_BACKGROUNDS)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.textureFilter.txHiresEnable = CButton(GetDlgItem(IDC_CHK_TEXTURE_PACK)).GetCheck() == BST_CHECKED ? 1 : 0;
 
-	SaveDirectory(IDC_TEX_PACK_PATH_EDIT, config.textureFilter.txPath);
-	SaveDirectory(IDC_TEX_CACHE_PATH_EDIT, config.textureFilter.txCachePath);
-	SaveDirectory(IDC_TEX_DUMP_PATH_EDIT, config.textureFilter.txDumpPath);
+	if (config.textureFilter.txHiresEnable)
+	{
+		SaveDirectory(IDC_TEX_PACK_PATH_EDIT, config.textureFilter.txPath);
+		SaveDirectory(IDC_TEX_CACHE_PATH_EDIT, config.textureFilter.txCachePath);
+		SaveDirectory(IDC_TEX_DUMP_PATH_EDIT, config.textureFilter.txDumpPath);
+	}
 
 	config.textureFilter.txHiresFullAlphaChannel = CButton(GetDlgItem(IDC_CHK_ALPHA_CHANNEL)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.textureFilter.txHresAltCRC = CButton(GetDlgItem(IDC_CHK_ALTERNATIVE_CRC)).GetCheck() == BST_CHECKED ? 1 : 0;

@@ -498,6 +498,19 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Down.ico" />
+    <Image Include="..\..\src\GLideNUI\Icon-Original.ico" />
+    <Image Include="..\..\src\GLideNUI\Info.ico" />
+    <Image Include="..\..\src\GLideNUI\Left.ico" />
+    <Image Include="..\..\src\GLideNUI\Right.ico" />
+    <Image Include="..\..\src\GLideNUI\TopLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\TopRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Up.ico" />
+    <Image Include="..\..\src\GLideNUI\Warning.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
