@@ -1022,8 +1022,11 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 		while (fontIt.hasNext()) {
 			QString font = fontIt.next();
 			int id = QFontDatabase::addApplicationFont(font);
-			QString fontListFamily = QFontDatabase::applicationFontFamilies(id).at(0);
-			internalFontList[fontListFamily].append(font);
+			QStringList fontListFamilies = QFontDatabase::applicationFontFamilies(id);
+			if (!fontListFamilies.isEmpty()) {
+				QString fontListFamily = fontListFamilies.at(0);
+				internalFontList[fontListFamily].append(font);
+			}
 		}
 
 		QMap<QString, QStringList>::const_iterator i;
