@@ -84,6 +84,8 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
 	m_TabLeft = Rect.left;
 
+	CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_CHECKED);
 	if (m_romName != NULL) {
 		std::wstring RomName(ToUTF16(m_romName));
 		CWindow dlgItem = GetDlgItem(IDC_GAME_PROFILE_NAME);
@@ -101,12 +103,8 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		dlgItem.SetWindowText(RomName.c_str());
 
 		m_ProfileLeft = Rect.right + 10;
-
-		CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_CHECKED);
-		CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_UNCHECKED);
+		
 	} else {
-		CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
-		CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_CHECKED);
 		GetDlgItem(IDC_SETTINGS_PROFILE_STATIC).GetWindowRect(&Rect);
 		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
 		m_ProfileLeft = Rect.left;

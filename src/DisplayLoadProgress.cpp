@@ -11,6 +11,8 @@
 
 void displayLoadProgress(const wchar_t *format, ...)
 {
+	return;
+
 	va_list args;
 	wchar_t wbuf[INFO_BUF];
 	char buf[INFO_BUF];

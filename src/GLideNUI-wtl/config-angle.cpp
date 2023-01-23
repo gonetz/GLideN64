@@ -13,7 +13,6 @@ BOOL CAngleTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/) {
 }
 
 void CAngleTab::ApplyLanguage(void) {
-	SetDlgItemTextW(IDC_RENDERER, wGS(ANGLE_RENDERER).c_str());
 }
 
 LRESULT CAngleTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -21,17 +20,30 @@ LRESULT CAngleTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 }
 
 void CAngleTab::LoadSettings(bool /*blockCustomSettings*/) {
-	//CButton(GetDlgItem(IDC_CHK_DUMP_LOW)).SetCheck((config.debug.dumpMode & DEBUG_LOW) != 0 ? BST_CHECKED : BST_UNCHECKED);
-	//CButton(GetDlgItem(IDC_CHK_DUMP_NORMAL)).SetCheck((config.debug.dumpMode & DEBUG_NORMAL) != 0 ? BST_CHECKED : BST_UNCHECKED);
-	//CButton(GetDlgItem(IDC_CHK_DUMP_DETAIL)).SetCheck((config.debug.dumpMode & DEBUG_DETAIL) != 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_RADIO_DIRECT3D)).SetCheck(config.angle.renderer == Config::arDirectX11 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_RADIO_VULKAN)).SetCheck(config.angle.renderer == Config::arVulkan ? BST_CHECKED : BST_UNCHECKED);
+#if 0
+	CButton(GetDlgItem(IDC_RADIO_OPENGL)).SetCheck(config.angle.renderer == Config::arOpenGL ? BST_CHECKED : BST_UNCHECKED);
+#endif
+	CButton(GetDlgItem(IDC_CHECK_DIRECT_COMPOSITION)).SetCheck((config.angle.directComposition) != 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_CHECK_ENABLE_FRAGMENT_DEPTH_WRITE)).SetCheck((config.generalEmulation.enableFragmentDepthWrite) != 0 ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void CAngleTab::SaveSettings() {
-	//config.debug.dumpMode = 0;
-	//if (CButton(GetDlgItem(IDC_CHK_DUMP_LOW)).GetCheck() == BST_CHECKED)
-	//	config.debug.dumpMode |= DEBUG_LOW;
-	//if (CButton(GetDlgItem(IDC_CHK_DUMP_NORMAL)).GetCheck() == BST_CHECKED)
-	//	config.debug.dumpMode |= DEBUG_NORMAL;
-	//if (CButton(GetDlgItem(IDC_CHK_DUMP_DETAIL)).GetCheck() == BST_CHECKED)
-	//	config.debug.dumpMode |= DEBUG_DETAIL;
+	if (CButton(GetDlgItem(IDC_RADIO_DIRECT3D)).GetCheck() == BST_CHECKED)
+	{
+		config.angle.renderer = Config::arDirectX11;
+	}
+	if (CButton(GetDlgItem(IDC_RADIO_VULKAN)).GetCheck() == BST_CHECKED)
+	{
+		config.angle.renderer = Config::arVulkan;
+	}
+#if 0
+	if (CButton(GetDlgItem(IDC_RADIO_OPENGL)).GetCheck() == BST_CHECKED)
+	{
+		config.angle.renderer = Config::arOpenGL;
+	}
+#endif
+	config.angle.directComposition = CButton(GetDlgItem(IDC_CHECK_DIRECT_COMPOSITION)).GetCheck() == BST_CHECKED;
+	config.generalEmulation.enableFragmentDepthWrite = CButton(GetDlgItem(IDC_CHECK_ENABLE_FRAGMENT_DEPTH_WRITE)).GetCheck() == BST_CHECKED;
 }

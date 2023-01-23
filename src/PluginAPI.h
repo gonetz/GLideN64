@@ -11,23 +11,12 @@
 #endif
 
 #ifdef RSPTHREAD
-#include <thread>
-#include <condition_variable>
+#include "QueueExecutor.h"
 #endif
-
-class APICommand;
 
 class PluginAPI
 {
 public:
-#ifdef RSPTHREAD
-	~PluginAPI()
-	{
-		delete m_pRspThread;
-		m_pRspThread = NULL;
-	}
-#endif
-
 	// Common
 	void MoveScreen(int /*_xpos*/, int /*_ypos*/) {}
 	void ViStatusChanged() {}
@@ -46,6 +35,8 @@ public:
 	void GetUserDataPath(wchar_t * _strPath);
 	void GetUserCachePath(wchar_t * _strPath);
 	bool isRomOpen() const { return m_bRomOpen; }
+
+	void Restart();
 
 #ifndef MUPENPLUSAPI
 	// Zilmar
@@ -92,10 +83,6 @@ public:
 private:
 	PluginAPI()
 		: m_bRomOpen(false)
-#ifdef RSPTHREAD
-		, m_pRspThread(NULL)
-		, m_pCommand(nullptr)
-#endif
 	{}
 	PluginAPI(const PluginAPI &) = delete;
 
@@ -103,13 +90,8 @@ private:
 
 	bool m_bRomOpen;
 #ifdef RSPTHREAD
-	void _callAPICommand(APICommand & _command);
-	std::mutex m_rspThreadMtx;
-	std::mutex m_pluginThreadMtx;
-	std::condition_variable_any m_rspThreadCv;
-	std::condition_variable_any m_pluginThreadCv;
-	std::thread * m_pRspThread;
-	APICommand * m_pCommand;
+	std::mutex m_initMutex;
+	QueueExecutor m_executor;
 #endif
 };
 

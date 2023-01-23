@@ -200,12 +200,12 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <Link>
-      <AdditionalDependencies>dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Cfgmgr32.lib;dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <Link>
-      <AdditionalDependencies>dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Release\lib\GLideNUI-wtl.lib;freetype253MT.lib</AdditionalDependencies>
+      <AdditionalDependencies>Cfgmgr32.lib;dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Release\lib\GLideNUI-wtl.lib;freetype253MT.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus'">
@@ -214,6 +214,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BufferSecurityCheck>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ControlFlowGuard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -225,6 +226,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\CombinerKey.cpp" />
     <ClCompile Include="..\..\src\CommonPluginAPI.cpp" />
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
+    <ClCompile Include="..\..\src\common\QueueExecutor.cpp" />
     <ClCompile Include="..\..\src\Config.cpp" />
     <ClCompile Include="..\..\src\convert.cpp" />
     <ClCompile Include="..\..\src\CRC_OPT.cpp" />
@@ -444,6 +446,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Platform.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
+    <ClInclude Include="..\..\src\QueueExecutor.h" />
     <ClInclude Include="..\..\src\RDP.h" />
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\RSP.h" />

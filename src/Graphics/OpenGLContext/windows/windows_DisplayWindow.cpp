@@ -59,21 +59,50 @@ DisplayWindow & DisplayWindow::get()
 #define EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE 0x320D
 #define EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE 0x3450
 
+#define EGL_DIRECT_COMPOSITION_ANGLE 0x33A5
+
 bool DisplayWindowWindows::_start()
 {
 	if (hWnd == NULL)
 		hWnd = GetActiveWindow();
 
-	if ((hDC = GetDC( hWnd )) == NULL) {
-		MessageBox( hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK );
+	if ((hDC = GetDC(hWnd)) == NULL) {
+		MessageBox(hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK);
 		return false;
 	}
 
-	int renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
-	int directComposition = renderer == EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE ? true : false;
+	std::vector<EGLint> dispOptions;
+	dispOptions.reserve(6);
 
-	EGLint dispOptions[] = { EGL_PLATFORM_ANGLE_TYPE_ANGLE, renderer, EGL_NONE };
-	eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, hDC, dispOptions); // eglGetDisplay(hDC);
+	dispOptions.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
+	EGLint renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+	switch (config.angle.renderer)
+	{
+	default:
+	case Config::arDirectX11:
+		renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+		break;
+	case Config::arVulkan:
+		renderer = EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE;
+		break;
+	case Config::arOpenGL:
+		renderer = EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
+		break;
+	}
+	dispOptions.push_back(renderer);
+
+#if 0
+	if (renderer == EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE && config.angle.dx11to12)
+	{
+		dispOptions.push_back(EGL_PLATFORM_ANGLE_D3D11ON12_ANGLE);
+		dispOptions.push_back(EGL_TRUE);
+	}
+#endif
+
+	dispOptions.push_back(EGL_NONE);
+	dispOptions.push_back(EGL_NONE);
+
+	eglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, hDC, dispOptions.data());
 	EGLint eglVersionMajor, eglVersionMinor;
 
 	if (!eglInitialize(eglDisplay, &eglVersionMajor, &eglVersionMinor))
@@ -120,12 +149,14 @@ bool DisplayWindowWindows::_start()
 		return false;
 	}
 
-	EGLint surfaceAttributes[] = { EGL_NONE, EGL_NONE, EGL_NONE };
+	EGLint surfaceAttributes[] = { EGL_NONE, EGL_NONE, EGL_NONE, EGL_NONE };
+	bool directComposition = renderer == EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE && config.angle.directComposition;
 	if (directComposition)
 	{
-		surfaceAttributes[0] = 0x33A5;
+		surfaceAttributes[0] = EGL_DIRECT_COMPOSITION_ANGLE;
 		surfaceAttributes[1] = EGL_TRUE;
 	}
+
 	eglSurface = eglCreateWindowSurface(eglDisplay, windowConfig, hWnd, surfaceAttributes);
 	if (!eglSurface)
 	{

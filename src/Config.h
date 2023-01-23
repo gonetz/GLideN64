@@ -190,12 +190,13 @@ struct Config
 
 	enum AngleRenderer {
 		arDirectX11 = 0,
-		arOpenGL = 1,
-		arVulkan = 2
+		arVulkan = 1,
+		arOpenGL = 2,
 	};
 
 	struct {
 		u32 renderer;
+		u32 directComposition;
 	} angle;
 
 	void resetToDefaults();

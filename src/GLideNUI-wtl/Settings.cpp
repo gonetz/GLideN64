@@ -130,6 +130,11 @@ void _loadSettings(GlSettings & settings)
 	settings.beginGroup("debug");
 	config.debug.dumpMode = settings.value("dumpMode", config.debug.dumpMode).toInt();
 	settings.endGroup();
+
+	settings.beginGroup("angle");
+	config.angle.renderer = settings.value("renderer", config.angle.renderer).toInt();
+	config.angle.directComposition = settings.value("directComposition", config.angle.directComposition).toInt();
+	settings.endGroup();
 }
 
 void loadSettings(const char * _strIniFolder)
@@ -292,6 +297,11 @@ void writeSettings(const char * _strIniFolder)
 
 		settings.beginGroup("debug");
 		settings.setValue("dumpMode", config.debug.dumpMode);
+		settings.endGroup();
+
+		settings.beginGroup("angle");
+		settings.setValue("renderer", config.angle.renderer);
+		settings.setValue("directComposition", config.angle.directComposition);
 		settings.endGroup();
 
 		settings.endGroup();
@@ -472,6 +482,11 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 	WriteCustomSetting2(onScreenDisplay, showInternalResolution, internalResolution);
 	WriteCustomSetting2(onScreenDisplay, showRenderingResolution, renderingResolution);
 	WriteCustomSetting2(onScreenDisplay, osdPos, pos);
+	settings.endGroup();
+
+	settings.beginGroup("angle");
+	WriteCustomSetting(angle, renderer);
+	WriteCustomSetting(angle, directComposition);
 	settings.endGroup();
 
 	settings.endGroup();

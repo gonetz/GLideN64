@@ -404,6 +404,9 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\QueueExecutor.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -768,6 +771,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ANGLE\entry_points_egl_ext_autogen.h">
       <Filter>Header Files\ANGLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\QueueExecutor.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

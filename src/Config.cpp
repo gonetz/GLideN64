@@ -119,6 +119,9 @@ void Config::resetToDefaults()
 	onScreenDisplay.pos = posBottomLeft;
 
 	debug.dumpMode = 0;
+
+	angle.renderer = arDirectX11;
+	angle.directComposition = 0;
 }
 
 bool isHWLightingAllowed()
@@ -138,5 +141,10 @@ void Config::validate()
 	} else {
 		if (graphics2D.enableNativeResTexrects != 0)
 			graphics2D.correctTexrectCoords = tcDisable;
+	}
+
+	if (config.angle.renderer == arDirectX11)
+	{
+		config.generalEmulation.enableFragmentDepthWrite = 0;
 	}
 }

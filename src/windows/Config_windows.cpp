@@ -20,7 +20,9 @@ void Config_DoConfig(/*HWND hParent*/)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
 	config.validate();
 	if (bRestart)
-		dwnd().restart();
+	{
+		PluginAPI::get().Restart();
+	}
 	ConfigOpen = false;
 }
 
