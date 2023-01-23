@@ -70,12 +70,15 @@ namespace opengl {
 							 _params.data);
 			} else {
 				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D_MULTISAMPLE, _params.handle);
+				abort();
+				/*
 				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
 										_params.msaaLevel,
 										GLenum(_params.internalFormat),
 										_params.width,
 										_params.height,
 										false);
+										*/
 			}
 		}
 

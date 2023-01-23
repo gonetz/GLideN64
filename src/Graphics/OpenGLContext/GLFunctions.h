@@ -44,7 +44,7 @@ extern "C" void KHRONOS_APIENTRY glBufferStorageEXT(GLenum target, GLsizeiptr si
 #define glTextureParameteri(...) assert(0 && "glTextureParameteri")
 #define glTextureParameterf(...) assert(0 && "glTextureParameterf")
 #define glTextureBarrierNV(...) assert(0 && "glTextureBarrierNV")
-#define glTexImage2DMultisample(...) assert(0 && "glTexImage2DMultisample")
+// #define glTexImage2DMultisample(...) assert(0 && "glTexImage2DMultisample")
 #define glNamedFramebufferTexture(...) assert(0 && "glNamedFramebufferTexture")
 #define glCreateTextures(...) assert(0 && "glCreateTextures")
 #define glCreateFramebuffers(...) assert(0 && "glCreateFramebuffers")

@@ -999,6 +999,16 @@ void FrameBufferList::_renderScreenSizeBuffer()
 
 	TextureParam filter = textureParameters::FILTER_LINEAR;
 
+	ObjectHandle readBuffer;
+	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
+		pFilteredBuffer->resolveMultisampledTexture(true);
+		readBuffer = pFilteredBuffer->m_resolveFBO;
+		pBufferTexture = pFilteredBuffer->m_pResolveTexture;
+	}
+	else {
+		readBuffer = pFilteredBuffer->m_FBO;
+	}
+
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
 	blitParams.srcY0 = srcCoord[3];
@@ -1016,7 +1026,7 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
-	blitParams.readBuffer = pFilteredBuffer->m_FBO;
+	blitParams.readBuffer = readBuffer;
 
 	drawer.blitOrCopyTexturedRect(blitParams);
 

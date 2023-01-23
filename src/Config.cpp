@@ -146,5 +146,7 @@ void Config::validate()
 	if (config.angle.renderer == arDirectX11)
 	{
 		config.generalEmulation.enableFragmentDepthWrite = 0;
+		// TODO: Figure out MSAA on DX11
+		video.multisampling = 0;
 	}
 }
