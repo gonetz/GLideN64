@@ -60,7 +60,11 @@ set tVSPF=%ProgramFiles(x86)%
 if "%PROCESSOR_ARCHITECTURE%"=="x86" set tVSPF=%ProgramFiles%
 set "tVSPF=%tVSPF%\Microsoft Visual Studio"
 set tVSDS=Common7\Tools\VsDevCmd.bat
-set MOD=\Community\ \Enterprise\ \Professional\
+set "tVSWHERE=%tVSPF%\Installer\vswhere.exe"
+set MOD=\ \Community\ \Enterprise\ \Professional\
+if exist "%tVSWHERE%" (
+	for /f "usebackq tokens=*" %%U in (`"%tVSWHERE%" -latest -property installationPath`) do set tVSPF=%%U
+)
 goto vsbeg
 :vsenv
 	for %%V in (%MOD%) do (
@@ -69,7 +73,7 @@ goto vsbeg
 	goto:eof
 
 :vsbeg
-call :vsenv "\2019"
+call :vsenv
 call :vsenv "\2017"
 set MOD=\
 call :vsenv " 14.0"
@@ -141,7 +145,7 @@ set "PJ64PluginsDirQT%MOD%=%PJ64QT%"
 set "PJ64PluginsDirWTL%MOD%=%PJ64WTL%"
 set "Mupen64PluginsDir%MOD%=%M64CL%"
 
-set MOD=%random:~-1%
+set MOD=%RANDOM:~-1%
 if %MOD% LEQ 4 (set MOD=Lylat
 	) else if %MOD% GEQ 8 (set MOD=Kildean) else set MOD=Caryll
 
@@ -151,7 +155,7 @@ if %ESIM%==1 (
 	md "translations\wtl" 2>nul
 	cd.>"translations\wtl\%MOD%.Lang"
 	pushd "%BUILDROUTE%"
-	for /f "tokens=*" %%S in ('dir /ad /b "%REV%*%IDTS%"') do (
+	for /f "tokens=*" %%S in ('dir /ad /b %REV%*%IDTS%') do (
 		if "%%S" NEQ "" rd /s /q "%%S"
 	)
 	del /f /q "%REV%*%IDTS%.%EXT%" 2>nul
@@ -252,8 +256,8 @@ if "%ARCH%"=="x64" (
 set MSG=DONE!^& echo Path to the %MOD%:^& echo %CD%
 %EBQ%
 :err
-set WTF=%errorlevel%
-set DMN=%EXIT% %WTF%
+set WTF=%ERRORLEVEL%
+set DMN=%EXIT% %ERRORLEVEL%
 echo.
 echo %MSG%
 %EXIT% %WTF%
