@@ -1,6 +1,10 @@
 #include <math.h>
 #include "3DMath.h"
 
+#ifdef WIN32_ASM
+#undef WIN32_ASM
+#endif
+
 void MultMatrix(float m0[4][4], float m1[4][4], float dest[4][4])
 {
 	int i;

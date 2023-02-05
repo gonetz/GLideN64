@@ -10,8 +10,8 @@ void ConfigInit(void* hinst);
 void ConfigCleanup(void);
 #endif
 
-extern "C" void __cdecl loader_initialize(void);
-extern "C" void __cdecl loader_release(void);
+extern "C" void loader_initialize(void);
+extern "C" void loader_release(void);
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpvReserved)
 {

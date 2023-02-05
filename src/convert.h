@@ -3,6 +3,10 @@
 
 #include "Types.h"
 
+#ifdef WIN32_ASM
+#undef WIN32_ASM
+#endif
+
 extern const volatile unsigned char Five2Eight[32];
 extern const volatile unsigned char Four2Eight[16];
 extern const volatile unsigned char Three2Four[8];

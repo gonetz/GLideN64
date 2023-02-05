@@ -15,6 +15,10 @@ void Normalize(float v[3]);
 float DotProduct(const float v0[3], const float v1[3]);
 void CopyMatrix( float m0[4][4], float m1[4][4]);
 
+#ifdef WIN32_ASM
+#undef WIN32_ASM
+#endif
+
 inline float DotProduct(const float v0[3], const float v1[3])
 {
 	float	dot;
