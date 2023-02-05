@@ -592,9 +592,9 @@ FT_BEGIN_HEADER
 #ifndef FT_EXPORT
 
 #ifdef __cplusplus
-#define FT_EXPORT( x )  extern "C"  x
+#define FT_EXPORT( x )  extern "C" __cdecl x
 #else
-#define FT_EXPORT( x )  extern  x
+#define FT_EXPORT( x )  extern __cdecl x
 #endif
 
 #endif /* !FT_EXPORT */

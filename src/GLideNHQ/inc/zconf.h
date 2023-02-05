@@ -377,7 +377,7 @@
 #  define ZEXTERN extern
 #endif
 #ifndef ZEXPORT
-#  define ZEXPORT
+#  define ZEXPORT __cdecl
 #endif
 #ifndef ZEXPORTVA
 #  define ZEXPORTVA

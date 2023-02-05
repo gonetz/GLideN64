@@ -407,6 +407,9 @@
     <ClCompile Include="..\..\src\common\QueueExecutor.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\xxHash\xxhash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -791,5 +794,9 @@
     <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
     <Image Include="..\..\src\GLideNUI\Down.ico" />
     <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ini\GLideN64.custom.ini" />
+    <None Include="..\..\ini\GLideN64.ini" />
   </ItemGroup>
 </Project>
