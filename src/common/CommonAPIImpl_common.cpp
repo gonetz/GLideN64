@@ -29,10 +29,7 @@ void PluginAPI::ProcessDList()
 {
 	LOG(LOG_APIFUNC, "ProcessDList\n");
 #ifdef RSPTHREAD
-	m_executor.sync([](auto&)
-	{
-		RSP_ProcessDList();
-	});
+	m_executor.sync(RSP_ProcessDList);
 #else
 	RSP_ProcessDList();
 #endif
@@ -42,10 +39,7 @@ void PluginAPI::ProcessRDPList()
 {
 	LOG(LOG_APIFUNC, "ProcessRDPList\n");
 #ifdef RSPTHREAD
-	m_executor.sync([](auto&)
-	{
-		RDP_ProcessRDPList();
-	});
+	m_executor.sync(RDP_ProcessRDPList);
 #else
 	RDP_ProcessRDPList();
 #endif
@@ -126,10 +120,7 @@ void PluginAPI::UpdateScreen()
 {
 	LOG(LOG_APIFUNC, "UpdateScreen\n");
 #ifdef RSPTHREAD
-	m_executor.sync([](auto&)
-	{
-		VI_UpdateScreen();
-	});
+	m_executor.async(VI_UpdateScreen);
 #else
 	VI_UpdateScreen();
 #endif
@@ -187,7 +178,7 @@ void PluginAPI::FBWrite(unsigned int _addr, unsigned int _size)
 void PluginAPI::FBRead(unsigned int _addr)
 {
 #ifdef RSPTHREAD
-	m_executor.sync([=](auto&)
+	m_executor.sync([=]()
 	{
 		FBInfo::fbInfo.Read(_addr);
 	});
@@ -210,7 +201,7 @@ void PluginAPI::FBWList(FrameBufferModifyEntry * _plist, unsigned int _size)
 void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
 {
 #ifdef RSPTHREAD
-	m_executor.sync([=](auto&)
+	m_executor.sync([=]()
 	{
 		dwnd().readScreen(_dest, _width, _height);
 	});

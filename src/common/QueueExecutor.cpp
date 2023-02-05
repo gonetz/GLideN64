@@ -6,7 +6,7 @@ QueueExecutor::QueueExecutor()
 {
 }
 
-void QueueExecutor::syncInternal(SyncFn fn)
+void QueueExecutor::syncInternal(Fn fn)
 try
 {
     SyncTask task{ synch_, std::move(fn) };
@@ -22,7 +22,7 @@ catch (...)
 {
 }
 
-void QueueExecutor::sync(SyncFn fn)
+void QueueExecutor::sync(Fn fn)
 try
 {
     if (!acceptsTasks_)
@@ -34,7 +34,7 @@ catch (...)
 {
 }
 
-void QueueExecutor::asyncInternal(AsyncFn fn)
+void QueueExecutor::asyncInternal(Fn fn)
 try
 {
     auto task = std::make_unique<AsyncTask>(std::move(fn));
@@ -49,7 +49,7 @@ catch (...)
 {
 }
 
-void QueueExecutor::async(AsyncFn fn)
+void QueueExecutor::async(Fn fn)
 try
 {
     if (!acceptsTasks_)
@@ -61,7 +61,7 @@ catch (...)
 {
 }
 
-void QueueExecutor::asyncOnce(AsyncFn fn)
+void QueueExecutor::asyncOnce(Fn fn)
 try
 {
     if (!acceptsTasks_)

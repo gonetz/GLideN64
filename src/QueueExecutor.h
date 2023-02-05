@@ -125,16 +125,14 @@ public:
         SynchImports::WBAS_ADDR wakeByAddressSingle_;
     };
 
-    using SyncFn = std::function<void(Event&)>;
-    using AsyncFn = std::function<void()>;
-    using StopFn = std::function<void()>;
+    using Fn = std::function<void()>;
 
     QueueExecutor();
     ~QueueExecutor();
 
-    void sync(SyncFn);
-    void async(AsyncFn);
-    void asyncOnce(AsyncFn);
+    void sync(Fn);
+    void async(Fn);
+    void asyncOnce(Fn);
 
     void acceptTasks() { acceptsTasks_ = true; }
     void blockTasks() { acceptsTasks_ = false; }
@@ -143,14 +141,14 @@ private:
     class SyncTask
     {
     public:
-        explicit SyncTask(SynchImports& imports, SyncFn fn)
+        explicit SyncTask(SynchImports& imports, Fn fn)
         : event_(imports)
         , task_(fn)
         { }
 
         void run()
         { 
-            task_(event_);
+            task_();
             event_.notify();
         }
 
@@ -159,13 +157,13 @@ private:
 
     private:
         Event event_;
-        SyncFn task_;
+        Fn task_;
     };
 
     class AsyncTask
     {
     public:
-        AsyncTask(AsyncFn fn) : task_(fn)
+        AsyncTask(Fn fn) : task_(fn)
         { }
 
         void run()
@@ -174,7 +172,7 @@ private:
         }
 
     private:
-        AsyncFn task_;
+        Fn task_;
     };
 
     using SyncTaskPtr = SyncTask*;
@@ -195,6 +193,6 @@ private:
 
     void loop();
 
-    void syncInternal(SyncFn fn);
-    void asyncInternal(AsyncFn fn);
+    void syncInternal(Fn fn);
+    void asyncInternal(Fn fn);
 };
