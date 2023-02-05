@@ -172,7 +172,14 @@ void PluginAPI::ChangeWindow()
 
 void PluginAPI::FBWrite(unsigned int _addr, unsigned int _size)
 {
+#ifdef RSPTHREAD
+	m_executor.sync([=]()
+	{
+		FBInfo::fbInfo.Write(_addr, _size);
+	});
+#else
 	FBInfo::fbInfo.Write(_addr, _size);
+#endif
 }
 
 void PluginAPI::FBRead(unsigned int _addr)

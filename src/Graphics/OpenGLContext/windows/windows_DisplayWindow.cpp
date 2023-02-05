@@ -215,13 +215,19 @@ void DisplayWindowWindows::_swapBuffers()
 
 void DisplayWindowWindows::_saveScreenshot()
 {
-	unsigned char * pixelData = NULL;
+	unsigned char * rgbaPixelData = NULL;
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
 	glReadBuffer(GL_FRONT);
-	pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
-	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+	rgbaPixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 4);
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGBA, GL_UNSIGNED_BYTE, rgbaPixelData);
+	unsigned char* pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
+	for (int i = 0; i < m_screenWidth * m_screenHeight; i++)
+	{
+		for (int j = 0; j < 3; j++)
+			pixelData[3 * i + j] = rgbaPixelData[4 * i + j];
+	}
 	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
 		if (pBuffer != nullptr)
@@ -230,6 +236,7 @@ void DisplayWindowWindows::_saveScreenshot()
 	glReadBuffer(oldMode);
 	SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
 	free( pixelData );
+	free(rgbaPixelData);
 }
 
 void DisplayWindowWindows::_saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture)

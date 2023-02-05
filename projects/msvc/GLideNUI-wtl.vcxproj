@@ -77,6 +77,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VectorCall</CallingConvention>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
