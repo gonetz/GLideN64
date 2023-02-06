@@ -4,6 +4,7 @@
 #include <windows.h>
 
 extern HWND			hWnd;
+extern DWORD        hWndThread;
 extern HWND			hStatusBar;
 extern HWND			hToolBar;
 extern HINSTANCE	hInstance;

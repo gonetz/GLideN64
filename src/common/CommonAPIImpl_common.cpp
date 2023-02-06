@@ -51,13 +51,47 @@ void PluginAPI::RomClosed()
 	m_bRomOpen = false;
 #ifdef RSPTHREAD
 	std::lock_guard<std::mutex> lck(m_initMutex);
-	m_executor.async([]()
+#if WIN32
+	bool main = GetCurrentThreadId() == hWndThread;
+	bool running = m_executor.disableTasksAndAsync([&]()
 	{
 		TFH.dumpcache();
 		dwnd().stop();
 		GBI.destroy();
+		if (main)
+		{
+			PostThreadMessage(hWndThread, WM_APP + 1, 0, 0);
+		}
 	});
-	m_executor.blockTasks();
+
+	if (main && running)
+	{
+		MSG msg;
+		while (GetMessage(&msg, 0, 0, 0))
+		{
+			if (msg.message == WM_APP + 1)
+				break;
+
+			DispatchMessage(&msg);
+		}
+	}
+
+	if (running)
+	{
+		m_executor.stop();
+	}
+#else
+	bool running = m_executor.disableTasksAndAsync([&]()
+	 {
+		TFH.dumpcache();
+		dwnd().stop();
+		GBI.destroy();
+	 });
+	 if (running)
+	 {
+		 m_executor.stop();
+	 }
+#endif
 #else
 	TFH.dumpcache();
 	dwnd().stop();
@@ -70,7 +104,7 @@ void PluginAPI::RomOpen()
 	LOG(LOG_APIFUNC, "RomOpen\n");
 #ifdef RSPTHREAD
 	std::lock_guard<std::mutex> lck(m_initMutex);
-	m_executor.acceptTasks();
+	m_executor.start();
 	m_executor.async([]()
 	{
 		RSP_Init();
@@ -196,7 +230,14 @@ void PluginAPI::FBRead(unsigned int _addr)
 
 void PluginAPI::FBGetFrameBufferInfo(void * _pinfo)
 {
+#ifdef RSPTHREAD
+	m_executor.sync([=]()
+	{
+		FBInfo::fbInfo.GetInfo(_pinfo);
+	});
+#else
 	FBInfo::fbInfo.GetInfo(_pinfo);
+#endif
 }
 
 #ifndef MUPENPLUSAPI

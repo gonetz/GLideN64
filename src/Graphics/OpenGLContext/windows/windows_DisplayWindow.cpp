@@ -66,6 +66,8 @@ bool DisplayWindowWindows::_start()
 	if (hWnd == NULL)
 		hWnd = GetActiveWindow();
 
+	hWndThread = GetWindowThreadProcessId(hWnd, nullptr);
+
 	if ((hDC = GetDC(hWnd)) == NULL) {
 		MessageBox(hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK);
 		return false;

@@ -134,8 +134,11 @@ public:
     void async(Fn);
     void asyncOnce(Fn);
 
-    void acceptTasks() { acceptsTasks_ = true; }
-    void blockTasks() { acceptsTasks_ = false; }
+    void start();
+    void stop();
+
+    // returns true if 'fn' will be called as a dtor
+    bool disableTasksAndAsync(Fn);
 
 private:
     class SyncTask

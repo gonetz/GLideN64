@@ -1,8 +1,7 @@
 #include "QueueExecutor.h"
 
 QueueExecutor::QueueExecutor()
-    : running_(true)
-    , executor_(&QueueExecutor::loop, this)
+: running_(false)
 {
 }
 
@@ -83,17 +82,8 @@ catch (...)
 }
 
 QueueExecutor::~QueueExecutor()
-try
 {
-    acceptsTasks_ = false;
-    asyncInternal([&]()
-    {
-        running_ = false;
-    });
-    executor_.join();
-}
-catch (...)
-{
+    stop();
 }
 
 void QueueExecutor::loop()
@@ -125,4 +115,37 @@ void QueueExecutor::loop()
         lck.lock();
         tasks_.pop_front();
     }
+}
+
+void QueueExecutor::start()
+{
+    if (running_)
+        return;
+
+    running_ = true;
+    executor_ = std::thread{ &QueueExecutor::loop, this };
+    acceptsTasks_ = true;
+}
+
+void QueueExecutor::stop()
+{
+    if (!running_)
+        return;
+
+    acceptsTasks_ = false;
+    asyncInternal([&]()
+    {
+        running_ = false;
+    });
+    executor_.join();
+}
+
+bool QueueExecutor::disableTasksAndAsync(Fn fn)
+{
+    if (!acceptsTasks_)
+        return false;
+
+    acceptsTasks_ = false;
+    asyncInternal(std::move(fn));
+    return true;
 }

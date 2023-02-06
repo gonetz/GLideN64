@@ -1,6 +1,7 @@
 #include "GLideN64_Windows.h"
 
-HWND		hWnd;
+HWND		hWnd = {};
+DWORD       hWndThread;
 HWND		hStatusBar;
 HWND		hToolBar;
 HINSTANCE	hInstance;
