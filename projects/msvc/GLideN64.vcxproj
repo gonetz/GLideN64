@@ -173,7 +173,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>GLESX;GL_GLEXT_PROTOTYPES;ANGLE_EXPORT=;EGLAPI=;WTL_UI;GL_APICALL=;GL_API=;EGL;GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ANGLE_EXPORT=;EGLAPI=;WTL_UI;GL_APICALL=;GL_API=;EGL;GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ZILMAR_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -200,12 +200,12 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <Link>
-      <AdditionalDependencies>Cfgmgr32.lib;dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Cfgmgr32.lib;dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <Link>
-      <AdditionalDependencies>Cfgmgr32.lib;dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Release\lib\GLideNUI-wtl.lib;freetype253MT.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Cfgmgr32.lib;dxguid.lib;DXGI.lib;Comdlg32.lib;libANGLE_static.lib;bin\Win32\Release\lib\GLideNUI-wtl.lib;freetype253MT.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus'">
@@ -217,6 +217,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp17</LanguageStandard>
       <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VectorCall</CallingConvention>
       <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VectorCall</CallingConvention>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Gw %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

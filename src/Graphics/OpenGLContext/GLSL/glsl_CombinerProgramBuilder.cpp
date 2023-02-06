@@ -2437,13 +2437,6 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	if (!Utils::checkShaderCompileStatus(fragmentShader))
 	Utils::logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
 
-#if 0
-	std::string output;
-	output.reserve(100000);
-	GLsizei length = 100000;
-	glGetTranslatedShaderSourceANGLE(fragmentShader, 100000, &length, (char*) output.data());
-#endif
-
 	GLuint program = glCreateProgram();
 	Utils::locateAttributes(program, bIsRect, bUseTextures);
 	if (bIsRect)

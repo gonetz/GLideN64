@@ -224,8 +224,9 @@
 #define IDC_CHECK_ENABLE_FRAGMENT_DEPTH_WRITE 1188
 #define IDC_TXT_AUTHOR_Z64              1189
 #define IDC_RADIO_VULKAN                1189
-#define IDC_CHECK_DX11_TO_12            1190
 #define IDC_CHECK_DIRECT_COMPOSITION    1190
+#define IDC_RADIO_VULKAN2               1191
+#define IDC_RADIO_OPENGL                1191
 
 // Next default values for new objects
 // 

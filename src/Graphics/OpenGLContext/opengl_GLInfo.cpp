@@ -13,6 +13,14 @@
 
 using namespace opengl;
 
+extern "C"
+{
+	void __stdcall GL_Enablei(GLenum target, GLuint index);
+	void __stdcall GL_Disablei(GLenum target, GLuint index);
+	void __stdcall GL_ProgramBinaryOES(GLuint program, GLenum binaryFormat, const void* binary, GLint length);
+	void __stdcall GL_GetProgramBinaryOES(GLuint program, GLsizei bufSize, GLsizei* length, GLenum* binaryFormat, void* binary);
+}
+
 void GLInfo::init() {
 	const char * strVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
 	isGLESX = strstr(strVersion, "OpenGL ES") != nullptr;
@@ -106,7 +114,8 @@ void GLInfo::init() {
 	}
 
 	bool ext_draw_buffers_indexed = isGLESX && (Utils::isExtensionSupported(*this, "GL_EXT_draw_buffers_indexed") || numericVersion >= 32);
-#if defined(EGL) && !defined(GL_GLEXT_PROTOTYPES)
+#if defined(EGL)
+#ifndef WIN32
 	if (isGLESX && bufferStorage)
 		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
 	if (isGLESX && numericVersion < 32) {
@@ -126,18 +135,22 @@ void GLInfo::init() {
 #else
 	if (isGLESX && numericVersion < 32) {
 		if (ext_draw_buffers_indexed) {
-			IS_GL_FUNCTION_VALID(glEnablei) = true;
-			IS_GL_FUNCTION_VALID(glDisablei) = true;
+			g_glEnablei = GL_Enablei;
+			g_glDisablei = GL_Disablei;
 		}
 		else {
-			IS_GL_FUNCTION_VALID(glEnablei) = false;
-			IS_GL_FUNCTION_VALID(glDisablei) = false;
+			g_glEnablei = nullptr;
+			g_glDisablei = nullptr;
 		}
 	}
 	if (isGLES2 && shaderStorage) {
-		IS_GL_FUNCTION_VALID(glProgramParameteri) = false;
+		g_glProgramBinary = GL_ProgramBinaryOES;
+		g_glGetProgramBinary = GL_GetProgramBinaryOES;
+		g_glProgramParameteri = nullptr;
 	}
 #endif
+#endif
+
 #ifndef OS_ANDROID
 	if (isGLES2 && config.frameBufferEmulation.copyToRDRAM > Config::ctSync) {
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
