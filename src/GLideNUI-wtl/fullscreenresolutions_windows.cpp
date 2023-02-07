@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include "FullscreenResolutions.h"
-#include "../Config.h"
+#include "UIConfig.h"
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
 

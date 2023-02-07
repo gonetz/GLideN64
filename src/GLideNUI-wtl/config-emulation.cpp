@@ -1,6 +1,6 @@
 #include "config-emulation.h"
 #include "util/util.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "resource.h"
 #include "ConfigDlg.h"
 

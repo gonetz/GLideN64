@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <algorithm>
 #include <map>
-#include "../Config.h"
+#include "UIConfig.h"
 
 bool g_debugLang = false;
 LANG_STRINGS g_currentStrings, g_defaultStrings;

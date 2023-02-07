@@ -96,6 +96,9 @@
     <ClCompile Include="..\..\src\GLideNUI-wtl\config-angle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI-wtl\UIConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI-wtl\About.h">
@@ -252,6 +255,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI-wtl\config-angle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI-wtl\UIConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

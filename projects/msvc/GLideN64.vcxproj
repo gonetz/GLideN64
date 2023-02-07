@@ -384,6 +384,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Combiner.h" />
     <ClInclude Include="..\..\src\CombinerKey.h" />
     <ClInclude Include="..\..\src\Config.h" />
+    <ClInclude Include="..\..\src\ConfigDecl.h" />
     <ClInclude Include="..\..\src\convert.h" />
     <ClInclude Include="..\..\src\CRC.h" />
     <ClInclude Include="..\..\src\DebugDump.h" />

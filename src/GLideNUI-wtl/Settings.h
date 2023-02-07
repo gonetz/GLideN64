@@ -3,13 +3,15 @@
 #include <set>
 typedef std::set<std::string> ProfileList;
 
-void loadSettings(const char * _strIniFolder);
-void writeSettings(const char * _strIniFolder);
-void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName);
-void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName);
-std::string getTranslationFile();
+class Config;
+
+void loadSettings(Config&, const char * _strIniFolder);
+void writeSettings(Config&, const char * _strIniFolder);
+void loadCustomRomSettings(Config&, const char * _strIniFolder, const char * _strRomName);
+void saveCustomRomSettings(Config&, const char * _strIniFolder, const char * _strRomName);
+std::string getTranslationFile(Config&);
 ProfileList getProfiles(const char * _strIniFolder);
 std::string getCurrentProfile(const char * _strIniFolder);
-void changeProfile(const char * _strIniFolder, const char * _strProfile);
-void addProfile(const char * _strIniFolder, const char * _strProfile);
+void changeProfile(Config&, const char * _strIniFolder, const char * _strProfile);
+void addProfile(Config&, const char * _strIniFolder, const char * _strProfile);
 void removeProfile(const char * _strIniFolder, const char * _strProfile);

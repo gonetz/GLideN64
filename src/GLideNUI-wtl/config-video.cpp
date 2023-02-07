@@ -3,7 +3,7 @@
 #include "util/util.h"
 #include "Language.h"
 #include "ConfigDlg.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "wtl-tooltip.h"
 
 static struct {

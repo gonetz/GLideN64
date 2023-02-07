@@ -1,6 +1,6 @@
 #include "config-framebuffer.h"
 #include "resource.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "Language.h"
 
 CFrameBufferTab::CFrameBufferTab() :

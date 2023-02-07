@@ -1,4 +1,5 @@
 #include "GLideN64_Windows.h"
+#include "../Config.h"
 #include "../N64.h"
 #include "../Config.h"
 #include "../RSP.h"
@@ -16,9 +17,6 @@ void Config_DoConfig(/*HWND hParent*/)
 
 	ConfigOpen = true;
 	const bool bRestart = RunConfig(strIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr, 8, 16);
-	if (config.generalEmulation.enableCustomSettings != 0)
-		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
-	config.validate();
 	if (bRestart)
 	{
 		PluginAPI::get().Restart();
@@ -30,8 +28,8 @@ void Config_LoadConfig()
 {
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
 	api().FindPluginPath(strIniFolderPath);
-	LoadConfig(strIniFolderPath);
+	LoadConfig(&config, strIniFolderPath);
 	if (config.generalEmulation.enableCustomSettings != 0)
-		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
+		LoadCustomRomSettings(&config, strIniFolderPath, RSP.romname);
 	config.validate();
 }

@@ -49,7 +49,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OS_WINDOWS;_WINDOWS;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
@@ -70,7 +70,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <PreprocessorDefinitions>DEBUG_DUMP;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OS_WINDOWS;DEBUG_DUMP;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -115,6 +115,7 @@
     <ClCompile Include="..\..\src\GLideNUI-wtl\InputDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\Language.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\Settings.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI-wtl\UIConfig.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\util\StdString.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\util\util.cpp" />
     <ClCompile Include="..\..\src\GLideNUI-wtl\wtl-BitmapPicture.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="..\..\src\GLideNUI-wtl\Language.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\resource.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\Settings.h" />
+    <ClInclude Include="..\..\src\GLideNUI-wtl\UIConfig.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\util\StdString.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\util\util.h" />
     <ClInclude Include="..\..\src\GLideNUI-wtl\wtl-BitmapPicture.h" />

@@ -141,6 +141,7 @@ void PluginAPI::Restart()
 		});
 	}
 #else
+	Config_LoadConfig();
 	dwnd().restart();
 #endif
 }

@@ -1,5 +1,5 @@
 #include "config-angle.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "Language.h"
 #include "resource.h"
 

@@ -4,7 +4,7 @@
 #include "../winlnxdefs.h"
 #endif
 #include "../GBI.h"
-#include "../Config.h"
+#include "../ConfigDecl.h"
 
 #include "Settings.h"
 #include "GlSettings.h"
@@ -17,7 +17,7 @@ static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
 static const char * strUserProfile = "User";
 
 static
-void _loadSettings(GlSettings & settings)
+void _loadSettings(Config& config, GlSettings & settings)
 {
 	config.version = settings.value("version").toInt();
 
@@ -137,7 +137,7 @@ void _loadSettings(GlSettings & settings)
 	settings.endGroup();
 }
 
-void loadSettings(const char * _strIniFolder)
+void loadSettings(Config& config, const char * _strIniFolder)
 {
 	std::string IniFileName = _strIniFolder;
 	IniFileName += "/";
@@ -152,21 +152,21 @@ void loadSettings(const char * _strIniFolder)
 		config.generalEmulation.hacks = hacks;
 		config.translationFile = settings.value("translation", config.translationFile.c_str()).toString();
 		if (configVersion < CONFIG_WITH_PROFILES) {
-			_loadSettings(settings);
+			_loadSettings(config, settings);
 			config.version = CONFIG_VERSION_CURRENT;
 			settings.clear();
 			settings.setValue("version", CONFIG_VERSION_CURRENT);
 			settings.setValue("profile", strUserProfile);
 			settings.setValue("translation", config.translationFile.c_str());
 			settings.beginGroup(strUserProfile);
-			writeSettings(_strIniFolder);
+			writeSettings(config, _strIniFolder);
 			settings.endGroup();
 		}
 		std::string profile = settings.value("profile", strUserProfile).toString();
 		GlSettings::sections childGroups = settings.childGroups();
 		if (childGroups.find(profile.c_str()) != childGroups.end()) {
 			settings.beginGroup(profile.c_str());
-			_loadSettings(settings);
+			_loadSettings(config, settings);
 			settings.endGroup();
 		} else
 			rewriteSettings = true;
@@ -181,11 +181,11 @@ void loadSettings(const char * _strIniFolder)
 			settings.remove(profile.c_str());
 		}
 		config.version = CONFIG_VERSION_CURRENT;
-		writeSettings(_strIniFolder);
+		writeSettings(config, _strIniFolder);
 	}
 }
 
-void writeSettings(const char * _strIniFolder)
+void writeSettings(Config& config, const char * _strIniFolder)
 {
 	std::string IniFileName = _strIniFolder;
 	IniFileName += "/";
@@ -344,7 +344,7 @@ std::string _getRomName(const char * _strRomName)
 	return RomName;
 }
 
-void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
+void loadCustomRomSettings(Config& config, const char * _strIniFolder, const char * _strRomName)
 {
 	std::string CustomIniFileName = _strIniFolder;
 	CustomIniFileName += "/";
@@ -357,17 +357,17 @@ void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 		return;
 
 	settings.beginGroup(romName.c_str());
-	_loadSettings(settings);
+	_loadSettings(config, settings);
 	settings.endGroup();
 	config.version = CONFIG_VERSION_CURRENT;
 }
 
-void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
+void saveCustomRomSettings(Config& config, const char * _strIniFolder, const char * _strRomName)
 {
 	Config origConfig;
 	origConfig.resetToDefaults();
 	std::swap(config, origConfig);
-	loadSettings(_strIniFolder);
+	loadSettings(config, _strIniFolder);
 	std::swap(config, origConfig);
 
 	std::string CustomIniFileName = _strIniFolder;
@@ -492,7 +492,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 	settings.endGroup();
 }
 
-std::string getTranslationFile()
+std::string getTranslationFile(Config& config)
 {
 	return config.translationFile.c_str();
 }
@@ -522,7 +522,7 @@ std::string getCurrentProfile(const char * _strIniFolder)
 	return settings.value("profile", strUserProfile).toString();
 }
 
-void changeProfile(const char * _strIniFolder, const char * _strProfile)
+void changeProfile(Config& config, const char * _strIniFolder, const char * _strProfile)
 {
 	{
 		std::string IniFileName = _strIniFolder;
@@ -532,10 +532,10 @@ void changeProfile(const char * _strIniFolder, const char * _strProfile)
 		GlSettings settings(IniFileName.c_str());
 		settings.setValue("profile", _strProfile);
 	}
-	loadSettings(_strIniFolder);
+	loadSettings(config, _strIniFolder);
 }
 
-void addProfile(const char * _strIniFolder, const char * _strProfile)
+void addProfile(Config& config, const char * _strIniFolder, const char * _strProfile)
 {
 	{
 		std::string IniFileName = _strIniFolder;
@@ -545,7 +545,7 @@ void addProfile(const char * _strIniFolder, const char * _strProfile)
 		GlSettings settings(IniFileName.c_str());
 		settings.setValue("profile", _strProfile);
 	}
-	writeSettings(_strIniFolder);
+	writeSettings(config, _strIniFolder);
 }
 
 void removeProfile(const char * _strIniFolder, const char * _strProfile)

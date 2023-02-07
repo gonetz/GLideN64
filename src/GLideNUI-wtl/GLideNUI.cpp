@@ -4,8 +4,8 @@
 
 #include "GLideNUI.h"
 #include "Settings.h"
-#include "../Config.h"
 #include "ConfigDlg.h"
+#include "UIConfig.h"
 
 #ifdef QT_STATICPLUGIN
 #include <QtPlugin>
@@ -24,9 +24,9 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsign
 	slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
 	IniFolder.resize(slength - 1); //Remove null end char
 
-	loadSettings(IniFolder.c_str());
+	loadSettings(config, IniFolder.c_str());
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
-		loadCustomRomSettings(IniFolder.c_str(), _romName);
+		loadCustomRomSettings(config, IniFolder.c_str(), _romName);
 
 	LoadCurrentStrings(IniFolder.c_str(), config.translationFile);
 
@@ -54,12 +54,12 @@ bool runConfigThread(const wchar_t * _strFileName, const char * _romName, unsign
 
 }
 
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
+bool RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
 {
 	return runConfigThread(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy);
 }
 
-EXPORT int CALL RunAbout(const wchar_t * _strFileName)
+int RunAbout(const wchar_t * _strFileName)
 {
 	std::string IniFolder;
 	uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
@@ -74,7 +74,7 @@ EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 	return 0;
 }
 
-EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
+void LoadConfig(Config* cfg, const wchar_t * _strFileName)
 {
 	std::string IniFolder;
 	uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
@@ -82,10 +82,10 @@ EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
 	slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
 	IniFolder.resize(slength - 1); //Remove null end char
 
-	loadSettings(IniFolder.c_str());
+	loadSettings(*cfg, IniFolder.c_str());
 }
 
-EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const char * _romName)
+void LoadCustomRomSettings(Config* cfg, const wchar_t * _strFileName, const char * _romName)
 {
 	std::string IniFolder;
 	uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
@@ -93,5 +93,5 @@ EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const char 
 	slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
 	IniFolder.resize(slength - 1); //Remove null end char
 
-	loadCustomRomSettings(IniFolder.c_str(), _romName);
+	loadCustomRomSettings(*cfg, IniFolder.c_str(), _romName);
 }

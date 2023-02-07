@@ -143,6 +143,12 @@ void Config::validate()
 			graphics2D.correctTexrectCoords = tcDisable;
 	}
 
+	if (config.angle.renderer != arOpenGL)
+	{
+		// Does not work currently
+		config.video.fxaa = 0;
+	}
+
 	if (config.angle.renderer == arDirectX11)
 	{
 		config.generalEmulation.enableFragmentDepthWrite = 0;

@@ -1,5 +1,5 @@
 #include "config-debug.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "../DebugDump.h"
 #include "Language.h"
 #include "resource.h"

@@ -1,7 +1,7 @@
 #include "config-texture.h"
 #include "resource.h"
 #include "util/util.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "Language.h"
 #include <Shlobj.h>
 

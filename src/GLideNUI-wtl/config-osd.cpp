@@ -1,7 +1,7 @@
 #include "config-osd.h"
 #include "resource.h"
 #include "util/util.h"
-#include "../Config.h"
+#include "UIConfig.h"
 #include "FontInfo.h"
 #include "Language.h"
 
