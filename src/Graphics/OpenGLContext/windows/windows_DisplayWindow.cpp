@@ -83,11 +83,15 @@ void DisplayWindow::reset()
 		{
 			if (dynamic_cast<DisplayWindowWGL*>(cur))
 				return;
+			else
+				Sleep(1000);
 		}
 		else
 		{
 			if (dynamic_cast<DisplayWindowEGL*>(cur))
 				return;
+			else
+				Sleep(1000);
 		}
 	}
 
