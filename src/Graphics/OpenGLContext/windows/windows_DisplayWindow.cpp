@@ -67,17 +67,37 @@ private:
 	HGLRC	hRC;
 };
 
+static std::unique_ptr<DisplayWindow> TheWindow;
+
 DisplayWindow & DisplayWindow::get()
 {
+	return *TheWindow;
+}
+
+void DisplayWindow::reset()
+{
+	DisplayWindow* cur = TheWindow.get();
+	if (cur)
+	{
+		if (config.angle.renderer == config.arOpenGL)
+		{
+			if (dynamic_cast<DisplayWindowWGL*>(cur))
+				return;
+		}
+		else
+		{
+			if (dynamic_cast<DisplayWindowEGL*>(cur))
+				return;
+		}
+	}
+
 	if (config.angle.renderer == config.arOpenGL)
 	{
-		static DisplayWindowWGL video;
-		return video;
+		TheWindow = std::make_unique<DisplayWindowWGL>();
 	}
 	else
 	{
-		static DisplayWindowEGL video;
-		return video;
+		TheWindow = std::make_unique<DisplayWindowEGL>();
 	}
 }
 

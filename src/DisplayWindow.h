@@ -40,6 +40,7 @@ public:
 	GraphicsDrawer & getDrawer() { return m_drawer; }
 
 	static DisplayWindow & get();
+	static void reset();
 
 protected:
 	DisplayWindow() = default;

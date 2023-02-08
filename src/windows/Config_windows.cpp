@@ -32,4 +32,5 @@ void Config_LoadConfig()
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(&config, strIniFolderPath, RSP.romname);
 	config.validate();
+	dwnd().reset();
 }
