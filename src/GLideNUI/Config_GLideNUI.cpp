@@ -14,24 +14,22 @@ void Config_DoConfig(/*HWND hParent*/)
 		return;
 
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
-	api().FindPluginPath(strIniFolderPath);
+	wchar_t strSharedIniFolderPath[PLUGIN_PATH_SIZE];
 
 #ifdef M64P_GLIDENUI
-	wchar_t strConfigFolderPath[PLUGIN_PATH_SIZE];
-	api().GetUserConfigPath(strConfigFolderPath);
-
-	if (!IsPathWriteable(strIniFolderPath)) {
-		CopyConfigFiles(strIniFolderPath, strConfigFolderPath);
-		api().GetUserConfigPath(strIniFolderPath);
-	}
+	api().FindPluginPath(strSharedIniFolderPath);
+	api().GetUserConfigPath(strIniFolderPath);
+#else
+	api().FindPluginPath(strSharedIniFolderPath);
+	api().FindPluginPath(strIniFolderPath);
 #endif // M64P_GLIDENUI
 
 	ConfigOpen = true;
 	const u32 maxMsaa = dwnd().maxMSAALevel();
 	const u32 maxAnisotropy = dwnd().maxAnisotropy();
-	const bool bRestart = RunConfig(strIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr, maxMsaa, maxAnisotropy);
+	const bool bRestart = RunConfig(strIniFolderPath, strSharedIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr, maxMsaa, maxAnisotropy);
 	if (config.generalEmulation.enableCustomSettings != 0)
-		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
+		LoadCustomRomSettings(strIniFolderPath, strSharedIniFolderPath, RSP.romname);
 	config.validate();
 	if (bRestart)
 		dwnd().restart();
@@ -41,20 +39,18 @@ void Config_DoConfig(/*HWND hParent*/)
 void Config_LoadConfig()
 {
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
-	api().FindPluginPath(strIniFolderPath);
+	wchar_t strSharedIniFolderPath[PLUGIN_PATH_SIZE];
 
 #ifdef M64P_GLIDENUI
-	wchar_t strConfigFolderPath[PLUGIN_PATH_SIZE];
-	api().GetUserConfigPath(strConfigFolderPath);
-
-	if (!IsPathWriteable(strIniFolderPath)) {
-		CopyConfigFiles(strIniFolderPath, strConfigFolderPath);
-		api().GetUserConfigPath(strIniFolderPath);
-	}
+	api().FindPluginPath(strSharedIniFolderPath);
+	api().GetUserConfigPath(strIniFolderPath);
+#else
+	api().FindPluginPath(strSharedIniFolderPath);
+	api().FindPluginPath(strIniFolderPath);
 #endif // M64P_GLIDENUI
 
-	LoadConfig(strIniFolderPath);
+	LoadConfig(strIniFolderPath, strSharedIniFolderPath);
 	if (config.generalEmulation.enableCustomSettings != 0)
-		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
+		LoadCustomRomSettings(strIniFolderPath, strSharedIniFolderPath, RSP.romname);
 	config.validate();
 }

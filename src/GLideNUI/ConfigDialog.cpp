@@ -127,9 +127,9 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	m_blockReInit = true;
 
 	if (reInit && m_romName != nullptr && ui->customSettingsCheckBox->isChecked() && ui->settingsDestGameRadioButton->isChecked()) {
-		loadCustomRomSettings(m_strIniPath, m_romName);
+		loadCustomRomSettings(m_strIniPath, m_strSharedIniPath, m_romName);
 	} else if (reInit) {
-		loadSettings(m_strIniPath);
+		loadSettings(m_strIniPath, m_strSharedIniPath);
 	}
 
 	// Video settings
@@ -480,14 +480,15 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
 {
-	QDir pluginFolder(m_strIniPath);
+	QDir pluginFolder(m_strSharedIniPath);
 	QStringList nameFilters("gliden64_*.qm");
 	_translationFiles = pluginFolder.entryList(nameFilters, QDir::Files, QDir::Name);
 }
 
-void ConfigDialog::setIniPath(const QString & _strIniPath)
+void ConfigDialog::setIniPath(const QString & _strIniPath, const QString & _strSharedIniPath)
 {
 	m_strIniPath = _strIniPath;
+	m_strSharedIniPath = _strSharedIniPath;
 
 	QStringList translationFiles;
 	_getTranslations(translationFiles);
@@ -798,7 +799,7 @@ void ConfigDialog::accept(bool justSave) {
 		config.debug.dumpMode |= DEBUG_DETAIL;
 
 	if (config.generalEmulation.enableCustomSettings && ui->settingsDestGameRadioButton->isChecked() && m_romName != nullptr)
-		saveCustomRomSettings(m_strIniPath, m_romName);
+		saveCustomRomSettings(m_strIniPath, m_strSharedIniPath, m_romName);
 	else
 		writeSettings(m_strIniPath);
 
@@ -1111,7 +1112,7 @@ void ConfigDialog::on_profilesComboBox_currentTextChanged(const QString &profile
 		}
 		return;
 	}
-	changeProfile(m_strIniPath, profile);
+	changeProfile(m_strIniPath, m_strSharedIniPath, profile);
 	_init(true);
 }
 
@@ -1139,7 +1140,7 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 		removeProfile(m_strIniPath, profile);
 		ui->profilesComboBox->blockSignals(true);
 		ui->profilesComboBox->removeItem(ui->profilesComboBox->currentIndex());
-		changeProfile(m_strIniPath, ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()));
+		changeProfile(m_strIniPath, m_strSharedIniPath, ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()));
 		ui->profilesComboBox->blockSignals(false);
 		_init(true);
 		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() == 3);

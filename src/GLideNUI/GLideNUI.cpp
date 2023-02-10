@@ -21,14 +21,15 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
+int openConfigDialog(const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
 	QString strIniFileName = QString::fromWCharArray(_strFileName);
-	loadSettings(strIniFileName);
+	QString strSharedIniFileName = QString::fromWCharArray(_strSharedFileName);
+	loadSettings(strIniFileName, strSharedIniFileName);
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
-		loadCustomRomSettings(strIniFileName, _romName);
+		loadCustomRomSettings(strIniFileName, strSharedIniFileName, _romName);
 
 	std::unique_ptr<QApplication> pQApp;
 	QCoreApplication* pApp = QCoreApplication::instance();
@@ -46,7 +47,7 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, unsign
 
 	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
 
-	w.setIniPath(strIniFileName);
+	w.setIniPath(strIniFileName, strSharedIniFileName);
 	w.setRomName(_romName);
 	w.setTitle();
 	w.show();
@@ -75,13 +76,13 @@ int openAboutDialog(const wchar_t * _strFileName)
 	return a.exec();
 }
 
-bool runConfigThread(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
+bool runConfigThread(const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
 	bool accepted = false;
 #ifdef RUN_DIALOG_IN_THREAD
-	std::thread configThread(openConfigDialog, _strFileName, _maxMSAALevel, std::ref(accepted));
+	std::thread configThread(openConfigDialog, _strFileName, _strSharedFileName, _maxMSAALevel, std::ref(accepted));
 	configThread.join();
 #else
-	openConfigDialog(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy, accepted);
+	openConfigDialog(_strFileName, _strSharedFileName, _romName, _maxMSAALevel, _maxAnisotropy, accepted);
 #endif
 	return accepted;
 
@@ -97,21 +98,9 @@ int runAboutThread(const wchar_t * _strFileName) {
 	return 0;
 }
 
-#ifdef M64P_GLIDENUI
-EXPORT bool CALL IsPathWriteable(const wchar_t * dir)
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const wchar_t * _strUserFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
 {
-	return isPathWriteable(QString::fromWCharArray(dir));
-}
-
-EXPORT void CALL CopyConfigFiles(const wchar_t * _srcDir, const wchar_t * _targetDir)
-{
-	return copyConfigFiles(QString::fromWCharArray(_srcDir), QString::fromWCharArray(_targetDir));
-}
-#endif // M64P_GLIDENUI
-
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
-{
-	return runConfigThread(_strFileName, _romName, _maxMSAALevel, _maxAnisotropy);
+	return runConfigThread(_strFileName, _strUserFileName, _romName, _maxMSAALevel, _maxAnisotropy);
 }
 
 EXPORT int CALL RunAbout(const wchar_t * _strFileName)
@@ -119,12 +108,12 @@ EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 	return runAboutThread(_strFileName);
 }
 
-EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
+EXPORT void CALL LoadConfig(const wchar_t * _strFileName, const wchar_t * _strSharedFileName)
 {
-	loadSettings(QString::fromWCharArray(_strFileName));
+	loadSettings(QString::fromWCharArray(_strFileName), QString::fromWCharArray(_strSharedFileName));
 }
 
-EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const char * _romName)
+EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName)
 {
-	loadCustomRomSettings(QString::fromWCharArray(_strFileName), _romName);
+	loadCustomRomSettings(QString::fromWCharArray(_strFileName), QString::fromWCharArray(_strSharedFileName), _romName);
 }

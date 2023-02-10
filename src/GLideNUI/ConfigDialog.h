@@ -28,7 +28,7 @@ public:
 						unsigned int _maxAnisotropy = 16);
 	~ConfigDialog();
 
-	void setIniPath(const QString & _strIniPath);
+	void setIniPath(const QString & _strIniPath, const QString & _strSharedIniPath);
 	void setRomName(const char * _romName);
 	void setTitle();
 	bool isAccepted() const { return m_accepted; }
@@ -110,6 +110,7 @@ private:
 	bool m_fontsInited;
 	bool m_blockReInit;
 	QString m_strIniPath;
+	QString m_strSharedIniPath;
 	const char * m_romName;
 	unsigned int m_maxMSAA;
 	unsigned int m_maxAnisotropy;
