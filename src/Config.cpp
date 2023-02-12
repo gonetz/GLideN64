@@ -131,8 +131,22 @@ bool isHWLightingAllowed()
 	return GBI.isHWLSupported();
 }
 
+static bool isWine(void)
+{
+	HMODULE ntdll = GetModuleHandle(L"ntdll.dll");
+	if (!ntdll)
+		return false;
+
+	return NULL != GetProcAddress(ntdll, "wine_get_version");
+}
+
 void Config::validate()
 {
+	if (config.angle.renderer == config.arDirectX11 && isWine())
+	{
+		config.angle.renderer = config.arOpenGL;
+	}
+
 	if (frameBufferEmulation.enable != 0 && frameBufferEmulation.N64DepthCompare != 0)
 		video.multisampling = 0;
 	if (frameBufferEmulation.nativeResFactor == 1) {
