@@ -37,12 +37,10 @@ NoiseTexture::NoiseTexture()
 static
 u32 Rand(u32 rand_value)
 {
-#ifdef MINGW
-	rand_s(&rand_value);
-#else
-	rand_value = rand();
-#endif
-	return rand_value;
+	static u32 iseed = 1;
+	iseed *= 0x343fd;
+	iseed += 0x269ec3;
+	return ((iseed >> 16) & 0x7fff);
 }
 
 static
@@ -68,37 +66,7 @@ void NoiseTexture::_fillTextureData()
 	for (auto& vec : m_texData)
 		vec.resize(NOISE_TEX_WIDTH * NOISE_TEX_HEIGHT);
 
-	const u32 concurentThreadsSupported = std::thread::hardware_concurrency();
-	if (concurentThreadsSupported > 1) {
-		const u32 numThreads = concurentThreadsSupported;
-		u32 chunk = NOISE_TEX_NUM / numThreads;
-		if (NOISE_TEX_NUM % numThreads != 0)
-			chunk++;
-
-		std::uniform_int_distribution<u32> uint_dist;
-		std::mt19937 engine; // Mersenne twister MT19937
-		engine.seed(std::mt19937::default_seed);
-		auto generator = std::bind(uint_dist, engine);
-
-		std::vector<std::thread> threads;
-		u32 start = 0;
-		do {
-			threads.emplace_back(
-				FillTextureData,
-				generator(),
-				&m_texData,
-				start,
-				std::min(start + chunk, static_cast<u32>(m_texData.size())));
-			start += chunk;
-		} while (start < NOISE_TEX_NUM - chunk);
-
-		FillTextureData(generator(), &m_texData, start, static_cast<u32>(m_texData.size()));
-
-		for (auto& t : threads)
-			t.join();
-	} else {
-		FillTextureData(static_cast<u32>(time(nullptr)), &m_texData, 0, static_cast<u32>(m_texData.size()));
-	}
+	FillTextureData(static_cast<u32>(time(nullptr)), &m_texData, 0, static_cast<u32>(m_texData.size()));
 
 	displayLoadProgress(L"");
 }
