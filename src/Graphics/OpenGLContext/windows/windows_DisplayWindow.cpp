@@ -252,9 +252,20 @@ void DisplayWindowWGL::_swapBuffers()
 
 #define EGL_DIRECT_COMPOSITION_ANGLE 0x33A5
 
+extern "C" void loader_initialize(void);
+extern "C" void loader_release(void);
+
+namespace egl
+{
+	extern bool InitializeProcess();
+	extern void TerminateProcess();
+}
+
 bool DisplayWindowEGL::_start()
 {
 	DisplayWindowWindows::_start();
+
+	egl::InitializeProcess();
 
 	std::vector<EGLint> dispOptions;
 	dispOptions.reserve(6);
@@ -268,6 +279,7 @@ bool DisplayWindowEGL::_start()
 		renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
 		break;
 	case Config::arVulkan:
+		loader_initialize();
 		renderer = EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE;
 		break;
 	case Config::arOpenGL:
@@ -372,14 +384,14 @@ void DisplayWindowEGL::_stop()
 {
 	eglMakeCurrent(eglDisplay, NULL, NULL, NULL);
 
-	if (eglContext != NULL) {
-		eglDestroyContext(eglDisplay, eglContext);
-		eglContext = NULL;
-	}
-
 	if (eglSurface != NULL) {
 		eglDestroySurface(eglDisplay, eglSurface);
 		eglSurface = NULL;
+	}
+
+	if (eglContext != NULL) {
+		eglDestroyContext(eglDisplay, eglContext);
+		eglContext = NULL;
 	}
 
 	if (eglDisplay != NULL) {
@@ -388,6 +400,12 @@ void DisplayWindowEGL::_stop()
 	}
 
 	DisplayWindowWindows::_stop();
+
+	if (config.angle.renderer == config.arVulkan)
+	{
+		loader_release();
+	}
+	egl::TerminateProcess();
 }
 
 void DisplayWindowEGL::_swapBuffers()

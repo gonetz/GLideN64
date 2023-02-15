@@ -11,8 +11,11 @@ void ConfigInit(void* hinst);
 void ConfigCleanup(void);
 #endif
 
-extern "C" void loader_initialize(void);
-extern "C" void loader_release(void);
+namespace egl
+{
+    // extern void AllocateCurrentThread();
+    extern void DeallocateCurrentThread();
+}
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpvReserved)
 {
@@ -33,12 +36,14 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpvReserved)
 
     switch (dwReason) {
     case DLL_PROCESS_ATTACH:
-        loader_initialize();
         break;
     case DLL_PROCESS_DETACH:
-        if (NULL == lpvReserved) {
-            loader_release();
-        }
+        break;
+    case DLL_THREAD_ATTACH:
+        // egl::AllocateCurrentThread();
+        break;
+    case DLL_THREAD_DETACH:
+        egl::DeallocateCurrentThread();
         break;
     default:
         // Do nothing
