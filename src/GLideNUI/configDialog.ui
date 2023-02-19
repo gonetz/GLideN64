@@ -1031,10 +1031,29 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_30">
          <item>
+          <widget class="QCheckBox" name="customSettingsCheckBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, all non-default values of settings are stored individually for each game.&lt;/p&gt;&lt;p&gt;When a game is running, settings are displayed and saved for the currently running game.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note:&lt;/span&gt; GLideN64 already contains settings for the optimal performance of most games. Be careful when altering options on 'Emulation' and 'Frame buffer' tab.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Use per-game settings</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QFrame" name="emulationOptionsFrame">
            <layout class="QVBoxLayout" name="verticalLayout_47">
             <property name="spacing">
-             <number>4</number>
+             <number>3</number>
             </property>
             <property name="leftMargin">
              <number>0</number>
@@ -1048,32 +1067,6 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
-             <widget class="QCheckBox" name="customSettingsCheckBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, all non-default values of settings are stored individually for each game.&lt;/p&gt;&lt;p&gt;When a game is running, settings are displayed and saved for the currently running game.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note:&lt;/span&gt; GLideN64 already contains settings for the optimal performance of most games. Be careful when altering options on 'Emulation' and 'Frame buffer' tab.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Use per-game settings</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="Line" name="line_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
             <item>
              <widget class="QCheckBox" name="emulateLodCheckBox">
               <property name="sizePolicy">
@@ -1236,7 +1229,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_15">
               <property name="spacing">
-               <number>4</number>
+               <number>3</number>
               </property>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_12">
@@ -1369,6 +1362,9 @@
             <string>Dithering</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
+            <property name="verticalSpacing">
+             <number>3</number>
+            </property>
             <item row="0" column="1">
              <widget class="QCheckBox" name="ditheringQuantizationCheckBox">
               <property name="toolTip">
@@ -1455,7 +1451,7 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_31">
               <property name="spacing">
-               <number>4</number>
+               <number>3</number>
               </property>
               <property name="leftMargin">
                <number>0</number>
