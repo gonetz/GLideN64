@@ -29,12 +29,6 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -1027,12 +1021,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="emulationTab">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>380</height>
-       </size>
-      </property>
       <attribute name="title">
        <string>Emulation</string>
       </attribute>
