@@ -1445,9 +1445,6 @@
             <string>2D elements</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_48">
-            <property name="spacing">
-             <number>18</number>
-            </property>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_31">
               <property name="spacing">
@@ -1577,27 +1574,31 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QRadioButton" name="fixTexrectForceRadioButton">
-                   <property name="text">
-                    <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">Always</string>
-                   </property>
-                   <attribute name="buttonGroup">
-                    <string notr="true">fixTexrectCoordsButtonGroup</string>
-                   </attribute>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="fixTexrectDisableRadioButton">
-                   <property name="text">
-                    <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">Never</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                   <attribute name="buttonGroup">
-                    <string notr="true">fixTexrectCoordsButtonGroup</string>
-                   </attribute>
-                  </widget>
+                  <layout class="QHBoxLayout" name="horizontalLayout_39">
+                   <item>
+                    <widget class="QRadioButton" name="fixTexrectForceRadioButton">
+                     <property name="text">
+                      <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">Always</string>
+                     </property>
+                     <attribute name="buttonGroup">
+                      <string notr="true">fixTexrectCoordsButtonGroup</string>
+                     </attribute>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QRadioButton" name="fixTexrectDisableRadioButton">
+                     <property name="text">
+                      <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">Never</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                     <attribute name="buttonGroup">
+                      <string notr="true">fixTexrectCoordsButtonGroup</string>
+                     </attribute>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </widget>
@@ -1656,22 +1657,6 @@
                     <string>Stripped</string>
                    </property>
                   </widget>
-                 </item>
-                 <item>
-                  <spacer name="verticalSpacer_13">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Preferred</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                 </layout>
                </widget>
