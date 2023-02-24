@@ -68,11 +68,6 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 
 	m_pCurFrameBuffer = pBuffer;
 
-	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && m_pCurFrameBuffer->m_width == VI.width) {
-		copyWhiteToRDRAM(m_pCurFrameBuffer);
-		return false;
-	}
-
 	ObjectHandle readBuffer;
 
 	if (config.video.multisampling != 0) {
@@ -215,7 +210,10 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 		u32 *ptr_src = (u32*)pPixels;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
 		m_blueNoiseIdx++;
-		writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, valueTester<u32, 0>, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		if ((config.generalEmulation.hacks & hack_subscreen) != 0u && height == 1u)
+			copyWhiteToRDRAM(m_pCurFrameBuffer);
+		else
+			writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, dummyTester<u32>, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	} else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
 		u8 *ptr_src = (u8*)pPixels;
 		u8 *ptr_dst = RDRAM + _startAddress;
