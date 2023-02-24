@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Packages
         run: |
+          # fix for "error processing package grub-efi-amd64-signed"
+          sudo apt-get purge shim-signed grub\* --yes --allow-remove-essential
           sudo apt-get -qq update
           sudo apt-get -y upgrade
           sudo apt-get -y install build-essential libgl1-mesa-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
