@@ -42,7 +42,7 @@ int openConfigDialog(const wchar_t * _strFileName, const wchar_t * _strSharedFil
 	}
 
 	QTranslator translator;
-	if (translator.load(getTranslationFile(), strIniFileName))
+	if (translator.load(getTranslationFile(), strSharedIniFileName))
 		pApp->installTranslator(&translator);
 
 	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
