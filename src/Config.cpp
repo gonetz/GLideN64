@@ -142,6 +142,12 @@ static bool isWine(void)
 
 void Config::validate()
 {
+	// Only OpenGL is capable of FB emulation
+	if (frameBufferEmulation.enable != 0)
+	{
+		config.angle.renderer = config.arOpenGL;
+	}
+
 	if (config.angle.renderer == config.arDirectX11 && isWine())
 	{
 		config.angle.renderer = config.arOpenGL;
