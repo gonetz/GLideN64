@@ -1340,15 +1340,21 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
+	bool bUseFbTexture = false;
+	bool bUseHdTexture = false;
+	for (u32 i = 0; i < 2; ++i) {
+		if (pCurrentCombiner->usesTile(i) && cache.current[i] != nullptr) {
+			bUseFbTexture |= cache.current[i]->frameBufferTexture != CachedTexture::fbNone;
+			bUseHdTexture |= cache.current[i]->bHDTexture;
+		}
+	}
 	const bool bUseTexrectDrawer = m_bBGMode || ((config.graphics2D.enableNativeResTexrects != 0)
 		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
 		&& (pCurrentBuffer == nullptr || !pCurrentBuffer->m_cfb)
 		&& (cache.current[0] != nullptr)
 		//		&& (cache.current[0] == nullptr || cache.current[0]->format == G_IM_FMT_RGBA || cache.current[0]->format == G_IM_FMT_CI)
-		&& ((cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
-		&& (cache.current[1] == nullptr || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture)));
-
+		&& !bUseFbTexture && !bUseHdTexture);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
 	const f32 ulx = _params.ulx;
@@ -1472,12 +1478,12 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		m_rect[2].t1 = texST[1].t1;
 	}
 
-	if (wnd.isAdjustScreen() &&
+	if (wnd.isAdjustScreen() && !bUseFbTexture &&
 		(_params.forceAjustScale ||
 		((gDP.colorImage.width > VI.width * 98 / 100) && (static_cast<u32>(_params.lrx - _params.ulx) < VI.width * 9 / 10))))
 	{
 		const float scale = wnd.getAdjustScale();
-		const float offsetx = static_cast<f32>(gDP.colorImage.width) * (1.0f-scale) / 2.0f;
+		const float offsetx = static_cast<f32>(gDP.colorImage.width) * (1.0f - scale) / 2.0f;
 		for (u32 i = 0; i < 4; ++i) {
 			m_rect[i].x *= scale;
 			m_rect[i].x += offsetx;
