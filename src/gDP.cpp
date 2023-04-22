@@ -983,6 +983,7 @@ void gDPFullSync()
 
 	CheckInterrupts();
 
+	CombinerInfo::get().compileUnknownShaders();
 	DebugMsg( DEBUG_NORMAL, "gDPFullSync();\n" );
 }
 
