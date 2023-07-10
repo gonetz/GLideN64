@@ -73,7 +73,7 @@ BOOL CVideoTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/) {
 	m_AliasingSlider.Attach(GetDlgItem(IDC_ALIASING_SLIDER));
 	m_AliasingSlider.SetTicFreq(1);
 	m_AliasingSlider.SetRangeMin(0);
-	m_AliasingSlider.SetRangeMax(3);
+	m_AliasingSlider.SetRangeMax(4);
 
 	m_AnisotropicSlider.Attach(GetDlgItem(IDC_ANISOTROPIC_SLIDER));
 	m_AnisotropicSlider.SetTicFreq(2);
@@ -427,7 +427,7 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
 		? min(config.video.multisampling, maxMSAALevel)
 		: maxMSAALevel;
-	m_AliasingSlider.SetRangeMax(powof(maxMSAALevel));
+
 	m_AliasingSlider.SetPos(powof(multisampling));
 	std::wstring AliasingText = FormatStrW(L"%dx", multisampling);
 	CWindow(GetDlgItem(IDC_ALIASING_LABEL)).SetWindowTextW(AliasingText.c_str());
