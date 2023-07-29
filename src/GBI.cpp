@@ -146,7 +146,12 @@ GBIInfo GBI;
 
 void GBI_Unknown( u32 w0, u32 w1 )
 {
+	auto pc = RSP.PC[RSP.PCi];
+	auto start = RSP_SegmentToPhysical(0x07000000);
+	auto end   = RSP_SegmentToPhysical(0x07020000);
 	DebugMsg(DEBUG_NORMAL, "UNKNOWN GBI COMMAND 0x%02X", _SHIFTR(w0, 24, 8));
+	if (start <= pc && pc <= end)
+		gSPEndDisplayList();
 }
 
 void GBIInfo::init()

@@ -28,7 +28,7 @@ void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)
 {
 	PluginInfo->Version = 0x103;
 	PluginInfo->Type = PLUGIN_TYPE_GFX;
-	sprintf(PluginInfo->Name, "ANGLE %s v4.3.5", pluginName, PLUGIN_REVISION);
+	sprintf(PluginInfo->Name, "ANGLE %s v4.3.6", pluginName, PLUGIN_REVISION);
 	PluginInfo->NormalMemory = FALSE;
 	PluginInfo->MemoryBswaped = TRUE;
 }
