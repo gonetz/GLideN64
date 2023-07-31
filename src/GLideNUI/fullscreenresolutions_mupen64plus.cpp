@@ -76,7 +76,10 @@ void fillFullscreenResolutionsList(QStringList &_listResolutions, int &_resoluti
 	ret = CoreVideo_ListFullscreenModes(resolutions, &resolutions_length);
 
 	if (ret != M64ERR_SUCCESS)
+	{
+		free(resolutions);
 		return;
+	}
 
 	for (int i = 0; i < resolutions_length; i++)
 	{
