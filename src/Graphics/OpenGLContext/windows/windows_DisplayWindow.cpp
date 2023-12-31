@@ -252,6 +252,9 @@ void DisplayWindowWGL::_swapBuffers()
 
 #define EGL_DIRECT_COMPOSITION_ANGLE 0x33A5
 
+#define EGL_PLATFORM_ANGLE_DEVICE_ID_HIGH_ANGLE 0x34D6
+#define EGL_PLATFORM_ANGLE_DEVICE_ID_LOW_ANGLE 0x34D7
+
 extern "C" void loader_initialize(void);
 extern "C" void loader_release(void);
 
@@ -261,31 +264,40 @@ namespace egl
 	extern void TerminateProcess();
 }
 
+namespace angle
+{
+	unsigned long long GetDedicatedDualGPU();
+	unsigned long long GetDedicatedDualGPUVulkan();
+}
+
 bool DisplayWindowEGL::_start()
 {
 	DisplayWindowWindows::_start();
 
 	egl::InitializeProcess();
 
-	std::vector<EGLint> dispOptions;
-	dispOptions.reserve(6);
-
-	dispOptions.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
 	EGLint renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+	uint64_t gpuOverride = 0;
 	switch (config.angle.renderer)
 	{
 	default:
 	case Config::arDirectX11:
 		renderer = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+		gpuOverride = angle::GetDedicatedDualGPU();
 		break;
 	case Config::arVulkan:
 		loader_initialize();
 		renderer = EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE;
+		gpuOverride = angle::GetDedicatedDualGPUVulkan();
 		break;
 	case Config::arOpenGL:
 		renderer = EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
 		break;
 	}
+
+	std::vector<EGLint> dispOptions;
+	dispOptions.reserve(10);
+	dispOptions.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
 	dispOptions.push_back(renderer);
 
 #if 0
@@ -295,6 +307,16 @@ bool DisplayWindowEGL::_start()
 		dispOptions.push_back(EGL_TRUE);
 	}
 #endif
+
+	if (gpuOverride)
+	{
+		EGLAttrib high = ((gpuOverride >> 32) & 0xFFFFFFFF);
+		EGLAttrib low = (gpuOverride & 0xFFFFFFFF);
+		dispOptions.push_back(EGL_PLATFORM_ANGLE_DEVICE_ID_HIGH_ANGLE);
+		dispOptions.push_back(high);
+		dispOptions.push_back(EGL_PLATFORM_ANGLE_DEVICE_ID_LOW_ANGLE);
+		dispOptions.push_back(low);
+	}
 
 	dispOptions.push_back(EGL_NONE);
 	dispOptions.push_back(EGL_NONE);

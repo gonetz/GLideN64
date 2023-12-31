@@ -198,13 +198,13 @@ void gSPMatrix( u32 matrix, u8 param )
 		(param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL",
 		(param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH");
 	DebugMsg(DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3] );
+		mtx.v[0][0], mtx.v[0][1], mtx.v[0][2], mtx.v[0][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3] );
+		mtx.v[1][0], mtx.v[1][1], mtx.v[1][2], mtx.v[1][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3] );
+		mtx.v[2][0], mtx.v[2][1], mtx.v[2][2], mtx.v[2][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
+		mtx.v[3][0], mtx.v[3][1], mtx.v[3][2], mtx.v[3][3] );
 }
 
 void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
@@ -235,13 +235,13 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 	DebugMsg(DEBUG_NORMAL, "gSPDMAMatrix( 0x%08X, %i, %s );\n",
 		matrix, index, multiply ? "TRUE" : "FALSE");
 	DebugMsg(DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3] );
+		mtx.v[0][0], mtx.v[0][1], mtx.v[0][2], mtx.v[0][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3] );
+		mtx.v[1][0], mtx.v[1][1], mtx.v[1][2], mtx.v[1][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3] );
+		mtx.v[2][0], mtx.v[2][1], mtx.v[2][2], mtx.v[2][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
+		mtx.v[3][0], mtx.v[3][1], mtx.v[3][2], mtx.v[3][3] );
 }
 
 void gSPViewport( u32 v )
