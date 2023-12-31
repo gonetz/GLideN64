@@ -290,9 +290,6 @@
     <ClCompile Include="..\..\src\Graphics\ObjectHandle.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\RSP_LoadMatrixX86.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\CRC_OPT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

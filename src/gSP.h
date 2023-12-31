@@ -4,6 +4,7 @@
 #include "Types.h"
 #include "GBI.h"
 #include "gDP.h"
+#include "3DMath.h"
 
 #define CHANGED_VIEWPORT		0x01
 #define CHANGED_MATRIX			0x02
@@ -33,7 +34,7 @@
 enum Component { R, G, B };
 enum Axis { X ,Y, Z, W };
 
-struct SPVertex
+struct __declspec(align((16))) SPVertex
 {
 	f32 x, y, z, w;
 	f32 nx, ny, nz, __pad0;
@@ -52,10 +53,10 @@ struct gSPInfo
 
 	struct
 	{
+		Mtx modelView[32];
+		Mtx projection;
+		Mtx combined;
 		u32 modelViewi, stackSize, billboard;
-		f32 modelView[32][4][4];
-		f32 projection[4][4];
-		f32 combined[4][4];
 	} matrix;
 
 	u32 objRendermode;

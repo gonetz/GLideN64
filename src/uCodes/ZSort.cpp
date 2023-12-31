@@ -299,46 +299,45 @@ void ZSort_MTXRNSP( u32, u32 )
 
 void ZSort_MTXCAT(u32 _w0, u32 _w1)
 {
-	M44 *s = nullptr;
-	M44 *t = nullptr;
+	Mtx* s = nullptr;
+	Mtx* t = nullptr;
 	u32 S = _SHIFTR(_w0, 0, 4);
 	u32 T = _SHIFTR(_w1, 16, 4);
 	u32 D = _SHIFTR(_w1, 0, 4);
 	switch (S) {
 	case GZM_MMTX:
-		s = (M44*)gSP.matrix.modelView[gSP.matrix.modelViewi];
+		s = &gSP.matrix.modelView[gSP.matrix.modelViewi];
 	break;
 	case GZM_PMTX:
-		s = (M44*)gSP.matrix.projection;
+		s = &gSP.matrix.projection;
 	break;
 	case GZM_MPMTX:
-		s = (M44*)gSP.matrix.combined;
+		s = &gSP.matrix.combined;
 	break;
 	}
 	switch (T) {
 	case GZM_MMTX:
-		t = (M44*)gSP.matrix.modelView[gSP.matrix.modelViewi];
+		t = &gSP.matrix.modelView[gSP.matrix.modelViewi];
 	break;
 	case GZM_PMTX:
-		t = (M44*)gSP.matrix.projection;
+		t = &gSP.matrix.projection;
 	break;
 	case GZM_MPMTX:
-		t = (M44*)gSP.matrix.combined;
+		t = &gSP.matrix.combined;
 	break;
 	}
 	assert(s != nullptr && t != nullptr);
-	f32 m[4][4];
-	MultMatrix(*s, *t, m);
+	auto m = MultMatrix(*s, *t);
 
 	switch (D) {
 	case GZM_MMTX:
-		memcpy (gSP.matrix.modelView[gSP.matrix.modelViewi], m, 64);;
+		gSP.matrix.modelView[gSP.matrix.modelViewi] = m;;
 	break;
 	case GZM_PMTX:
-		memcpy (gSP.matrix.projection, m, 64);;
+		gSP.matrix.projection = m;;
 	break;
 	case GZM_MPMTX:
-		memcpy (gSP.matrix.combined, m, 64);;
+		gSP.matrix.combined = m;;
 	break;
 	}
 }
@@ -357,10 +356,10 @@ void ZSort_MultMPMTX( u32 _w0, u32 _w1 )
 		s16 sx = saddr[(idx++)^1];
 		s16 sy = saddr[(idx++)^1];
 		s16 sz = saddr[(idx++)^1];
-		f32 x = sx*gSP.matrix.combined[0][0] + sy*gSP.matrix.combined[1][0] + sz*gSP.matrix.combined[2][0] + gSP.matrix.combined[3][0];
-		f32 y = sx*gSP.matrix.combined[0][1] + sy*gSP.matrix.combined[1][1] + sz*gSP.matrix.combined[2][1] + gSP.matrix.combined[3][1];
-		f32 z = sx*gSP.matrix.combined[0][2] + sy*gSP.matrix.combined[1][2] + sz*gSP.matrix.combined[2][2] + gSP.matrix.combined[3][2];
-		f32 w = sx*gSP.matrix.combined[0][3] + sy*gSP.matrix.combined[1][3] + sz*gSP.matrix.combined[2][3] + gSP.matrix.combined[3][3];
+		f32 x = sx*gSP.matrix.combined.v[0][0] + sy*gSP.matrix.combined.v[1][0] + sz*gSP.matrix.combined.v[2][0] + gSP.matrix.combined.v[3][0];
+		f32 y = sx*gSP.matrix.combined.v[0][1] + sy*gSP.matrix.combined.v[1][1] + sz*gSP.matrix.combined.v[2][1] + gSP.matrix.combined.v[3][1];
+		f32 z = sx*gSP.matrix.combined.v[0][2] + sy*gSP.matrix.combined.v[1][2] + sz*gSP.matrix.combined.v[2][2] + gSP.matrix.combined.v[3][2];
+		f32 w = sx*gSP.matrix.combined.v[0][3] + sy*gSP.matrix.combined.v[1][3] + sz*gSP.matrix.combined.v[2][3] + gSP.matrix.combined.v[3][3];
 		v.sx = (s16)(zSortRdp.view_trans[0] + x / w * zSortRdp.view_scale[0]);
 		v.sy = (s16)(zSortRdp.view_trans[1] + y / w * zSortRdp.view_scale[1]);
 
@@ -442,17 +441,17 @@ void ZSort_MoveMem( u32 _w0, u32 _w1 )
 	break;
 
 	case GZM_MMTX:  // model matrix
-		RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr);
+		gSP.matrix.modelView[gSP.matrix.modelViewi] = RSP_LoadMatrix(addr);
 		gSP.changed |= CHANGED_MATRIX;
 	break;
 
 	case GZM_PMTX:  // projection matrix
-		RSP_LoadMatrix(gSP.matrix.projection, addr);
+		gSP.matrix.projection = RSP_LoadMatrix(addr);
 		gSP.changed |= CHANGED_MATRIX;
 	break;
 
 	case GZM_MPMTX:  // combined matrix
-		RSP_LoadMatrix(gSP.matrix.combined, addr);
+		gSP.matrix.combined = RSP_LoadMatrix(addr);
 		gSP.changed &= ~CHANGED_MATRIX;
 	break;
 

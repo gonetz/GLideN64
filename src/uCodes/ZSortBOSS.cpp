@@ -120,7 +120,7 @@ void ZSortBOSS_ClearBuffer( u32, u32 )
 }
 
 static
-void StoreMatrix( f32 mtx[4][4], u32 address )
+void StoreMatrix( Mtx& mtx, u32 address )
 {
 	struct _N64Matrix
 	{
@@ -130,7 +130,7 @@ void StoreMatrix( f32 mtx[4][4], u32 address )
 	
 	for (u32 i = 0; i < 4; i++) {
 		for (u32 j = 0; j < 4; j++) {
-			const auto element = GetIntMatrixElement(mtx[i][j]);
+			const auto element = GetIntMatrixElement(mtx.v[i][j]);
 			n64Mat->fraction[i][j^1] = element.second;
 			n64Mat->integer[i][j^1] = element.first;
 		}
@@ -150,7 +150,7 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 	// model matrix
 	if((_w0 & 0xfff) == 0x830) {
 		assert(flag == 0);
-		RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr);
+		gSP.matrix.modelView[gSP.matrix.modelViewi] = RSP_LoadMatrix(addr);
 		gSP.changed |= CHANGED_MATRIX;
 		return;
 	}
@@ -158,7 +158,7 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 	// projection matrix
 	if((_w0 & 0xfff) == 0x870) {
 		assert(flag == 0);
-		RSP_LoadMatrix(gSP.matrix.projection, addr);
+		gSP.matrix.projection = RSP_LoadMatrix(addr);
 		gSP.changed |= CHANGED_MATRIX;
 		return;
 	}
@@ -166,7 +166,7 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 	// combined matrix
 	if((_w0 & 0xfff) == 0x8b0) {
 		if(flag == 0) {
-			RSP_LoadMatrix(gSP.matrix.combined, addr);
+			gSP.matrix.combined = RSP_LoadMatrix(addr);
 			gSP.changed &= ~CHANGED_MATRIX;
 		} else {
 			StoreMatrix(gSP.matrix.combined, addr);
@@ -225,9 +225,9 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 
 void ZSortBOSS_MTXCAT(u32 _w0, u32 _w1)
 {
-	M44 *s = nullptr;
-	M44 *t = nullptr;
-	M44 *d = nullptr;
+	Mtx *s = nullptr;
+	Mtx *t = nullptr;
+	Mtx *d = nullptr;
 	u32 S = (_w1 >> 16) & 0xfff;
 	u32 T = _w0 & 0xfff;
 	u32 D = _w1 & 0xfff;
@@ -235,60 +235,59 @@ void ZSortBOSS_MTXCAT(u32 _w0, u32 _w1)
 	switch(S) {
 		// model matrix
 		case 0x830:
-			s = (M44*)gSP.matrix.modelView[gSP.matrix.modelViewi];
+			s = &gSP.matrix.modelView[gSP.matrix.modelViewi];
 		break;
 
 		// projection matrix
 		case 0x870:
-			s = (M44*)gSP.matrix.projection;
+			s = &gSP.matrix.projection;
 		break;
 
 		// combined matrix
 		case 0x8b0:
-			s = (M44*)gSP.matrix.combined;
+			s = &gSP.matrix.combined;
 		break;
 	}
 
 	switch(T) {
 		// model matrix
 		case 0x830:
-			t = (M44*)gSP.matrix.modelView[gSP.matrix.modelViewi];
+			t = &gSP.matrix.modelView[gSP.matrix.modelViewi];
 		break;
 
 		// projection matrix
 		case 0x870:
-			t = (M44*)gSP.matrix.projection;
+			t = &gSP.matrix.projection;
 		break;
 
 		// combined matrix
 		case 0x8b0:
-			t = (M44*)gSP.matrix.combined;
+			t = &gSP.matrix.combined;
 		break;
 	}
 
 	assert(s != nullptr && t != nullptr);
-	f32 m[4][4];
-	MultMatrix(*s, *t, m);
+	auto m = MultMatrix(*s, *t);
 
 	switch(D) {
 		// model matrix
 		case 0x830:
-			d = (M44*)gSP.matrix.modelView[gSP.matrix.modelViewi];
+			d = &gSP.matrix.modelView[gSP.matrix.modelViewi];
 		break;
 
 		// projection matrix
 		case 0x870:
-			d = (M44*)gSP.matrix.projection;
+			d = &gSP.matrix.projection;
 		break;
 
 		// combined matrix
 		case 0x8b0:
-			d = (M44*)gSP.matrix.combined;
+			d = &gSP.matrix.combined;
 		break;
 	}
 
 	assert(d != nullptr);
-	memcpy(*d, m, 64);
+	*d = m;
 
 	LOG(LOG_VERBOSE, "ZSortBOSS_MTXCAT (S: 0x%04x, T: 0x%04x, D: 0x%04x)\n", S, T, D);
 }
@@ -313,10 +312,10 @@ void ZSortBOSS_MultMPMTX( u32 _w0, u32 _w1 )
 		s16 sx = saddr[(idx++)^1];
 		s16 sy = saddr[(idx++)^1];
 		s16 sz = saddr[(idx++)^1];
-		f32 x = sx*gSP.matrix.combined[0][0] + sy*gSP.matrix.combined[1][0] + sz*gSP.matrix.combined[2][0] + gSP.matrix.combined[3][0];
-		f32 y = sx*gSP.matrix.combined[0][1] + sy*gSP.matrix.combined[1][1] + sz*gSP.matrix.combined[2][1] + gSP.matrix.combined[3][1];
-		f32 z = sx*gSP.matrix.combined[0][2] + sy*gSP.matrix.combined[1][2] + sz*gSP.matrix.combined[2][2] + gSP.matrix.combined[3][2];
-		f32 w = sx*gSP.matrix.combined[0][3] + sy*gSP.matrix.combined[1][3] + sz*gSP.matrix.combined[2][3] + gSP.matrix.combined[3][3];
+		f32 x = sx*gSP.matrix.combined.v[0][0] + sy*gSP.matrix.combined.v[1][0] + sz*gSP.matrix.combined.v[2][0] + gSP.matrix.combined.v[3][0];
+		f32 y = sx*gSP.matrix.combined.v[0][1] + sy*gSP.matrix.combined.v[1][1] + sz*gSP.matrix.combined.v[2][1] + gSP.matrix.combined.v[3][1];
+		f32 z = sx*gSP.matrix.combined.v[0][2] + sy*gSP.matrix.combined.v[1][2] + sz*gSP.matrix.combined.v[2][2] + gSP.matrix.combined.v[3][2];
+		f32 w = sx*gSP.matrix.combined.v[0][3] + sy*gSP.matrix.combined.v[1][3] + sz*gSP.matrix.combined.v[2][3] + gSP.matrix.combined.v[3][3];
 
 		v.xi = (s16)x;
 		v.yi = (s16)y;
@@ -462,24 +461,23 @@ void ZSortBOSS_Obj( u32 _w0, u32 _w1 )
 
 void ZSortBOSS_TransposeMTX( u32, u32 _w1 )
 {
-	M44 *mtx = nullptr;
-	f32 m[4][4];
+	Mtx* mtx = nullptr;
 	assert((_w1 & 0xfff) == 0x830); // model matrix
 
 	switch(_w1 & 0xfff) {
 		// model matrix
 		case 0x830:
-			mtx = (M44*)gSP.matrix.modelView[gSP.matrix.modelViewi];
+			mtx = &gSP.matrix.modelView[gSP.matrix.modelViewi];
 		break;
 
 		// projection matrix
 		case 0x870:
-			mtx = (M44*)gSP.matrix.projection;
+			mtx = &gSP.matrix.projection;
 		break;
 
 		// combined matrix
 		case 0x8b0:
-			mtx = (M44*)gSP.matrix.combined;
+			mtx = &gSP.matrix.combined;
 		break;
 
 		default:
@@ -487,11 +485,11 @@ void ZSortBOSS_TransposeMTX( u32, u32 _w1 )
 			return;
 	}
 
-	memcpy(m, mtx, 64);
+	auto m = *mtx;
 
 	for(int i = 0; i < 3; i++) {
 		for(int j = 0; j < 3; j++) {
-			(*mtx)[j][i] = m[i][j];
+			mtx->v[j][i] = m.v[i][j];
 		}
 	}
 
@@ -549,15 +547,15 @@ void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
 }
 
 static
-void ZSortBOSS_TransformVectorNormalize(float vec[3], float mtx[4][4])
+void ZSortBOSS_TransformVectorNormalize(float vec[3], Mtx mtx)
 {
 	float vres[3];
 	float len;
 	float recip = 256.f;
 
-	vres[0] = mtx[0][0] * vec[0] + mtx[1][0] * vec[1] + mtx[2][0] * vec[2];
-	vres[1] = mtx[0][1] * vec[0] + mtx[1][1] * vec[1] + mtx[2][1] * vec[2];
-	vres[2] = mtx[0][2] * vec[0] + mtx[1][2] * vec[1] + mtx[2][2] * vec[2];
+	vres[0] = mtx.v[0][0] * vec[0] + mtx.v[1][0] * vec[1] + mtx.v[2][0] * vec[2];
+	vres[1] = mtx.v[0][1] * vec[0] + mtx.v[1][1] * vec[1] + mtx.v[2][1] * vec[2];
+	vres[2] = mtx.v[0][2] * vec[0] + mtx.v[1][2] * vec[1] + mtx.v[2][2] * vec[2];
 
 	len = vres[0]*vres[0] + vres[1]*vres[1] + vres[2]*vres[2];
 

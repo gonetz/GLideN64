@@ -3,6 +3,7 @@
 
 #include "Types.h"
 #include "N64.h"
+#include "3DMath.h"
 
 typedef struct
 {
@@ -26,7 +27,7 @@ extern u32 rectDepthBufferCopyFrame;
 
 void RSP_Init();
 void RSP_ProcessDList();
-void RSP_LoadMatrix( f32 mtx[4][4], u32 address );
+Mtx RSP_LoadMatrix( u32 address );
 void RSP_CheckDLCounter();
 
 #endif
