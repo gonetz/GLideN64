@@ -158,7 +158,8 @@ void Config::validate()
 	if (frameBufferEmulation.nativeResFactor == 1) {
 		graphics2D.enableNativeResTexrects = 0;
 		graphics2D.correctTexrectCoords = tcDisable;
-	} else {
+	}
+	else {
 		if (graphics2D.enableNativeResTexrects != 0)
 			graphics2D.correctTexrectCoords = tcDisable;
 	}
@@ -169,9 +170,13 @@ void Config::validate()
 		config.video.fxaa = 0;
 	}
 
-	if (config.angle.renderer == arDirectX11)
+	if (frameBufferEmulation.enable == 0)
 	{
 		config.generalEmulation.enableFragmentDepthWrite = 0;
+	}
+
+	if (config.angle.renderer == arDirectX11)
+	{
 		// TODO: Figure out MSAA on DX11
 		video.multisampling = 0;
 	}
