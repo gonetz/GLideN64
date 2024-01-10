@@ -22,6 +22,8 @@ public:
 
 	u32 getBilerp() const;
 
+	bool noAlpha() const;
+
 	u64 getMux() const { return m_key.mux; }
 
 	void read(std::istream & _is);

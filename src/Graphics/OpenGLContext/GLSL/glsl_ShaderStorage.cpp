@@ -229,7 +229,7 @@ CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is,
 	UniformGroups uniforms;
 	_uniformFactory.buildUniforms(program, cmbInputs, cmbKey, uniforms);
 
-	return new CombinerProgramImpl(cmbKey, program, _useProgram, cmbInputs, std::move(uniforms));
+	return new CombinerProgramImpl(cmbKey, program, _useProgram, cmbInputs, {}, std::move(uniforms));
 }
 
 bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)

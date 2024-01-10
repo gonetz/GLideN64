@@ -2233,7 +2233,7 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 	else if (combinedAlphaABD(combine))
 		m_signExtendAlphaABD->write(ssShader);
 
-	if (g_cycleType < G_CYC_FILL)
+	if (!_key.noAlpha() && g_cycleType < G_CYC_FILL)
 		m_alphaTest->write(ssShader);
 
 	ssShader << "  color1 = ";
@@ -2255,7 +2255,8 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		else
 			ssShader << "  alpha2 = alpha1;" << std::endl;
 
-		ssShader << "  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard;" << std::endl;
+		if (!_key.noAlpha())
+			ssShader << "  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard;" << std::endl;
 
 		if (_color.numStages == 2) {
 			ssShader << "  color2 = ";
@@ -2268,8 +2269,9 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		ssShader << "  lowp vec4 cmbRes = vec4(color2, alpha2);" << std::endl;
 	}
 	else {
-		if (g_cycleType < G_CYC_FILL)
+		if (!_key.noAlpha() && g_cycleType < G_CYC_FILL)
 			ssShader << "  if (uCvgXAlpha != 0 && alpha1 < 0.125) discard;" << std::endl;
+
 		ssShader << "  lowp vec4 cmbRes = vec4(color1, alpha1);" << std::endl;
 	}
 
@@ -2455,7 +2457,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	UniformGroups uniforms;
 	m_uniformFactory->buildUniforms(program, combinerInputs, _key, uniforms);
 
-	return new CombinerProgramImpl(_key, program, m_useProgram, combinerInputs, std::move(uniforms));
+	return new CombinerProgramImpl(_key, program, m_useProgram, combinerInputs, std::move(strFragmentShader), std::move(uniforms));
 }
 
 const ShaderPart * CombinerProgramBuilder::getVertexShaderHeader() const

@@ -13,6 +13,7 @@ CombinerProgramImpl::CombinerProgramImpl(const CombinerKey & _key,
 	GLuint _program,
 	opengl::CachedUseProgram * _useProgram,
 	const CombinerInputs & _inputs,
+	std::string program,
 	UniformGroups && _uniforms)
 : m_bNeedUpdate(true)
 , m_key(_key)
@@ -20,6 +21,9 @@ CombinerProgramImpl::CombinerProgramImpl(const CombinerKey & _key,
 , m_useProgram(_useProgram)
 , m_inputs(_inputs)
 , m_uniforms(std::move(_uniforms))
+#if 0
+, m_programCode(std::move(program))
+#endif
 {
 }
 

@@ -18,8 +18,32 @@ CombinerKey::CombinerKey(u64 _mux, bool _setModeBits)
 	u32 flags = CombinerInfo::get().isRectMode() ? 1U : 0U;
 	const u32 cycleType = gDP.otherMode.cycleType;
 	const u32 bilerp = (gDP.otherMode.h >> 10) & 3;
+
+	u32 wantAlpha = 0;
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		wantAlpha = 0;
+	}
+	else if (gDP.otherMode.cycleType == G_CYC_COPY) {
+		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
+			wantAlpha = 1;
+		}
+		else {
+			wantAlpha = 0;
+		}
+	}
+	else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
+		wantAlpha = 1;
+	}
+	else {
+		wantAlpha = 0;
+	}
+
+	wantAlpha |= !!(gDP.otherMode.cvgXAlpha);
+	u32 noAlpha = !wantAlpha;
+
 	flags |= (cycleType << 1);
 	flags |= (bilerp << 3);
+	flags |= (noAlpha << 5);
 
 	m_key.muxs0 |= (flags << 24);
 }
@@ -62,6 +86,11 @@ u32 CombinerKey::getBilerp() const
 bool CombinerKey::isRectKey() const
 {
 	return ((m_key.muxs0 >> 24) & 1) != 0;
+}
+
+bool CombinerKey::noAlpha() const
+{
+	return ((m_key.muxs0 >> 29) & 1) != 0;
 }
 
 void CombinerKey::read(std::istream & _is)

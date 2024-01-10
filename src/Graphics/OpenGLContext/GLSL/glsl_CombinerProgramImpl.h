@@ -26,6 +26,7 @@ namespace glsl {
 			GLuint _program,
 			opengl::CachedUseProgram * _useProgram,
 			const CombinerInputs & _inputs,
+			std::string _programCode,
 			UniformGroups && _uniforms);
 		~CombinerProgramImpl();
 
@@ -48,6 +49,10 @@ namespace glsl {
 		opengl::CachedUseProgram * m_useProgram;
 		CombinerInputs m_inputs;
 		UniformGroups m_uniforms;
+
+#if 0
+		std::string m_programCode;
+#endif
 	};
 
 }
