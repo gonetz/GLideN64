@@ -1735,11 +1735,14 @@ void gSPPerspNormalize( u16 scale )
 	DebugMsg(DEBUG_NORMAL| DEBUG_IGNORED, "gSPPerspNormalize( %i );\n", scale);
 }
 
+extern "C" uint32_t LegacySm64ToolsHacks;
 void gSPTexture( f32 sc, f32 tc, u32 level, u32 tile, u32 on )
 {
 	gSP.texture.on = on;
 	if (on == 0) {
-		gDPSetCombine(0xffffff, 0xFFFE793C);
+		if (LegacySm64ToolsHacks)
+			gDPSetCombine(0xffffff, 0xFFFE793C);
+
 		DebugMsg(DEBUG_NORMAL, "gSPTexture skipped b/c of off\n");
 		return;
 	}
@@ -1895,6 +1898,7 @@ void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 {
 	// Typo fixrefix
 	// !!! This is very cheesy fix
+	if (LegacySm64ToolsHacks)
 	{
 		const u32 maskH = (((u64)1 << 2) - 1) << 0x14;
 		if (!(gDP.otherMode.h & maskH) && _data == 0xC8113078)

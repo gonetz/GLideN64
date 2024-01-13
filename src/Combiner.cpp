@@ -268,6 +268,7 @@ graphics::CombinerProgram * Combiner_Compile(CombinerKey key)
 	return gfxContext.createCombinerProgram(color, alpha, key);
 }
 
+extern "C" uint32_t LegacySm64ToolsHacks;
 void CombinerInfo::update()
 {
 	// TODO: find, why gDP.changed & CHANGED_COMBINE not always works (e.g. Mario Tennis).
@@ -282,42 +283,45 @@ void CombinerInfo::update()
 			setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
 		}
 		else
-		{			// This is sanity check of provided combiner
-			if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
+		{
+			if (LegacySm64ToolsHacks)
 			{
-#define FIX_COMBINE(val) gDP.combine.val##1 = gDP.combine.val##0
-				FIX_COMBINE(aA);
-				FIX_COMBINE(aRGB);
-				FIX_COMBINE(mA);
-				FIX_COMBINE(mRGB);
-				FIX_COMBINE(saA);
-				FIX_COMBINE(saRGB);
-				FIX_COMBINE(sbA);
-				FIX_COMBINE(sbRGB);
-#undef FIX_COMBINE
-			}
-
-			// This forces COMBINED usage for 2nd mode and assumes no magic is happening in 2nd cycle
-			// Some magic may happen in the 2CYCLE mode, do not force anything
-			if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
-			{
-				if (gDP.combine.aRGB0 == gDP.combine.aRGB1
-					&& gDP.combine.mRGB0 == gDP.combine.mRGB1
-					&& gDP.combine.saRGB0 == gDP.combine.saRGB1
-					&& gDP.combine.sbRGB0 == gDP.combine.sbRGB1
-					)
+				// This is sanity check of provided combiner - 1st and 2nd cycle must be equal
+				if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
 				{
-					gDP.combine.aA1 = G_CCMUX_COMBINED;
-					gDP.combine.aRGB1 = G_CCMUX_COMBINED;
-					gDP.combine.mA1 = G_CCMUX_0;
-					gDP.combine.mRGB1 = G_CCMUX_0;
-					gDP.combine.saA1 = G_CCMUX_0;
-					gDP.combine.saRGB1 = G_CCMUX_0;
-					gDP.combine.sbA1 = G_CCMUX_0;
-					gDP.combine.sbRGB1 = G_CCMUX_0;
+#define FIX_COMBINE(val) gDP.combine.val##1 = gDP.combine.val##0
+					FIX_COMBINE(aA);
+					FIX_COMBINE(aRGB);
+					FIX_COMBINE(mA);
+					FIX_COMBINE(mRGB);
+					FIX_COMBINE(saA);
+					FIX_COMBINE(saRGB);
+					FIX_COMBINE(sbA);
+					FIX_COMBINE(sbRGB);
+#undef FIX_COMBINE
+				}
+
+				// This forces COMBINED usage for 2nd mode and assumes no magic is happening in 2nd cycle
+				// Some magic may happen in the 2CYCLE mode, do not force anything
+				if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+				{
+					if (gDP.combine.aRGB0 == gDP.combine.aRGB1
+						&& gDP.combine.mRGB0 == gDP.combine.mRGB1
+						&& gDP.combine.saRGB0 == gDP.combine.saRGB1
+						&& gDP.combine.sbRGB0 == gDP.combine.sbRGB1
+						)
+					{
+						gDP.combine.aA1 = G_CCMUX_COMBINED;
+						gDP.combine.aRGB1 = G_CCMUX_COMBINED;
+						gDP.combine.mA1 = G_CCMUX_0;
+						gDP.combine.mRGB1 = G_CCMUX_0;
+						gDP.combine.saA1 = G_CCMUX_0;
+						gDP.combine.saRGB1 = G_CCMUX_0;
+						gDP.combine.sbA1 = G_CCMUX_0;
+						gDP.combine.sbRGB1 = G_CCMUX_0;
+					}
 				}
 			}
-
 			setCombine(gDP.combine.mux);
 		}
 		gDP.changed &= ~CHANGED_COMBINE;

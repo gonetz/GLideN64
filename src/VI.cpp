@@ -29,9 +29,13 @@ u16 VI_GetMaxBufferHeight(u16 _width)
 	return VI.PAL ? 290 : 240;
 }
 
+extern "C" uint32_t LegacySm64ToolsHacks;
 void VI_UpdateSize()
 {
-	if (*REG.VI_V_SYNC == 0x0627) *REG.VI_V_SYNC = 0x0834;
+	if (LegacySm64ToolsHacks)
+	{
+		if (*REG.VI_V_SYNC == 0x0627) *REG.VI_V_SYNC = 0x0834;
+	}
 	
 	const f32 xScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 0, 12 ), 10 );
 //	f32 xOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 16, 12 ), 10 );

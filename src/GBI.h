@@ -489,6 +489,7 @@ struct MicrocodeInfo
 	bool fast3DPersp = false;
 	bool texturePersp = true;
 	bool combineMatrices = false;
+	bool sm64 = false;
 };
 
 struct GBIInfo

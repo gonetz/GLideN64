@@ -40,6 +40,10 @@
 #include "Graphics/Parameters.h"
 
 u32 last_good_ucode = (u32) -1;
+extern "C"
+{
+	uint32_t LegacySm64ToolsHacks = false;
+}
 
 struct SpecialMicrocodeInfo
 {
@@ -184,6 +188,7 @@ void GBIInfo::_flushCommands()
 
 void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 {
+	LegacySm64ToolsHacks = false;
 	if (_pCurrent->type == NONE) {
 		LOG(LOG_ERROR, "[GLideN64]: error - unknown ucode!!!\n");
 		return;
@@ -203,6 +208,9 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 		switch (m_pCurrent->type) {
 			case F3D:
+				if (m_pCurrent->sm64)
+					LegacySm64ToolsHacks = true;
+
 				F3D_Init();
 				m_hwlSupported = true;
 			break;
@@ -361,6 +369,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataAddress = uc_dstart;
 	current.dataSize = uc_dsize;
 	current.type = NONE;
+	current.sm64 = false;
 
 	// See if we can identify it by CRC
 	const u32 uc_crc = CRC_Calculate_Strict( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
@@ -374,6 +383,9 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 		current.NoN = info.NoN;
 		current.negativeY = info.negativeY;
 		current.fast3DPersp = info.fast3DPerspNorm;
+		if (uc_crc == 0x6932365f) // sm64 microcode
+			current.sm64 = true;
+
 		LOG(LOG_VERBOSE, "Load microcode type: %d crc: 0x%08x romname: %s\n", current.type, uc_crc, RSP.romname);
 		_makeCurrent(&current);
 		return;
