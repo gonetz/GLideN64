@@ -78,6 +78,7 @@ public:
 				   N64FormatSize n64FmtSz,
 				   GHQTexInfo *info);
   uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
+  uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
   boolean dmptx(uint8 *src, int width, int height, int rowStridePixel, ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64);
   boolean reloadhirestex();
   void dumpcache();

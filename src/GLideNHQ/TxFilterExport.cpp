@@ -84,6 +84,15 @@ txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, ui
   return 0;
 }
 
+TAPI uint64 TAPIENTRY
+txfilter_checksum_strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+{
+	if (txFilter)
+		return txFilter->checksum64strong(src, width, height, size, rowStride, palette);
+
+	return 0;
+}
+
 TAPI boolean TAPIENTRY
 txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum r_crc64)
 {
