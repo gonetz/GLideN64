@@ -465,7 +465,7 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.textureFilter.txHiresFullAlphaChannel = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txHresAltCRC", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.textureFilter.txHresAltCRC = atoi(value);
-	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txDump", value, sizeof(value));
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txForce16bpp", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.textureFilter.txForce16bpp = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txCacheCompression", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.textureFilter.txCacheCompression = atoi(value);
