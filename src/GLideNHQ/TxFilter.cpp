@@ -590,7 +590,8 @@ TxFilter::checksum64strong(uint8 *src, int width, int height, int size, int rowS
 }
 
 boolean
-TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64)
+TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
+				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc)
 {
 	assert(gfmt != graphics::colorFormat::RGBA);
 	if (!_initialized)
@@ -618,7 +619,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, ColorForm
 		tmpbuf.assign(_dumpPath);
 		tmpbuf.append(wst("/"));
 		tmpbuf.append(_ident);
-		tmpbuf.append(wst("/GLideNHQ"));
+		isStrongCrc ? tmpbuf.append(wst("/GLideNHQ_strong_crc")) : tmpbuf.append(wst("/GLideNHQ"));
 		if (!osal_path_existsW(tmpbuf.c_str()) && osal_mkdirp(tmpbuf.c_str()) != 0)
 			return 0;
 

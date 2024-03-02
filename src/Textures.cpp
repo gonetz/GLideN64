@@ -1499,10 +1499,15 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 			config.textureFilter.txHiresEnable != 0 &&
 			config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
 			config.textureFilter.txDump) {
-			txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
-						   tmptex.width, (u16)u32(glInternalFormat),
-						   N64FormatSize(_pTexture->format, _pTexture->size),
-						   config.textureFilter.txStrongCRC ? strongcrc : ricecrc);
+				config.textureFilter.txStrongCRC ?
+				txfilter_dmptx_strong((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					strongcrc) :
+				txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					ricecrc);
 		}
 
 		bool bLoaded = false;
@@ -1676,10 +1681,15 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 				config.textureFilter.txHiresEnable != 0 &&
 				config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
 				config.textureFilter.txDump) {
-				txfilter_dmptx((u8*)(m_tempTextureHolder.data() + texDataOffset), tmptex.width, tmptex.height,
-					tmptex.width, (u16)u32(glInternalFormat),
-					N64FormatSize(_pTexture->format, _pTexture->size),
-					config.textureFilter.txStrongCRC ? strongcrc : ricecrc);
+				config.textureFilter.txStrongCRC ?
+					txfilter_dmptx_strong((u8*)(m_tempTextureHolder.data() + texDataOffset), tmptex.width, tmptex.height,
+						tmptex.width, (u16)u32(glInternalFormat),
+						N64FormatSize(_pTexture->format, _pTexture->size),
+						strongcrc) :
+					txfilter_dmptx((u8*)(m_tempTextureHolder.data() + texDataOffset), tmptex.width, tmptex.height,
+						tmptex.width, (u16)u32(glInternalFormat),
+						N64FormatSize(_pTexture->format, _pTexture->size),
+						ricecrc);
 			}
 
 			texDataOffset += tmptex.width * tmptex.height;
@@ -1735,10 +1745,15 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			config.textureFilter.txHiresEnable != 0 &&
 			config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
 			config.textureFilter.txDump) {
-			txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+				config.textureFilter.txStrongCRC ?
+				txfilter_dmptx_strong((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
 					tmptex.width, (u16)u32(glInternalFormat),
 					N64FormatSize(_pTexture->format, _pTexture->size),
-					config.textureFilter.txStrongCRC ? strongcrc : ricecrc);
+					strongcrc) :
+				txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					ricecrc);
 		}
 
 		bool bLoaded = false;

@@ -139,8 +139,6 @@ static void checkHotkeys()
 			else
 				dwnd().getDrawer().showMessage("Disable strong CRC for textures dump\n", Milliseconds(750));
 			config.textureFilter.txStrongCRC = !config.textureFilter.txStrongCRC;
-			TFH.shutdown();
-			TFH.init();
 		}
 	}
 

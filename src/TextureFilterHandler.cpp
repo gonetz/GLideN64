@@ -112,12 +112,6 @@ void TextureFilterHandler::init()
 		pTexDumpPath = txDumpPath;
 	}
 
-	if (config.textureFilter.txStrongCRC) {
-		::wcscpy(txDumpPath, pTexDumpPath);
-		gln_wcscat(txDumpPath, wst("/strong_crc"));
-		pTexDumpPath = txDumpPath;
-	}
-
 	m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
 		maxTextureSize, // max texture height supported by hardware
 		32, // max texture bpp supported by hardware

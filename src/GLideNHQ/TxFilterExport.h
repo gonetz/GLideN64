@@ -232,6 +232,9 @@ TAPI boolean TAPIENTRY
 txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum r_crc64);
 
 TAPI boolean TAPIENTRY
+txfilter_dmptx_strong(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum r_crc64);
+
+TAPI boolean TAPIENTRY
 txfilter_reloadhirestex();
 
 TAPI void TAPIENTRY
