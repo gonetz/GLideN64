@@ -515,18 +515,27 @@ findmax0:
 uint32
 TxUtil::StrongCRC32(const uint8* src, int width, int height, int size, int rowStride)
 {
-	/* NOTE: bytes_per_width must be equal or larger than 4 */
-
+	/* NOTE: bytesPerLine must be equal or larger than 4 */
 	const uint32 bytesPerLine = width << size >> 1;
 
 	u64 crc = UINT64_MAX;
+	std::vector<uint8> buf(height*rowStride);
+	uint8* pData = buf.data();
 	try {
-		int y = height - 1;
-		while (y >= 0) {
-			crc = XXH3_64bits_withSeed(src, bytesPerLine, crc);
+		for (int y = 0; y < height; ++y) {
+			if (bytesPerLine < 4) {
+				// bytesPerLine must be >= 4, but if it less than 4, reproduce RiceCRC behavior,
+				// that is read bytes before provided source address.
+				memcpy(pData, src - 4 + bytesPerLine, 4);
+				pData += 4;
+			}
+			else {
+				memcpy(pData, src, bytesPerLine);
+				pData += bytesPerLine;
+			}
 			src += rowStride;
-			--y;
 		}
+		crc = XXH3_64bits(buf.data(), static_cast<size_t>(pData - buf.data()));
 	}
 	catch (...) {
 		DBG_INFO(80, wst("Error: StrongCRC32 exception!\n"));
