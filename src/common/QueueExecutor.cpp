@@ -99,6 +99,7 @@ void QueueExecutor::loop()
 
         try
         {
+#if 0
             if (auto sync = std::get_if<SyncTaskPtr>(&task))
             {
                 (*sync)->run();
@@ -107,6 +108,16 @@ void QueueExecutor::loop()
             {
                 (*async)->run();
             }
+#else
+            if (task.sync)
+            {
+                task.sync->run();
+            }
+            if (task.async)
+            {
+                task.async->run();
+            }
+#endif
         }
         catch (...)
         {

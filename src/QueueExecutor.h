@@ -180,7 +180,18 @@ private:
 
     using SyncTaskPtr = SyncTask*;
     using AsyncTaskPtr = std::unique_ptr<AsyncTask>;
+#if 0
     using Task = std::variant<SyncTaskPtr, AsyncTaskPtr>;
+#else
+    struct Task
+    {
+        Task(SyncTaskPtr t) : sync(std::move(t)) {}
+        Task(AsyncTaskPtr t) : sync(nullptr), async(std::move(t)) { }
+
+        SyncTaskPtr sync;
+        AsyncTaskPtr async;
+    };
+#endif
 
     SynchImports synch_;
 
