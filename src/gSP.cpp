@@ -120,10 +120,10 @@ gSPInfo gSP;
 
 static const Mtx identityMatrix =
 {
-	1.0f, 0.0f, 0.0f, 0.0f ,
-	0.0f, 1.0f, 0.0f, 0.0f ,
-	0.0f, 0.0f, 1.0f, 0.0f ,
-	0.0f, 0.0f, 0.0f, 1.0f 
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f
 };
 
 void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
@@ -446,28 +446,28 @@ void gSPUpdateLookatVectors()
 /*---------------------------------Vertex Load------------------------------------*/
 
 static
-void gSPTransformVector_default(float vtx[4], float mtx[4][4])
+void gSPTransformVector(float vtx[4], Mtx mtx)
 {
 	const float x = vtx[0];
 	const float y = vtx[1];
 	const float z = vtx[2];
 
-	vtx[0] = x * mtx[0][0] + y * mtx[1][0] + z * mtx[2][0] + mtx[3][0];
-	vtx[1] = x * mtx[0][1] + y * mtx[1][1] + z * mtx[2][1] + mtx[3][1];
-	vtx[2] = x * mtx[0][2] + y * mtx[1][2] + z * mtx[2][2] + mtx[3][2];
-	vtx[3] = x * mtx[0][3] + y * mtx[1][3] + z * mtx[2][3] + mtx[3][3];
+	vtx[0] = x * mtx.v[0][0] + y * mtx.v[1][0] + z * mtx.v[2][0] + mtx.v[3][0];
+	vtx[1] = x * mtx.v[0][1] + y * mtx.v[1][1] + z * mtx.v[2][1] + mtx.v[3][1];
+	vtx[2] = x * mtx.v[0][2] + y * mtx.v[1][2] + z * mtx.v[2][2] + mtx.v[3][2];
+	vtx[3] = x * mtx.v[0][3] + y * mtx.v[1][3] + z * mtx.v[2][3] + mtx.v[3][3];
 }
 
 static
-void gSPInverseTransformVector_default(float vec[3], float mtx[4][4])
+void gSPInverseTransformVector(float vec[3], Mtx mtx)
 {
 	const float x = vec[0];
 	const float y = vec[1];
 	const float z = vec[2];
 
-	vec[0] = mtx[0][0] * x + mtx[0][1] * y + mtx[0][2] * z;
-	vec[1] = mtx[1][0] * x + mtx[1][1] * y + mtx[1][2] * z;
-	vec[2] = mtx[2][0] * x + mtx[2][1] * y + mtx[2][2] * z;
+	vec[0] = mtx.v[0][0] * x + mtx.v[0][1] * y + mtx.v[0][2] * z;
+	vec[1] = mtx.v[1][0] * x + mtx.v[1][1] * y + mtx.v[1][2] * z;
+	vec[2] = mtx.v[2][0] * x + mtx.v[2][1] * y + mtx.v[2][2] * z;
 }
 
 template <u32 VNUM>
@@ -626,7 +626,7 @@ void gSPPointLightVertexZeldaMM(u32 v, float _vecPos[VNUM][4], SPVertex * spVtx)
 		vtx.r = gSP.lights.rgb[gSP.numLights][R];
 		vtx.g = gSP.lights.rgb[gSP.numLights][G];
 		vtx.b = gSP.lights.rgb[gSP.numLights][B];
-		gSPTransformVector(_vecPos[j], gSP.matrix.modelView[gSP.matrix.modelViewi].v);
+		gSPTransformVector(_vecPos[j], gSP.matrix.modelView[gSP.matrix.modelViewi]);
 
 		for (u32 l = 0; l < gSP.numLights; ++l) {
 			if (gSP.lights.ca[l] != 0.0f) {
@@ -640,7 +640,7 @@ void gSPPointLightVertexZeldaMM(u32 v, float _vecPos[VNUM][4], SPVertex * spVtx)
 				const f32 K = lvec[0] * lvec[0] + lvec[1] * lvec[1] + lvec[2] * lvec[2] * 2.0f;
 				const f32 KS = sqrtf(K);
 
-				gSPInverseTransformVector(lvec, gSP.matrix.modelView[gSP.matrix.modelViewi].v);
+				gSPInverseTransformVector(lvec, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 
 				for (u32 i = 0; i < 3; ++i) {
 					lvec[i] = (4.0f * lvec[i] / KS);
@@ -2122,16 +2122,6 @@ void gSPSprite2DBase(u32 _base)
 			drawer.drawScreenSpaceTriangle(4);
 	} while (RSP.nextCmd == 0xBD || RSP.nextCmd == 0xBE);
 }
-
-#ifndef __NEON_OPT
-void(*gSPInverseTransformVector)(float vec[3], float mtx[4][4]) = gSPInverseTransformVector_default;
-void(*gSPTransformVector)(float vtx[4], float mtx[4][4]) = gSPTransformVector_default;
-#else
-void gSPInverseTransformVector_NEON(float vec[3], float mtx[4][4]);
-void gSPTransformVector_NEON(float vtx[4], float mtx[4][4]);
-void(*gSPInverseTransformVector)(float vec[3], float mtx[4][4]) = gSPInverseTransformVector_NEON;
-void(*gSPTransformVector)(float vtx[4], float mtx[4][4]) = gSPTransformVector_NEON;
-#endif //__NEON_OPT
 
 void gSPSetupFunctions()
 {

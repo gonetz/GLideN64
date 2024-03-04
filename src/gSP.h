@@ -210,9 +210,8 @@ void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
 					const s32 v30, const s32 v31, const s32 v32 );
 
 void gSPLightVertex(SPVertex & _vtx);
-
-extern void (*gSPTransformVector)(float vtx[4], float mtx[4][4]);
-extern void (*gSPInverseTransformVector)(float vec[3], float mtx[4][4]);
+void gSPTransformVector(float vtx[4], Mtx mtx);
+void gSPInverseTransformVector(float vec[3], Mtx mtx);
 void gSPSetupFunctions();
 void gSPFlushTriangles();
 #endif

@@ -125,7 +125,7 @@ void ZSort_DrawObject (u8 * _addr, u32 _type)
 	drawer.drawScreenSpaceTriangle(vnum);
 }
 
-static
+__attribute__((optnone))  static
 u32 ZSort_LoadObject (u32 _zHeader, u32 * _pRdpCmds)
 {
 	const u32 type = _zHeader & 7;
