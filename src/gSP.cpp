@@ -198,13 +198,13 @@ void gSPMatrix( u32 matrix, u8 param )
 		(param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL",
 		(param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH");
 	DebugMsg(DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[0][0], mtx.v[0][1], mtx.v[0][2], mtx.v[0][3] );
+		mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[1][0], mtx.v[1][1], mtx.v[1][2], mtx.v[1][3] );
+		mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[2][0], mtx.v[2][1], mtx.v[2][2], mtx.v[2][3] );
+		mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[3][0], mtx.v[3][1], mtx.v[3][2], mtx.v[3][3] );
+		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
 }
 
 void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
@@ -235,13 +235,13 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 	DebugMsg(DEBUG_NORMAL, "gSPDMAMatrix( 0x%08X, %i, %s );\n",
 		matrix, index, multiply ? "TRUE" : "FALSE");
 	DebugMsg(DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[0][0], mtx.v[0][1], mtx.v[0][2], mtx.v[0][3] );
+		mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[1][0], mtx.v[1][1], mtx.v[1][2], mtx.v[1][3] );
+		mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[2][0], mtx.v[2][1], mtx.v[2][2], mtx.v[2][3] );
+		mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
-		mtx.v[3][0], mtx.v[3][1], mtx.v[3][2], mtx.v[3][3] );
+		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
 }
 
 void gSPViewport( u32 v )
@@ -452,10 +452,10 @@ void gSPTransformVector(float vtx[4], Mtx mtx)
 	const float y = vtx[1];
 	const float z = vtx[2];
 
-	vtx[0] = x * mtx.v[0][0] + y * mtx.v[1][0] + z * mtx.v[2][0] + mtx.v[3][0];
-	vtx[1] = x * mtx.v[0][1] + y * mtx.v[1][1] + z * mtx.v[2][1] + mtx.v[3][1];
-	vtx[2] = x * mtx.v[0][2] + y * mtx.v[1][2] + z * mtx.v[2][2] + mtx.v[3][2];
-	vtx[3] = x * mtx.v[0][3] + y * mtx.v[1][3] + z * mtx.v[2][3] + mtx.v[3][3];
+	vtx[0] = x * mtx[0][0] + y * mtx[1][0] + z * mtx[2][0] + mtx[3][0];
+	vtx[1] = x * mtx[0][1] + y * mtx[1][1] + z * mtx[2][1] + mtx[3][1];
+	vtx[2] = x * mtx[0][2] + y * mtx[1][2] + z * mtx[2][2] + mtx[3][2];
+	vtx[3] = x * mtx[0][3] + y * mtx[1][3] + z * mtx[2][3] + mtx[3][3];
 }
 
 static
@@ -465,9 +465,9 @@ void gSPInverseTransformVector(float vec[3], Mtx mtx)
 	const float y = vec[1];
 	const float z = vec[2];
 
-	vec[0] = mtx.v[0][0] * x + mtx.v[0][1] * y + mtx.v[0][2] * z;
-	vec[1] = mtx.v[1][0] * x + mtx.v[1][1] * y + mtx.v[1][2] * z;
-	vec[2] = mtx.v[2][0] * x + mtx.v[2][1] * y + mtx.v[2][2] * z;
+	vec[0] = mtx[0][0] * x + mtx[0][1] * y + mtx[0][2] * z;
+	vec[1] = mtx[1][0] * x + mtx[1][1] * y + mtx[1][2] * z;
+	vec[2] = mtx[2][0] * x + mtx[2][1] * y + mtx[2][2] * z;
 }
 
 template <u32 VNUM>
@@ -768,10 +768,10 @@ void gSPTransformVertex(u32 v, SPVertex * spVtx, Mtx mtx)
 		x = vtx.x;
 		y = vtx.y;
 		z = vtx.z;
-		vtx.x = x * mtx.v[0][0] + y * mtx.v[1][0] + z * mtx.v[2][0] + mtx.v[3][0];
-		vtx.y = x * mtx.v[0][1] + y * mtx.v[1][1] + z * mtx.v[2][1] + mtx.v[3][1];
-		vtx.z = x * mtx.v[0][2] + y * mtx.v[1][2] + z * mtx.v[2][2] + mtx.v[3][2];
-		vtx.w = x * mtx.v[0][3] + y * mtx.v[1][3] + z * mtx.v[2][3] + mtx.v[3][3];
+		vtx.x = x * mtx[0][0] + y * mtx[1][0] + z * mtx[2][0] + mtx[3][0];
+		vtx.y = x * mtx[0][1] + y * mtx[1][1] + z * mtx[2][1] + mtx[3][1];
+		vtx.z = x * mtx[0][2] + y * mtx[1][2] + z * mtx[2][2] + mtx[3][2];
+		vtx.w = x * mtx[0][3] + y * mtx[1][3] + z * mtx[2][3] + mtx[3][3];
 	}
 #else
 	void gSPTransformVector_NEON(float vtx[4], float mtx[4][4]);
@@ -806,7 +806,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 		for(int i = 0; i < VNUM; ++i) {
 			SPVertex & vtx = spVtx[v+i];
 			vtx.x *= adjustScale;
-			if (gSP.matrix.projection.v[3][2] == -1.f)
+			if (gSP.matrix.projection[3][2] == -1.f)
 				vtx.w *= adjustScale;
 		}
 	}
@@ -1663,7 +1663,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				if (dwnd().isAdjustScreen()) {
 					const f32 adjustScale = dwnd().getAdjustScale();
 					vtx0.x *= adjustScale;
-					if (gSP.matrix.projection.v[3][2] == -1.f)
+					if (gSP.matrix.projection[3][2] == -1.f)
 						vtx0.w *= adjustScale;
 				}
 

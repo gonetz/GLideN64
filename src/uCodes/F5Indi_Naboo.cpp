@@ -1239,9 +1239,9 @@ void F5Naboo_TexrectGen()
 	u32 param4X = params[4] & 0xFFFF0000;
 	u32 param4Y = _SHIFTL(params[4], 16, 16);
 	float intpart;
-	const f32 frac_x_f = fabs(modff(gSP.matrix.combined.v[0][0], &intpart));
+	const f32 frac_x_f = fabs(modff(gSP.matrix.combined[0][0], &intpart));
 	const u32 combMatrixFracX = u32(frac_x_f*65536.0f);
-	const f32 frac_y_f = fabs(modff(gSP.matrix.combined.v[0][1], &intpart));
+	const f32 frac_y_f = fabs(modff(gSP.matrix.combined[0][1], &intpart));
 	const u32 combMatrixFracY = u32(frac_y_f*65536.0f);
 	param4X |= combMatrixFracX;
 	param4Y |= combMatrixFracY;

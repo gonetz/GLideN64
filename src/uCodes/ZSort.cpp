@@ -356,10 +356,10 @@ void ZSort_MultMPMTX( u32 _w0, u32 _w1 )
 		s16 sx = saddr[(idx++)^1];
 		s16 sy = saddr[(idx++)^1];
 		s16 sz = saddr[(idx++)^1];
-		f32 x = sx*gSP.matrix.combined.v[0][0] + sy*gSP.matrix.combined.v[1][0] + sz*gSP.matrix.combined.v[2][0] + gSP.matrix.combined.v[3][0];
-		f32 y = sx*gSP.matrix.combined.v[0][1] + sy*gSP.matrix.combined.v[1][1] + sz*gSP.matrix.combined.v[2][1] + gSP.matrix.combined.v[3][1];
-		f32 z = sx*gSP.matrix.combined.v[0][2] + sy*gSP.matrix.combined.v[1][2] + sz*gSP.matrix.combined.v[2][2] + gSP.matrix.combined.v[3][2];
-		f32 w = sx*gSP.matrix.combined.v[0][3] + sy*gSP.matrix.combined.v[1][3] + sz*gSP.matrix.combined.v[2][3] + gSP.matrix.combined.v[3][3];
+		f32 x = sx*gSP.matrix.combined[0][0] + sy*gSP.matrix.combined[1][0] + sz*gSP.matrix.combined[2][0] + gSP.matrix.combined[3][0];
+		f32 y = sx*gSP.matrix.combined[0][1] + sy*gSP.matrix.combined[1][1] + sz*gSP.matrix.combined[2][1] + gSP.matrix.combined[3][1];
+		f32 z = sx*gSP.matrix.combined[0][2] + sy*gSP.matrix.combined[1][2] + sz*gSP.matrix.combined[2][2] + gSP.matrix.combined[3][2];
+		f32 w = sx*gSP.matrix.combined[0][3] + sy*gSP.matrix.combined[1][3] + sz*gSP.matrix.combined[2][3] + gSP.matrix.combined[3][3];
 		v.sx = (s16)(zSortRdp.view_trans[0] + x / w * zSortRdp.view_scale[0]);
 		v.sy = (s16)(zSortRdp.view_trans[1] + y / w * zSortRdp.view_scale[1]);
 

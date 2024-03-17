@@ -216,12 +216,12 @@ void RSP_SetDefaultState()
 
 	for (int i = 0; i < 4; i++)
 	for (int j = 0; j < 4; j++)
-		gSP.matrix.modelView[0].v[i][j] = 0.0f;
+		gSP.matrix.modelView[0][i][j] = 0.0f;
 
-	gSP.matrix.modelView[0].v[0][0] = 1.0f;
-	gSP.matrix.modelView[0].v[1][1] = 1.0f;
-	gSP.matrix.modelView[0].v[2][2] = 1.0f;
-	gSP.matrix.modelView[0].v[3][3] = 1.0f;
+	gSP.matrix.modelView[0][0][0] = 1.0f;
+	gSP.matrix.modelView[0][1][1] = 1.0f;
+	gSP.matrix.modelView[0][2][2] = 1.0f;
+	gSP.matrix.modelView[0][3][3] = 1.0f;
 
 	gSP.clipRatio = 2U;
 

@@ -6,9 +6,13 @@
 #include <Types.h>
 #include "GBI.h"
 
-struct __declspec(align((16))) Mtx
+typedef f32 Vec __attribute__((vector_size(16)));
+struct Mtx
 {
-	f32 v[4][4];
+	Vec v[4];
+
+	Vec& operator[](int i) { return v[i]; }
+	const Vec& operator[](int i) const { return v[i]; }
 };
 
 Mtx MultMatrix(Mtx m0, const Mtx& m1);

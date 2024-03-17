@@ -130,7 +130,7 @@ void StoreMatrix( Mtx& mtx, u32 address )
 	
 	for (u32 i = 0; i < 4; i++) {
 		for (u32 j = 0; j < 4; j++) {
-			const auto element = GetIntMatrixElement(mtx.v[i][j]);
+			const auto element = GetIntMatrixElement(mtx[i][j]);
 			n64Mat->fraction[i][j^1] = element.second;
 			n64Mat->integer[i][j^1] = element.first;
 		}
@@ -312,10 +312,10 @@ void ZSortBOSS_MultMPMTX( u32 _w0, u32 _w1 )
 		s16 sx = saddr[(idx++)^1];
 		s16 sy = saddr[(idx++)^1];
 		s16 sz = saddr[(idx++)^1];
-		f32 x = sx*gSP.matrix.combined.v[0][0] + sy*gSP.matrix.combined.v[1][0] + sz*gSP.matrix.combined.v[2][0] + gSP.matrix.combined.v[3][0];
-		f32 y = sx*gSP.matrix.combined.v[0][1] + sy*gSP.matrix.combined.v[1][1] + sz*gSP.matrix.combined.v[2][1] + gSP.matrix.combined.v[3][1];
-		f32 z = sx*gSP.matrix.combined.v[0][2] + sy*gSP.matrix.combined.v[1][2] + sz*gSP.matrix.combined.v[2][2] + gSP.matrix.combined.v[3][2];
-		f32 w = sx*gSP.matrix.combined.v[0][3] + sy*gSP.matrix.combined.v[1][3] + sz*gSP.matrix.combined.v[2][3] + gSP.matrix.combined.v[3][3];
+		f32 x = sx*gSP.matrix.combined[0][0] + sy*gSP.matrix.combined[1][0] + sz*gSP.matrix.combined[2][0] + gSP.matrix.combined[3][0];
+		f32 y = sx*gSP.matrix.combined[0][1] + sy*gSP.matrix.combined[1][1] + sz*gSP.matrix.combined[2][1] + gSP.matrix.combined[3][1];
+		f32 z = sx*gSP.matrix.combined[0][2] + sy*gSP.matrix.combined[1][2] + sz*gSP.matrix.combined[2][2] + gSP.matrix.combined[3][2];
+		f32 w = sx*gSP.matrix.combined[0][3] + sy*gSP.matrix.combined[1][3] + sz*gSP.matrix.combined[2][3] + gSP.matrix.combined[3][3];
 
 		v.xi = (s16)x;
 		v.yi = (s16)y;
@@ -489,7 +489,7 @@ void ZSortBOSS_TransposeMTX( u32, u32 _w1 )
 
 	for(int i = 0; i < 3; i++) {
 		for(int j = 0; j < 3; j++) {
-			mtx->v[j][i] = m.v[i][j];
+			mtx->v[j][i] = m[i][j];
 		}
 	}
 
@@ -553,9 +553,9 @@ void ZSortBOSS_TransformVectorNormalize(float vec[3], Mtx mtx)
 	float len;
 	float recip = 256.f;
 
-	vres[0] = mtx.v[0][0] * vec[0] + mtx.v[1][0] * vec[1] + mtx.v[2][0] * vec[2];
-	vres[1] = mtx.v[0][1] * vec[0] + mtx.v[1][1] * vec[1] + mtx.v[2][1] * vec[2];
-	vres[2] = mtx.v[0][2] * vec[0] + mtx.v[1][2] * vec[1] + mtx.v[2][2] * vec[2];
+	vres[0] = mtx[0][0] * vec[0] + mtx[1][0] * vec[1] + mtx[2][0] * vec[2];
+	vres[1] = mtx[0][1] * vec[0] + mtx[1][1] * vec[1] + mtx[2][1] * vec[2];
+	vres[2] = mtx[0][2] * vec[0] + mtx[1][2] * vec[1] + mtx[2][2] * vec[2];
 
 	len = vres[0]*vres[0] + vres[1]*vres[1] + vres[2]*vres[2];
 
