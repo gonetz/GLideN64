@@ -517,7 +517,7 @@ TxUtil::StrongCRC32(const uint8* src, int width, int height, int size, int rowSt
 	const uint32 bytesPerLine = width << size >> 1;
 
 	u64 crc = UINT64_MAX;
-	std::vector<uint8> buf(height*rowStride);
+	std::vector<uint8> buf(static_cast<uint32>(height) * std::max(bytesPerLine, static_cast<uint32>(rowStride)));
 	uint8* pData = buf.data();
 	try {
 		for (int y = 0; y < height; ++y) {
