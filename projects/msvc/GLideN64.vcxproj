@@ -227,7 +227,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\3DMath.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp" />

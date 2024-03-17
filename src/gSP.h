@@ -36,9 +36,30 @@ enum Axis { X ,Y, Z, W };
 
 struct __declspec(align((16))) SPVertex
 {
-	f32 x, y, z, w;
-	f32 nx, ny, nz, __pad0;
-	f32 r, g, b, a;
+	union
+	{
+		Vec pos;
+		struct
+		{
+			f32 x, y, z, w;
+		};
+	};
+	union
+	{
+		Vec normal;
+		struct
+		{
+			f32 nx, ny, nz, __pad0;
+		};
+	};
+	union
+	{
+		Vec color;
+		struct
+		{
+			f32 r, g, b, a;
+		};
+	};
 	f32 flat_r, flat_g, flat_b, flat_a;
 	f32 s, t;
 	u32 modify;
@@ -66,19 +87,19 @@ struct gSPInfo
 
 	struct
 	{
-		f32 rgb[12][3];
-		f32 xyz[12][3];
-		f32 i_xyz[12][3];
-		f32 pos_xyzw[12][4];
+		Vec rgb[12];
+		Vec xyz[12];
+		Vec i_xyz[12];
+		Vec pos_xyzw[12];
 		f32 ca[12], la[12], qa[12];
 	} lights;
 
 	struct
 	{
-		f32 rgb[2][3];
-		f32 xyz[2][3];
-		f32 i_xyz[2][3];
-		f32 pos_xyzw[2][4];
+		Vec rgb[2];
+		Vec xyz[2];
+		Vec i_xyz[2];
+		Vec pos_xyzw[2];
 		f32 ca[2], la[2], qa[2];
 	} lookat;
 
@@ -210,8 +231,8 @@ void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
 					const s32 v30, const s32 v31, const s32 v32 );
 
 void gSPLightVertex(SPVertex & _vtx);
-void gSPTransformVector(float vtx[4], Mtx mtx);
-void gSPInverseTransformVector(float vec[3], Mtx mtx);
+void gSPTransformVector(Vec& vtx, Mtx mtx);
+void gSPInverseTransformVector(Vec& vec, Mtx mtx);
 void gSPSetupFunctions();
 void gSPFlushTriangles();
 #endif

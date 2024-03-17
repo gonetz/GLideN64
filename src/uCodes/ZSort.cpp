@@ -260,9 +260,9 @@ void ZSort_Lighting( u32 _w0, u32 _w1 )
 		vtx.nx = ((s8*)DMEM)[(nsrs++)^3];
 		vtx.ny = ((s8*)DMEM)[(nsrs++)^3];
 		vtx.nz = ((s8*)DMEM)[(nsrs++)^3];
-		TransformVectorNormalize( &vtx.nx, gSP.matrix.modelView[gSP.matrix.modelViewi] );
+		TransformVectorNormalize( vtx.normal, gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		gSPLightVertex(vtx);
-		f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+		Vec fLightDir = {vtx.nx, vtx.ny, vtx.nz};
 		TransformVectorNormalize(fLightDir, gSP.matrix.projection);
 		f32 x, y;
 		if (gSP.lookatEnable) {

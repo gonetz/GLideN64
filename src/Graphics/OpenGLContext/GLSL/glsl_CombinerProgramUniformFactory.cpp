@@ -61,6 +61,13 @@ struct fv3Uniform {
 			glUniform3fv(loc, 1, _pVal);
 		}
 	}
+
+	void set(Vec _pVal, bool _force) {
+		if (loc >= 0 && (_force || !(_pVal[0] == val[0] && _pVal[1] == val[1] && _pVal[2] == val[2]))) {
+			val[0] = _pVal[0]; val[1] = _pVal[1]; val[2] = _pVal[2];
+			glUniform3fv(loc, 1, val);
+		}
+	}
 };
 
 struct fv4Uniform {

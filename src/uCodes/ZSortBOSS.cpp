@@ -526,7 +526,7 @@ void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
 		// TODO: implement light vertex if ever needed
 		//gSPLightVertex(vtx);
 
-		f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+		Vec fLightDir = {vtx.nx, vtx.ny, vtx.nz};
 		f32 x, y;
 		x = DotProduct(gSP.lookat.xyz[0], fLightDir);
 		y = DotProduct(gSP.lookat.xyz[1], fLightDir);
@@ -547,7 +547,7 @@ void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
 }
 
 static
-void ZSortBOSS_TransformVectorNormalize(float vec[3], Mtx mtx)
+void ZSortBOSS_TransformVectorNormalize(Vec& vec, Mtx mtx)
 {
 	float vres[3];
 	float len;

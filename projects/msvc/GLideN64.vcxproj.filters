@@ -110,9 +110,6 @@
     <ClCompile Include="..\..\src\VI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\3DMath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\MupenPlusPluginAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
