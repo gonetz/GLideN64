@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
+#include <lancir.h>
 #include "Platform.h"
 #include "Textures.h"
 #include "GBI.h"
@@ -1151,6 +1152,80 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	free(pDest);
 }
 
+void _loadHiresTextureMipMapAccurate(CachedTexture *_pTexture, GHQTexInfo const& _ghqTexInfo, u64 _ricecrc)
+{
+	u32 texWidth = _ghqTexInfo.width;
+	u32 texHeight = _ghqTexInfo.height;
+	unsigned int totalTexSize = std::max(static_cast<u32>(texWidth * texHeight + 16), MIPMAP_TILE_WIDTH)
+		* (_pTexture->max_level + 1);
+
+	std::vector<u32> m_tempTextureHolder(totalTexSize);
+	std::vector<u32> tileData(texWidth * texHeight / 4);
+	u32* pTileData = reinterpret_cast<u32*>(_ghqTexInfo.data);
+
+	u32 mipLevel = 0;
+	u32 texDataOffset = 16; // number of gDP.tiles * 2
+	avir::CLancIR imageResizer;
+
+	// Load all tiles into one 1D texture atlas.
+	u32 mipRatioS = gDP.tiles[gSP.texture.tile + 1].shifts + 5u;
+	if (mipRatioS >= 16u) mipRatioS -= 16u;
+	u32 mipRatioT = gDP.tiles[gSP.texture.tile + 1].shiftt + 5u;
+	if (mipRatioT >= 16) mipRatioT -= 16u;
+	while (true)
+	{
+		const u32 tileSizePacked = texWidth | (mipRatioT << 16) | (mipRatioS << 24);
+		m_tempTextureHolder[mipLevel * 2] = texDataOffset;
+		m_tempTextureHolder[mipLevel * 2 + 1] = tileSizePacked;
+
+		txfilter_dmptx((u8*)pTileData, texWidth, texHeight,
+			texWidth, (u16)_ghqTexInfo.format,
+			N64FormatSize(_pTexture->format, _pTexture->size),
+			_ricecrc + mipLevel);
+
+		std::copy_n(pTileData, texWidth * texHeight, &m_tempTextureHolder[texDataOffset]);
+		pTileData = &m_tempTextureHolder[texDataOffset];
+		texDataOffset += texWidth * texHeight;
+		if (mipLevel == _pTexture->max_level)
+			break;
+
+		++mipLevel;
+		u32 mipRatioSNew = gDP.tiles[gSP.texture.tile + mipLevel + 1].shifts + 5u;
+		if (mipRatioSNew >= 16u) mipRatioSNew -= 16u;
+		u32 mipRatioTNew = gDP.tiles[gSP.texture.tile + mipLevel + 1].shiftt + 5u;
+		if (mipRatioTNew >= 16u) mipRatioTNew -= 16u;
+		u32 shifts = mipRatioSNew - mipRatioS;
+		u32 shiftt = mipRatioTNew - mipRatioT;
+		if (shifts > 0 || shiftt > 0) {
+			imageResizer.resizeImage((u8*)pTileData, texWidth, texHeight, (u8*)tileData.data(), texWidth >> shifts, texHeight >> shiftt, 4);
+			texWidth >>= shifts;
+			texHeight >>= shiftt;
+			mipRatioS = mipRatioSNew;
+			mipRatioT = mipRatioTNew;
+			pTileData = tileData.data();
+		}
+	}
+
+	u32 texformat = gfxContext.convertInternalTextureFormat(_ghqTexInfo.format);
+	Context::InitTextureParams params;
+	params.handle = _pTexture->name;
+	params.textureUnitIndex = textureIndices::Tex[1];
+	params.mipMapLevel = 0;
+	params.mipMapLevels = 1;
+	params.msaaLevel = 0;
+	params.width = std::min(texDataOffset, MIPMAP_TILE_WIDTH);
+	params.height = (texDataOffset / MIPMAP_TILE_WIDTH) + ((texDataOffset % MIPMAP_TILE_WIDTH) ? 1 : 0);
+	params.internalFormat = InternalColorFormatParam(texformat);
+	params.format = ColorFormatParam(_ghqTexInfo.texture_format);
+	params.dataType = DatatypeParam(_ghqTexInfo.pixel_type);
+	params.data = m_tempTextureHolder.data();
+	gfxContext.init2DTexture(params);
+	assert(!gfxContext.isError());
+	_pTexture->mipmapAtlasWidth = params.width;
+	_pTexture->mipmapAtlasHeight = params.height;
+	_pTexture->textureBytes = texDataOffset << 2;
+}
+
 bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc, u64 & _strongcrc)
 {
 	if (config.textureFilter.txHiresEnable == 0 || !TFH.isInited())
@@ -1233,6 +1308,21 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		hirestexFound = txfilter_hirestex(_pTexture->crc, _strongcrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
 	}
 	if (hirestexFound && ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {
+		if (config.generalEmulation.enableInaccurateTextureCoordinates == 0 &&
+			_tile > 0 &&
+			currentCombiner()->usesLOD() &&
+			gSP.texture.level > 1) {
+			_pTexture->max_level = gDP.otherMode.textureDetail == G_TD_DETAIL ?
+				static_cast<u8>(gSP.texture.level) :
+				static_cast<u8>(gSP.texture.level - 1);
+		}
+		if (_pTexture->max_level > 0)
+		{
+			_loadHiresTextureMipMapAccurate(_pTexture, ghqTexInfo, _ricecrc);
+			_updateCachedTexture(ghqTexInfo, _pTexture, width, height);
+			return true;
+		}
+
 		ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 		Context::InitTextureParams params;
 		params.handle = _pTexture->name;
@@ -1604,6 +1694,12 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 
 void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 {
+	gDPTile * pTile = _tile < 2 ? gSP.textureTile[_tile] : &gDP.tiles[_tile];
+	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
+	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
+	if (info.texAddress == 0x0071a0f0 || info.texAddress == 0x00719ef0)
+		int t = 0;
+
 	u64 ricecrc = 0;
 	u64 strongcrc = 0;
 	if (_loadHiresTexture(_tile, _pTexture, ricecrc, strongcrc))
@@ -1666,7 +1762,6 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 		// Load all tiles into one 1D texture atlas.
 		while (true)
 		{
-
 			u32 mipRatioS = gDP.tiles[gSP.texture.tile + mipLevel + 1].shifts + 5u;
 			if (mipRatioS >= 16u) mipRatioS -= 16u;
 			u32 mipRatioT = gDP.tiles[gSP.texture.tile + mipLevel + 1].shiftt + 5u;
@@ -1699,7 +1794,6 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			++mipLevel;
 			const u32 tileMipLevel = gSP.texture.tile + mipLevel + 1;
 			gDPTile & mipTile = gDP.tiles[tileMipLevel];
-			gDPTile & prevMipTile = gDP.tiles[tileMipLevel - 1];
 			line = mipTile.line;
 			tmptex.tMem = mipTile.tmem;
 			tmptex.palette = mipTile.palette;
