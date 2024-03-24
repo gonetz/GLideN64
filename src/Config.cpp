@@ -51,6 +51,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableClipping = 1;
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;
+	generalEmulation.enableAsyncShadersCompilation = 1;
 	generalEmulation.enableLegacyBlending = 0;
 	generalEmulation.enableHybridFilter = 1;
 	generalEmulation.enableInaccurateTextureCoordinates = 0;
