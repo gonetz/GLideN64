@@ -1628,7 +1628,7 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 	}
 	_pTexture->textureBytes = (_pTexture->width * _pTexture->height) << sizeShift;
 
-	unsigned int totalTexSize = std::max(static_cast<u32>(_pTexture->textureBytes/sizeof(u32) + 8), MIPMAP_TILE_WIDTH)
+	unsigned int totalTexSize = std::max(static_cast<u32>(_pTexture->textureBytes/sizeof(u32) + 16), MIPMAP_TILE_WIDTH)
 								* (_pTexture->max_level + 1);
 
 	if (m_tempTextureHolder.size() < totalTexSize) {
@@ -1661,7 +1661,7 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 	if (_pTexture->max_level > 0)
 	{
 		u32 mipLevel = 0;
-		u32 texDataOffset = 8; // number of gDP.tiles
+		u32 texDataOffset = 16; // number of gDP.tiles * 2
 
 		// Load all tiles into one 1D texture atlas.
 		while (true)
@@ -1671,8 +1671,9 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			if (mipRatioS >= 16u) mipRatioS -= 16u;
 			u32 mipRatioT = gDP.tiles[gSP.texture.tile + mipLevel + 1].shiftt + 5u;
 			if (mipRatioT >= 16) mipRatioT -= 16u;
-			const u32 tileSizePacked = texDataOffset | (tmptex.width << 16) | (mipRatioT << 24) | (mipRatioS << 28);
-			m_tempTextureHolder[mipLevel] = tileSizePacked;
+			const u32 tileSizePacked = tmptex.width | (mipRatioT << 16) | (mipRatioS << 24);
+			m_tempTextureHolder[mipLevel * 2] = texDataOffset;
+			m_tempTextureHolder[mipLevel * 2 + 1] = tileSizePacked;
 
 			getLoadParams(tmptex.format, tmptex.size);
 			_getTextureDestData(tmptex, &m_tempTextureHolder[texDataOffset], glInternalFormat, GetTexel, &line);
