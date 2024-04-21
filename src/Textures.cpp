@@ -1347,6 +1347,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 
 	_ricecrc = ldata.ricecrc;
 	_strongcrc = ldata.strongcrc;
+	u32 tile = _tile - gSP.texture.tile;
 
 	GHQTexInfo ghqTexInfo;
 	// TODO: fix problem with zero texture dimensions on GLideNHQ side.
@@ -1359,7 +1360,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	}
 	if (hirestexFound && ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {
 		if (config.generalEmulation.enableInaccurateTextureCoordinates == 0 &&
-			_tile > 0 &&
+			tile > 0 &&
 			currentCombiner()->usesLOD() &&
 			gSP.texture.level > 1) {
 			_pTexture->max_level = gDP.otherMode.textureDetail == G_TD_DETAIL ?
@@ -1384,7 +1385,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		params.format = ColorFormatParam(ghqTexInfo.texture_format);
 		params.dataType = DatatypeParam(ghqTexInfo.pixel_type);
 		params.data = ghqTexInfo.data;
-		params.textureUnitIndex = textureIndices::Tex[_tile];
+		params.textureUnitIndex = textureIndices::Tex[tile];
 		gfxContext.init2DTexture(params);
 		assert(!gfxContext.isError());
 		_updateCachedTexture(ghqTexInfo, _pTexture, ldata.width, ldata.height);
@@ -1744,21 +1745,22 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 
 void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 {
-	gDPTile * pTile = _tile < 2 ? gSP.textureTile[_tile] : &gDP.tiles[_tile];
-	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
-	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
+	//gDPTile * pTile = _tile < 2 ? gSP.textureTile[_tile] : &gDP.tiles[_tile];
+	//const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
+	//gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
 	//if (info.texAddress == 0x0071a0f0 || info.texAddress == 0x00719ef0)
 	//	int t = 0;
 
 	u64 ricecrc = 0;
 	u64 strongcrc = 0;
-	if (_loadHiresTexture(_tile, _pTexture, ricecrc, strongcrc))
+	if (_loadHiresTexture(gSP.texture.tile + _tile, _pTexture, ricecrc, strongcrc))
 		return;
 
 	bool force32bitFormat = false;
 	_pTexture->max_level = 0;
 
-	if (currentCombiner()->usesLOD() && gSP.texture.level > 1 && _tile > 0) {
+	const bool isMipMapTex = currentCombiner()->usesLOD() && gSP.texture.level > 1;
+	if (isMipMapTex && _tile > 0) {
 		_pTexture->max_level = gDP.otherMode.textureDetail == G_TD_DETAIL ?
 			static_cast<u8>(gSP.texture.level) :
 			static_cast<u8>(gSP.texture.level - 1);
@@ -1803,11 +1805,25 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 
 	CachedTexture tmptex = *_pTexture;
 	u16 line = tmptex.line;
+	const bool needDump = (m_toggleDumpTex &&
+		config.textureFilter.txHiresEnable != 0 &&
+		config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
+		config.textureFilter.txDump;
 
 	if (_pTexture->max_level > 0)
 	{
 		u32 mipLevel = 0;
 		u32 texDataOffset = 16; // number of gDP.tiles * 2
+
+		u64 ricecrcbase = 0u;
+		u64 strongcrcbase = 0u;
+		if (needDump) {
+			TexLoadData ldata;
+			if (_calculateHiresTextureCRC(gSP.texture.tile, current[0], ldata)) {
+				ricecrcbase = ldata.ricecrc;
+				strongcrcbase = ldata.strongcrc;
+			}
+		}
 
 		// Load all tiles into one 1D texture atlas.
 		while (true)
@@ -1823,21 +1839,18 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			getLoadParams(tmptex.format, tmptex.size);
 			_getTextureDestData(tmptex, &m_tempTextureHolder[texDataOffset], glInternalFormat, GetTexel, &line);
 
-			if ((m_toggleDumpTex &&
-				config.textureFilter.txHiresEnable != 0 &&
-				config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
-				config.textureFilter.txDump) {
+			if (needDump) {
 				TexLoadData ldata;
 				if (_calculateHiresTextureCRC(gSP.texture.tile + mipLevel + 1, &tmptex, ldata)) {
 					config.textureFilter.txStrongCRC ?
-						txfilter_dmptx_strong(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
+						txfilter_dmptx_mipmap(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
 							tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
 							N64FormatSize(_pTexture->format, _pTexture->size),
-							ldata.strongcrc) :
-						txfilter_dmptx(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
+							ldata.strongcrc, strongcrcbase, TRUE) :
+						txfilter_dmptx_mipmap(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
 							tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
 							N64FormatSize(_pTexture->format, _pTexture->size),
-							ldata.ricecrc);
+							ldata.ricecrc, ricecrcbase, FALSE);
 				}
 			}
 
@@ -1889,19 +1902,27 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			return;
 		}
 
-		if ((m_toggleDumpTex &&
-			config.textureFilter.txHiresEnable != 0 &&
-			config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
-			config.textureFilter.txDump) {
+		if (needDump) {
+			if (isMipMapTex) {
 				config.textureFilter.txStrongCRC ?
-				txfilter_dmptx_strong((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
-					tmptex.width, (u16)u32(glInternalFormat),
-					N64FormatSize(_pTexture->format, _pTexture->size),
-					strongcrc) :
-				txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
-					tmptex.width, (u16)u32(glInternalFormat),
-					N64FormatSize(_pTexture->format, _pTexture->size),
-					ricecrc);
+					txfilter_dmptx_mipmap(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
+						tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
+						N64FormatSize(_pTexture->format, _pTexture->size),
+						strongcrc, strongcrc, TRUE) :
+					txfilter_dmptx_mipmap(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
+						tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
+						N64FormatSize(_pTexture->format, _pTexture->size),
+						ricecrc, ricecrc, FALSE);
+			}
+			else {
+				config.textureFilter.txStrongCRC ?
+				txfilter_dmptx_strong(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
+					tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size), strongcrc) :
+				txfilter_dmptx(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
+					tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size), ricecrc);
+			}
 		}
 
 		bool bLoaded = false;

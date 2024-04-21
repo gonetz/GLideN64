@@ -112,6 +112,25 @@ txfilter_dmptx_strong(uint8 *src, int width, int height, int rowStridePixel, uin
 }
 
 TAPI boolean TAPIENTRY
+txfilter_dmptx_mipmap(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum crc64, Checksum crc64base, boolean strongCRC)
+{
+	if (txFilter)
+		return txFilter->dmptxMipmap(src, width, height, rowStridePixel, ColorFormat(u32(gfmt)), n64FmtSz, crc64, crc64base, strongCRC);
+
+	return 0;
+}
+
+TAPI boolean TAPIENTRY
+txfilter_dmp_mipmap(GHQDumpTexInfo* infos, int numLevels)
+{
+	for (int i = 0; i < numLevels; ++i) {
+
+	}
+
+	return 0;
+}
+
+TAPI boolean TAPIENTRY
 txfilter_reloadhirestex()
 {
   if (txFilter)

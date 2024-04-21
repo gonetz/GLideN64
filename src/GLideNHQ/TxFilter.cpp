@@ -589,20 +589,48 @@ TxFilter::checksum64strong(uint8 *src, int width, int height, int size, int rowS
 	return 0;
 }
 
+tx_wstring
+TxFilter::getDumpPath(boolean isStrongCrc)
+{
+	if (_dumpPath.empty() || _ident.empty())
+		return tx_wstring();
+
+	tx_wstring path;
+	path.assign(_dumpPath);
+	path.append(wst("/"));
+	path.append(_ident);
+	isStrongCrc ? path.append(wst("/GLideNHQ_strong_crc")) : path.append(wst("/GLideNHQ"));
+	return path;
+}
+
+tx_wstring
+TxFilter::getMipMapDumpPath(N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc)
+{
+	tx_wstring path = getDumpPath(isStrongCrc);
+	if (path.empty())
+		return path;
+
+	wchar_t wbuf[256];
+	if (n64FmtSz._format == 0x2)
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X#%08X_mipmap"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size, r_crc64._palette);
+	else
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X_mipmap"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size);
+
+	path.append(wbuf);
+	return path;
+}
+
 boolean
-TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
-				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc)
+TxFilter::dmptxImpl(uint8 *src, int width, int height, int rowStridePixel,
+	ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, tx_wstring const& dumpPath)
 {
 	assert(gfmt != graphics::colorFormat::RGBA);
-	if (!_initialized)
-		return 0;
-
-	if (!(_options & DUMP_TEX))
+	if (!_initialized || !(_options & DUMP_TEX) || dumpPath.empty())
 		return 0;
 
 	DBG_INFO(80, wst("gfmt = %02x n64fmt = %02x\n"), u32(gfmt), n64FmtSz._format);
 	DBG_INFO(80, wst("hirestex: r_crc64:%08X %08X\n"),
-			 r_crc64._palette, r_crc64._texture);
+		r_crc64._palette, r_crc64._texture);
 
 	if (gfmt != graphics::internalcolorFormat::RGBA8) {
 		if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, gfmt, graphics::internalcolorFormat::RGBA8))
@@ -613,13 +641,9 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
 	if (!_dumpPath.empty() && !_ident.empty()) {
 		/* dump it to disk */
 		FILE *fp = nullptr;
-		tx_wstring tmpbuf;
+		tx_wstring tmpbuf = dumpPath;
 
 		/* create directories */
-		tmpbuf.assign(_dumpPath);
-		tmpbuf.append(wst("/"));
-		tmpbuf.append(_ident);
-		isStrongCrc ? tmpbuf.append(wst("/GLideNHQ_strong_crc")) : tmpbuf.append(wst("/GLideNHQ"));
 		if (!osal_path_existsW(tmpbuf.c_str()) && osal_mkdirp(tmpbuf.c_str()) != 0)
 			return 0;
 
@@ -627,7 +651,8 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
 			wchar_t wbuf[256];
 			tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X#%08X_ciByRGBA.png"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size, r_crc64._palette);
 			tmpbuf.append(wbuf);
-		} else {
+		}
+		else {
 			wchar_t wbuf[256];
 			tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X_all.png"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size);
 			tmpbuf.append(wbuf);
@@ -644,10 +669,39 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
 			fclose(fp);
 			return 1;
 		}
-	}
+		}
 
 	return 0;
 }
+
+
+boolean
+TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
+				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc)
+{
+	return dmptxImpl(src, width, height, rowStridePixel, gfmt, n64FmtSz, r_crc64, getDumpPath(isStrongCrc));
+}
+
+boolean
+TxFilter::dmptxMipmap(uint8 *src, int width, int height, int rowStridePixel,
+	ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum crc64, Checksum crc64base, boolean isStrongCrc)
+{
+	tx_wstring path = getMipMapDumpPath(n64FmtSz, crc64base, isStrongCrc);
+	return dmptxImpl(src, width, height, rowStridePixel, gfmt, n64FmtSz, crc64, path);
+}
+
+//boolean
+//TxFilter::dmpMipmap(GHQDumpTexInfo* infos, int numLevel, boolean isStrongCrc)
+//{
+//	if (!infos || !numLevel)
+//		return 0;
+//	tx_wstring path = getMipMapDumpPath(infos[0].n64_format_size, infos[0].checksum, isStrongCrc);
+//	for (int i = 0; i < numLevel; ++i) {
+//		GHQDumpTexInfo& info = infos[i];
+//		dmptxImpl(info.data, info.width, info.height, info.stride, info.texture_format, info.n64_format_size, info.checksum, path);
+//	}
+//	return 1;
+//}
 
 boolean
 TxFilter::reloadhirestex()

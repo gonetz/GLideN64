@@ -53,6 +53,11 @@ private:
   TxImage *_txImage;
   boolean _initialized;
   void clear();
+  tx_wstring getDumpPath(boolean isStrongCrc);
+  tx_wstring getMipMapDumpPath(N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc);
+  boolean dmptxImpl(uint8 *src, int width, int height, int rowStridePixel,
+	  ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, tx_wstring const& dumpPath);
+
 public:
   ~TxFilter();
   TxFilter(int maxwidth,
@@ -81,6 +86,9 @@ public:
   uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
   boolean dmptx(uint8 *src, int width, int height, int rowStridePixel,
 				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc);
+  boolean dmptxMipmap(uint8 *src, int width, int height, int rowStridePixel,
+	  ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum crc64, Checksum crc64base, boolean isStrongCrc);
+  //boolean dmpMipmap(GHQDumpTexInfo* infos, int numLevel, boolean isStrongCrc);
   boolean reloadhirestex();
   void dumpcache();
 };
