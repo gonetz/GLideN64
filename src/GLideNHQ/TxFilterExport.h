@@ -165,19 +165,6 @@ struct GHQTexInfo
   N64FormatSize n64_format_size{ 0u, 0u };
 };
 
-struct GHQDumpTexInfo
-{
-	GHQDumpTexInfo(): checksum(0) {}
-	~GHQDumpTexInfo() {}
-	unsigned char *data{ nullptr };
-	unsigned int width{ 0u };
-	unsigned int height{ 0u };
-	unsigned int stride{ 0u };
-	unsigned short texture_format{ 0u };
-	N64FormatSize n64_format_size{ 0u, 0u };
-	Checksum checksum;
-};
-
 /* Callback to display hires texture info.
  * Gonetz <gonetz(at)ngs.ru>
  *
@@ -249,9 +236,6 @@ txfilter_dmptx_strong(uint8 *src, int width, int height, int rowStridePixel, uin
 
 TAPI boolean TAPIENTRY
 txfilter_dmptx_mipmap(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz, Checksum crc64, Checksum crc64base, boolean strongCRC);
-
-TAPI boolean TAPIENTRY
-txfilter_dmp_mipmap(GHQDumpTexInfo* infos, int numLevels);
 
 TAPI boolean TAPIENTRY
 txfilter_reloadhirestex();

@@ -121,16 +121,6 @@ txfilter_dmptx_mipmap(uint8 *src, int width, int height, int rowStridePixel, uin
 }
 
 TAPI boolean TAPIENTRY
-txfilter_dmp_mipmap(GHQDumpTexInfo* infos, int numLevels)
-{
-	for (int i = 0; i < numLevels; ++i) {
-
-	}
-
-	return 0;
-}
-
-TAPI boolean TAPIENTRY
 txfilter_reloadhirestex()
 {
   if (txFilter)

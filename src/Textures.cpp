@@ -1171,10 +1171,13 @@ static bool _calculateHiresTextureCRC(u32 _tileIdx, CachedTexture *_pTexture, Te
 
 	gDPLoadTileInfo & info = gDP.loadInfo[_pTexture->tMem];
 
-	// Temporal workaround for crash problem with mip-mapped textures. See #1711 for details.
-	// TODO: make proper fix.
-	if (info.texAddress == 0)
-		return false;
+	bool mipMapWorkaround = info.texAddress == 0U;
+	if (mipMapWorkaround)
+	{
+		// Workaround for crash problem with mip-mapped textures. See #1711 for details.
+		info = gDP.loadInfo[TextureCache::get().current[0]->tMem];
+		info.texAddress += _pTexture->tMem << 3;
+	}
 
 	_ldata.addr = (u8*)(RDRAM + info.texAddress);
 	if (info.loadType == LOADTYPE_TILE) {
@@ -1235,6 +1238,9 @@ static bool _calculateHiresTextureCRC(u32 _tileIdx, CachedTexture *_pTexture, Te
 	_ldata.ricecrc = txfilter_checksum(_ldata.addr, _ldata.width, _ldata.height, _pTexture->size, _ldata.bpl, _ldata.paladdr);
 	if (config.textureFilter.txStrongCRC)
 		_ldata.strongcrc = txfilter_checksum_strong(_ldata.addr, _ldata.width, _ldata.height, _pTexture->size, _ldata.bpl, _ldata.paladdr);
+
+	if (mipMapWorkaround)
+		info.texAddress = 0U;
 
 	return true;
 }
@@ -1745,12 +1751,6 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 
 void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 {
-	//gDPTile * pTile = _tile < 2 ? gSP.textureTile[_tile] : &gDP.tiles[_tile];
-	//const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
-	//gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
-	//if (info.texAddress == 0x0071a0f0 || info.texAddress == 0x00719ef0)
-	//	int t = 0;
-
 	u64 ricecrc = 0;
 	u64 strongcrc = 0;
 	if (_loadHiresTexture(gSP.texture.tile + _tile, _pTexture, ricecrc, strongcrc))
