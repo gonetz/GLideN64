@@ -54,7 +54,7 @@ private:
   boolean _initialized;
   void clear();
   tx_wstring getTexDumpPath(boolean isStrongCrc);
-  tx_wstring getMipMapTexDumpPath(N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc);
+  tx_wstring getMipMapTexDumpPath(N64FormatSize n64FmtSz, Checksum detailedTileCRC, Checksum firstTileCRC, boolean isStrongCrc);
   boolean dmptxImpl(uint8 *src, int width, int height, int rowStridePixel,
 	  ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, tx_wstring const& texDumpPath);
 
@@ -87,7 +87,7 @@ public:
   boolean dmptx(uint8 *src, int width, int height, int rowStridePixel,
 				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc);
   boolean dmptxMipmap(uint8 *src, int width, int height, int rowStridePixel,
-	  ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum crc64, Checksum crc64base, boolean isStrongCrc);
+	  ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum detailedTileCRC, Checksum firstTileCRC, Checksum tileCRC, boolean isStrongCrc);
   boolean reloadhirestex();
   void dumpcache();
 };

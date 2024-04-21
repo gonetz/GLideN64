@@ -1812,18 +1812,21 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 
 	if (_pTexture->max_level > 0)
 	{
-		u32 mipLevel = 0;
-		u32 texDataOffset = 16; // number of gDP.tiles * 2
-
-		u64 ricecrcbase = 0u;
-		u64 strongcrcbase = 0u;
+		u64 detailTileCrc = 0U;
+		u64 firstTileCrc = 0U;
 		if (needDump) {
 			TexLoadData ldata;
 			if (_calculateHiresTextureCRC(gSP.texture.tile, current[0], ldata)) {
-				ricecrcbase = ldata.ricecrc;
-				strongcrcbase = ldata.strongcrc;
+				firstTileCrc = config.textureFilter.txStrongCRC ? ldata.strongcrc : ldata.ricecrc;
+				if (gDP.otherMode.textureDetail == G_TD_DETAIL) {
+					detailTileCrc = firstTileCrc;
+					firstTileCrc = config.textureFilter.txStrongCRC ? strongcrc : ricecrc;
+				}
 			}
 		}
+
+		u32 mipLevel = 0;
+		u32 texDataOffset = 16; // number of gDP.tiles * 2
 
 		// Load all tiles into one 1D texture atlas.
 		while (true)
@@ -1842,15 +1845,11 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			if (needDump) {
 				TexLoadData ldata;
 				if (_calculateHiresTextureCRC(gSP.texture.tile + mipLevel + 1, &tmptex, ldata)) {
-					config.textureFilter.txStrongCRC ?
-						txfilter_dmptx_mipmap(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
+					u64 tileCrc = config.textureFilter.txStrongCRC ? ldata.strongcrc : ldata.ricecrc;
+					txfilter_dmptx_mipmap(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
 							tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
 							N64FormatSize(_pTexture->format, _pTexture->size),
-							ldata.strongcrc, strongcrcbase, TRUE) :
-						txfilter_dmptx_mipmap(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
-							tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
-							N64FormatSize(_pTexture->format, _pTexture->size),
-							ldata.ricecrc, ricecrcbase, FALSE);
+							detailTileCrc, firstTileCrc, tileCrc, config.textureFilter.txStrongCRC);
 				}
 			}
 
@@ -1904,15 +1903,15 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 
 		if (needDump) {
 			if (isMipMapTex) {
-				config.textureFilter.txStrongCRC ?
-					txfilter_dmptx_mipmap(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
-						tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
-						N64FormatSize(_pTexture->format, _pTexture->size),
-						strongcrc, strongcrc, TRUE) :
-					txfilter_dmptx_mipmap(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
-						tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
-						N64FormatSize(_pTexture->format, _pTexture->size),
-						ricecrc, ricecrc, FALSE);
+				u64 detailTileCrc = 0U;
+				u64 firstTileCrc = config.textureFilter.txStrongCRC ? strongcrc : ricecrc;
+				u64 tileCrc = firstTileCrc;
+				if (gDP.otherMode.textureDetail == G_TD_DETAIL)
+					std::swap(detailTileCrc, firstTileCrc);
+				txfilter_dmptx_mipmap(reinterpret_cast<u8*>(m_tempTextureHolder.data()),
+					tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					detailTileCrc, firstTileCrc, tileCrc, config.textureFilter.txStrongCRC);
 			}
 			else {
 				config.textureFilter.txStrongCRC ?

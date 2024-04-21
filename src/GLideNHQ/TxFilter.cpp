@@ -604,23 +604,22 @@ TxFilter::getTexDumpPath(boolean isStrongCrc)
 }
 
 tx_wstring
-TxFilter::getMipMapTexDumpPath(N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc)
+TxFilter::getMipMapTexDumpPath(N64FormatSize n64FmtSz, Checksum detailedTileCRC, Checksum firstTileCRC, boolean isStrongCrc)
 {
 	tx_wstring path = getTexDumpPath(isStrongCrc);
 	if (path.empty())
 		return path;
 
 	wchar_t wbuf[256];
-#if 1
-	tx_swprintf(wbuf, 256, wst("/%ls#%08X_mipmap"), _ident.c_str(), r_crc64._texture);
-#else
-	if (n64FmtSz._format == 0x2)
-		tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X#%08X_mipmap"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size, r_crc64._palette);
-	else
-		tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X_mipmap"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size);
-#endif
+	if (detailedTileCRC._texture != 0u) {
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X_detail"), _ident.c_str(), detailedTileCRC._texture);
+		path.append(wbuf);
+	}
+	if (firstTileCRC._texture != 0u) {
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X_mipmap"), _ident.c_str(), firstTileCRC._texture);
+		path.append(wbuf);
+	}
 
-	path.append(wbuf);
 	return path;
 }
 
@@ -681,10 +680,10 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
 
 boolean
 TxFilter::dmptxMipmap(uint8 *src, int width, int height, int rowStridePixel,
-	ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum crc64, Checksum crc64base, boolean isStrongCrc)
+	ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum detailedTileCRC, Checksum firstTileCRC, Checksum tileCRC, boolean isStrongCrc)
 {
-	tx_wstring path = getMipMapTexDumpPath(n64FmtSz, crc64base, isStrongCrc);
-	return dmptxImpl(src, width, height, rowStridePixel, gfmt, n64FmtSz, crc64, path);
+	tx_wstring path = getMipMapTexDumpPath(n64FmtSz, detailedTileCRC, firstTileCRC, isStrongCrc);
+	return dmptxImpl(src, width, height, rowStridePixel, gfmt, n64FmtSz, tileCRC, path);
 }
 
 boolean
