@@ -82,8 +82,8 @@ public:
 				   uint16 *palette,
 				   N64FormatSize n64FmtSz,
 				   GHQTexInfo *info);
-  uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
-  uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
+  uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed);
+  uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed);
   boolean dmptx(uint8 *src, int width, int height, int rowStridePixel,
 				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc);
   boolean dmptxMipmap(uint8 *src, int width, int height, int rowStridePixel,

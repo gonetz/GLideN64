@@ -572,19 +572,19 @@ TxFilter::hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSi
 }
 
 uint64
-TxFilter::checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+TxFilter::checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	if (_options & (HIRESTEXTURES_MASK|DUMP_TEX))
-		return TxUtil::checksum64(src, width, height, size, rowStride, palette);
+		return TxUtil::checksum64(src, width, height, size, rowStride, palette, seed);
 
 	return 0;
 }
 
 uint64
-TxFilter::checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+TxFilter::checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	if (_options & (HIRESTEXTURES_MASK | DUMP_TEX))
-		return TxUtil::checksum64strong(src, width, height, size, rowStride, palette);
+		return TxUtil::checksum64strong(src, width, height, size, rowStride, palette, seed);
 
 	return 0;
 }

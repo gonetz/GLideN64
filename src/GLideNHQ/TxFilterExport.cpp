@@ -76,19 +76,19 @@ txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSiz
 }
 
 TAPI uint64 TAPIENTRY
-txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
   if (txFilter)
-	return txFilter->checksum64(src, width, height, size, rowStride, palette);
+	return txFilter->checksum64(src, width, height, size, rowStride, palette, seed);
 
   return 0;
 }
 
 TAPI uint64 TAPIENTRY
-txfilter_checksum_strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+txfilter_checksum_strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	if (txFilter)
-		return txFilter->checksum64strong(src, width, height, size, rowStride, palette);
+		return txFilter->checksum64strong(src, width, height, size, rowStride, palette, seed);
 
 	return 0;
 }

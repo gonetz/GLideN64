@@ -79,7 +79,7 @@ TxUtil::sizeofTx(int width, int height, ColorFormat format)
 }
 
 uint64
-TxUtil::checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+TxUtil::checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	/* Rice CRC32 for now. We can switch this to Jabo MD5 or
    * any other custom checksum.
@@ -88,35 +88,35 @@ TxUtil::checksum64(uint8 *src, int width, int height, int size, int rowStride, u
 
 	if (!src) return 0;
 
-	uint64 crc64Ret = 0;
+	uint64 crc64Ret = 0U;
 
 	if (palette) {
 		uint32 crc32 = 0, cimax = 0;
 		switch (size & 0xff) {
 		case 1:
-			if (RiceCRC32_CI8(src, width, height, rowStride, &crc32, &cimax)) {
-				crc64Ret = (uint64)RiceCRC32(palette, cimax + 1, 1, 2, 512);
+			if (RiceCRC32_CI8(src, width, height, rowStride, &crc32, &cimax, seed)) {
+				crc64Ret = (uint64)RiceCRC32(palette, cimax + 1, 1, 2, 512, 0);
 				crc64Ret <<= 32;
 				crc64Ret |= (uint64)crc32;
 			}
 		break;
 		case 0:
-			if (RiceCRC32_CI4(src, width, height, rowStride, &crc32, &cimax)) {
-				crc64Ret = (uint64)RiceCRC32(palette, cimax + 1, 1, 2, 32);
+			if (RiceCRC32_CI4(src, width, height, rowStride, &crc32, &cimax, seed)) {
+				crc64Ret = (uint64)RiceCRC32(palette, cimax + 1, 1, 2, 32, 0);
 				crc64Ret <<= 32;
 				crc64Ret |= (uint64)crc32;
 			}
 		}
 	}
-	if (!crc64Ret) {
-		crc64Ret = (uint64)RiceCRC32(src, width, height, size, rowStride);
+	if (crc64Ret == 0U) {
+		crc64Ret = (uint64)RiceCRC32(src, width, height, size, rowStride, seed);
 	}
 
 	return crc64Ret;
 }
 
 uint64
-TxUtil::checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+TxUtil::checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	/* XXH3_64bits for strong 32bit texture hash. */
     /* Returned value is 64bits: hi=palette crc32 low=texture crc32 */
@@ -130,15 +130,15 @@ TxUtil::checksum64strong(uint8 *src, int width, int height, int size, int rowStr
 		uint32 crc32 = 0, cimax = 0;
 		switch (size & 0xff) {
 		case 1:
-			if (StrongCRC32_CI8(src, width, height, rowStride, &crc32, &cimax)) {
-				crc64Ret = StrongCRC32(palette, cimax + 1, 1, 2, 512);
+			if (StrongCRC32_CI8(src, width, height, rowStride, &crc32, &cimax, seed)) {
+				crc64Ret = StrongCRC32(palette, cimax + 1, 1, 2, 512, 0);
 				crc64Ret <<= 32;
 				crc64Ret |= crc32;
 			}
 			break;
 		case 0:
-			if (StrongCRC32_CI4(src, width, height, rowStride, &crc32, &cimax)) {
-				crc64Ret = StrongCRC32(palette, cimax + 1, 1, 2, 32);
+			if (StrongCRC32_CI4(src, width, height, rowStride, &crc32, &cimax, seed)) {
+				crc64Ret = StrongCRC32(palette, cimax + 1, 1, 2, 32, 0);
 				crc64Ret <<= 32;
 				crc64Ret |= crc32;
 			}
@@ -146,7 +146,7 @@ TxUtil::checksum64strong(uint8 *src, int width, int height, int size, int rowStr
 	}
 
 	if (!crc64Ret) {
-		crc64Ret = StrongCRC32(src, width, height, size, rowStride);
+		crc64Ret = StrongCRC32(src, width, height, size, rowStride, seed);
 	}
 
 	return crc64Ret;
@@ -167,11 +167,11 @@ TxUtil::checksum64strong(uint8 *src, int width, int height, int size, int rowStr
  *          bpl);
  */
 uint32
-TxUtil::RiceCRC32(const uint8* src, int width, int height, int size, int rowStride)
+TxUtil::RiceCRC32(const uint8* src, int width, int height, int size, int rowStride, uint64 seed)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
-	uint32 crc32Ret = 0;
+	uint32 crc32Ret = static_cast<u32>(seed & 0xFFFFFFFF);
 	const uint32 bytesPerLine = width << size >> 1;
 
 	try {
@@ -183,7 +183,7 @@ TxUtil::RiceCRC32(const uint8* src, int width, int height, int size, int rowStri
 
 			mov ecx, dword ptr [src];
 			mov eax, dword ptr [height];
-			mov edx, 0;
+			mov edx, dword ptr [crc32Ret];
 			dec eax;
 
 loop2:
@@ -274,11 +274,11 @@ uint8 CalculateMaxCI4b(const uint8* src, uint32 width, uint32 height, uint32 row
 
 boolean
 TxUtil::RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
-					  uint32* crc32, uint32* cimax)
+					  uint32* crc32, uint32* cimax, uint64 seed)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
-	uint32 crc32Ret = 0;
+	uint32 crc32Ret = static_cast<u32>(seed & 0xFFFFFFFF);
 	uint32 cimaxRet = 0;
 	const uint32 bytes_per_width = width >> 1;
 
@@ -294,7 +294,7 @@ TxUtil::RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
 
 			mov ecx, dword ptr [src];
 			mov eax, dword ptr [height];
-			mov edx, 0;
+			mov edx, dword ptr [crc32Ret];
 			mov edi, 0;
 			dec eax;
 
@@ -395,7 +395,7 @@ findmax0:
 			pop ebx;
 		}
 #else
-		crc32Ret = RiceCRC32(src, width, height, 0, rowStride);
+		crc32Ret = RiceCRC32(src, width, height, 0, rowStride, seed);
 		cimaxRet = CalculateMaxCI4b(src, width, height, rowStride);
 #endif
 	} catch(...) {
@@ -410,11 +410,11 @@ findmax0:
 
 boolean
 TxUtil::RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
-					  uint32* crc32, uint32* cimax)
+					  uint32* crc32, uint32* cimax, uint64 seed)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
-	uint32 crc32Ret = 0;
+	uint32 crc32Ret = static_cast<u32>(seed & 0xFFFFFFFF);
 	uint32 cimaxRet = 0;
 
 	/* 8bit CI */
@@ -428,7 +428,7 @@ TxUtil::RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 
 			mov ecx, dword ptr [src];
 			mov eax, dword ptr [height];
-			mov edx, 0;
+			mov edx, dword ptr[crc32Ret];
 			mov edi, 0;
 			dec eax;
 
@@ -497,7 +497,7 @@ findmax0:
 			pop ebx;
 		}
 #else
-		crc32Ret = RiceCRC32(src, width, height, 1, rowStride);
+		crc32Ret = RiceCRC32(src, width, height, 1, rowStride, seed);
 		cimaxRet = CalculateMaxCI8b(src, width, height, rowStride);
 #endif
 	} catch(...) {
@@ -511,7 +511,7 @@ findmax0:
 }
 
 uint32
-TxUtil::StrongCRC32(const uint8* src, int width, int height, int size, int rowStride)
+TxUtil::StrongCRC32(const uint8* src, int width, int height, int size, int rowStride, uint64 seed)
 {
 	/* NOTE: bytesPerLine must be equal or larger than 4 */
 	const uint32 bytesPerLine = width << size >> 1;
@@ -533,7 +533,7 @@ TxUtil::StrongCRC32(const uint8* src, int width, int height, int size, int rowSt
 			}
 			src += rowStride;
 		}
-		crc = XXH3_64bits(buf.data(), static_cast<size_t>(pData - buf.data()));
+		crc = XXH3_64bits_withSeed(buf.data(), static_cast<size_t>(pData - buf.data()), seed);
 	}
 	catch (...) {
 		DBG_INFO(80, wst("Error: StrongCRC32 exception!\n"));
@@ -544,13 +544,13 @@ TxUtil::StrongCRC32(const uint8* src, int width, int height, int size, int rowSt
 
 boolean
 TxUtil::StrongCRC32_CI4(const uint8* src, int width, int height, int rowStride,
-					  uint32* crc32, uint32* cimax)
+					  uint32* crc32, uint32* cimax, uint64 seed)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
 	/* 4bit CI */
 	try {
-		uint32 crc32Ret = StrongCRC32(src, width, height, 0, rowStride);
+		uint32 crc32Ret = StrongCRC32(src, width, height, 0, rowStride, seed);
 		uint32 cimaxRet = CalculateMaxCI4b(src, width, height, rowStride);
 		*crc32 = crc32Ret;
 		*cimax = cimaxRet;
@@ -563,13 +563,13 @@ TxUtil::StrongCRC32_CI4(const uint8* src, int width, int height, int rowStride,
 
 boolean
 TxUtil::StrongCRC32_CI8(const uint8* src, int width, int height, int rowStride,
-	uint32* crc32, uint32* cimax)
+	uint32* crc32, uint32* cimax, uint64 seed)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
 	/* 8bit CI */
 	try {
-		uint32 crc32Ret = StrongCRC32(src, width, height, 1, rowStride);
+		uint32 crc32Ret = StrongCRC32(src, width, height, 1, rowStride, seed);
 		uint32 cimaxRet = CalculateMaxCI8b(src, width, height, rowStride);
 		*crc32 = crc32Ret;
 		*cimax = cimaxRet;

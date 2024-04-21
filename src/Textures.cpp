@@ -995,7 +995,7 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture, u64 & _ricecrc
 	}
 
 	_ricecrc = txfilter_checksum(addr, tile_width,
-						tile_height, gSP.bgImage.size, bpl, paladdr);
+						tile_height, gSP.bgImage.size, bpl, paladdr, 0U);
 	GHQTexInfo ghqTexInfo;
 	// TODO: fix problem with zero texture dimensions on GLideNHQ side.
 	if (txfilter_hirestex(_pTexture->crc, _ricecrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo) &&
@@ -1164,7 +1164,7 @@ struct TexLoadData
 	u64 strongcrc;
 };
 
-static bool _calculateHiresTextureCRC(u32 _tileIdx, CachedTexture *_pTexture, TexLoadData & _ldata)
+static bool _calculateHiresTextureCRC(u32 _tileIdx, CachedTexture *_pTexture, TexLoadData & _ldata, u64 seed)
 {
 	if (config.textureFilter.txHiresEnable == 0 || !TFH.isInited())
 		return false;
@@ -1235,9 +1235,9 @@ static bool _calculateHiresTextureCRC(u32 _tileIdx, CachedTexture *_pTexture, Te
 		//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
 	}
 
-	_ldata.ricecrc = txfilter_checksum(_ldata.addr, _ldata.width, _ldata.height, _pTexture->size, _ldata.bpl, _ldata.paladdr);
+	_ldata.ricecrc = txfilter_checksum(_ldata.addr, _ldata.width, _ldata.height, _pTexture->size, _ldata.bpl, _ldata.paladdr, seed);
 	if (config.textureFilter.txStrongCRC)
-		_ldata.strongcrc = txfilter_checksum_strong(_ldata.addr, _ldata.width, _ldata.height, _pTexture->size, _ldata.bpl, _ldata.paladdr);
+		_ldata.strongcrc = txfilter_checksum_strong(_ldata.addr, _ldata.width, _ldata.height, _pTexture->size, _ldata.bpl, _ldata.paladdr, seed);
 
 	if (mipMapWorkaround)
 		info.texAddress = 0U;
@@ -1246,7 +1246,7 @@ static bool _calculateHiresTextureCRC(u32 _tileIdx, CachedTexture *_pTexture, Te
 }
 
 static
-void _loadHiresTextureMipMapAccurate(CachedTexture *_pTexture, GHQTexInfo const& _ghqTexInfo/*, u64 _ricecrc*/)
+void _loadHiresTextureMipMapAccurate(CachedTexture *_pTexture, GHQTexInfo const& _ghqTexInfo, u64 seed)
 {
 	u32 texWidth = _ghqTexInfo.width;
 	u32 texHeight = _ghqTexInfo.height;
@@ -1275,7 +1275,7 @@ void _loadHiresTextureMipMapAccurate(CachedTexture *_pTexture, GHQTexInfo const&
 		//txfilter_dmptx((u8*)pTileData, texWidth, texHeight,
 		//	texWidth, (u16)_ghqTexInfo.format,
 		//	N64FormatSize(_pTexture->format, _pTexture->size),
-		//	_ricecrc + mipLevel);
+		//	seed + mipLevel);
 
 		std::copy_n(pTileData, texWidth * texHeight, &m_tempTextureHolder[texDataOffset]);
 		pTileData = &m_tempTextureHolder[texDataOffset];
@@ -1302,7 +1302,7 @@ void _loadHiresTextureMipMapAccurate(CachedTexture *_pTexture, GHQTexInfo const&
 			tmptex.size = mipTile.size;
 			TexLoadData ldata;
 			GHQTexInfo ghqTexInfo;
-			if (_calculateHiresTextureCRC(gSP.texture.tile + mipLevel + 1, &tmptex, ldata)) {
+			if (_calculateHiresTextureCRC(gSP.texture.tile + mipLevel + 1, &tmptex, ldata, seed)) {
 				// TODO: fix problem with zero texture dimensions on GLideNHQ side.
 				auto hirestexFound = txfilter_hirestex(_pTexture->crc, ldata.ricecrc, ldata.palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
 				if (!hirestexFound) {
@@ -1348,7 +1348,7 @@ void _loadHiresTextureMipMapAccurate(CachedTexture *_pTexture, GHQTexInfo const&
 bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc, u64 & _strongcrc)
 {
 	TexLoadData ldata;
-	if (!_calculateHiresTextureCRC(_tile, _pTexture, ldata))
+	if (!_calculateHiresTextureCRC(_tile, _pTexture, ldata, 0))
 		return false;
 
 	_ricecrc = ldata.ricecrc;
@@ -1361,7 +1361,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	if (!hirestexFound) {
 		// Texture with RiceCRC was not found. Try alternative CRC.
 		if (_strongcrc == 0U)
-			_strongcrc = txfilter_checksum_strong(ldata.addr, ldata.width, ldata.height, _pTexture->size, ldata.bpl, ldata.paladdr);
+			_strongcrc = txfilter_checksum_strong(ldata.addr, ldata.width, ldata.height, _pTexture->size, ldata.bpl, ldata.paladdr, 0);
 		hirestexFound = txfilter_hirestex(_pTexture->crc, _strongcrc, ldata.palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
 	}
 	if (hirestexFound && ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {
@@ -1375,7 +1375,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		}
 		if (_pTexture->max_level > 0)
 		{
-			_loadHiresTextureMipMapAccurate(_pTexture, ghqTexInfo/*, _ricecrc*/);
+			_loadHiresTextureMipMapAccurate(_pTexture, ghqTexInfo, config.textureFilter.txStrongCRC ? _strongcrc : _ricecrc);
 			_updateCachedTexture(ghqTexInfo, _pTexture, ldata.width, ldata.height);
 			return true;
 		}
@@ -1816,7 +1816,7 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 		u64 firstTileCrc = 0U;
 		if (needDump) {
 			TexLoadData ldata;
-			if (_calculateHiresTextureCRC(gSP.texture.tile, current[0], ldata)) {
+			if (_calculateHiresTextureCRC(gSP.texture.tile, current[0], ldata, 0)) {
 				firstTileCrc = config.textureFilter.txStrongCRC ? ldata.strongcrc : ldata.ricecrc;
 				if (gDP.otherMode.textureDetail == G_TD_DETAIL) {
 					detailTileCrc = firstTileCrc;
@@ -1844,7 +1844,7 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 
 			if (needDump) {
 				TexLoadData ldata;
-				if (_calculateHiresTextureCRC(gSP.texture.tile + mipLevel + 1, &tmptex, ldata)) {
+				if (_calculateHiresTextureCRC(gSP.texture.tile + mipLevel + 1, &tmptex, ldata, mipLevel == 0 ? 0 : firstTileCrc)) {
 					u64 tileCrc = config.textureFilter.txStrongCRC ? ldata.strongcrc : ldata.ricecrc;
 					txfilter_dmptx_mipmap(reinterpret_cast<u8*>(&m_tempTextureHolder[texDataOffset]),
 							tmptex.width, tmptex.height, tmptex.width, (u16)u32(glInternalFormat),
