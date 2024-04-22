@@ -1,12 +1,3 @@
-#ifdef MINGW
-#define _CRT_RAND_S
-#endif
-
-#include <thread>
-#include <algorithm>
-#include <random>
-#include <functional>
-#include <cstdlib>
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "FrameBuffer.h"
@@ -35,7 +26,7 @@ NoiseTexture::NoiseTexture()
 }
 
 static
-u32 Rand(u32 rand_value)
+u32 Rand()
 {
 	static u32 iseed = 1;
 	iseed *= 0x343fd;
@@ -44,16 +35,13 @@ u32 Rand(u32 rand_value)
 }
 
 static
-void FillTextureData(u32 _seed, NoiseTexturesData * _pData, u32 _start, u32 _stop)
+void FillTextureData(NoiseTexturesData * _pData, u32 _start, u32 _stop)
 {
-	srand(_seed);
 	for (u32 i = _start; i < _stop; ++i) {
 		auto & vec = _pData->at(i);
 		const size_t sz = vec.size();
-		u32 rand_value(0U);
 		for (size_t t = 0; t < sz; ++t) {
-			rand_value = Rand(rand_value);
-			vec[t] = rand_value & 0xFF;
+			vec[t] = Rand() & 0xFF;
 		}
 	}
 }
@@ -66,7 +54,7 @@ void NoiseTexture::_fillTextureData()
 	for (auto& vec : m_texData)
 		vec.resize(NOISE_TEX_WIDTH * NOISE_TEX_HEIGHT);
 
-	FillTextureData(static_cast<u32>(time(nullptr)), &m_texData, 0, static_cast<u32>(m_texData.size()));
+	FillTextureData(&m_texData, 0, static_cast<u32>(m_texData.size()));
 
 	displayLoadProgress(L"");
 }
@@ -129,10 +117,8 @@ void NoiseTexture::update()
 	if (m_texData[0].empty() || m_DList == dwnd().getBuffersSwapCount())
 		return;
 
-	u32 rand_value(0U);
 	while (m_currTex == m_prevTex) {
-		rand_value = Rand(rand_value);
-		m_currTex = rand_value % NOISE_TEX_NUM;
+		m_currTex = Rand() % NOISE_TEX_NUM;
 	}
 	m_prevTex = m_currTex;
 	if (m_pTexture[m_currTex] == nullptr)
