@@ -71,7 +71,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 	_addBlendCvg(_program, _uniforms);
 
-	_addDitherMode(_program, _uniforms, _inputs.usesNoise());
+	_addDitherMode(_program, _uniforms);
 
 	_addScreenScale(_program, _uniforms);
 
