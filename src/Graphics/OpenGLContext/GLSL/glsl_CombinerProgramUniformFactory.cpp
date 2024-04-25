@@ -19,7 +19,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 												  const CombinerKey &_key,
 												  UniformGroups &_uniforms) {
 
-	_addNoiseTex(_program, _uniforms);
+	//_addNoiseTex(_program, _uniforms);
+	_addNoiseSeed(_program, _uniforms);
 	_addScreenSpaceTriangleInfo(_program, _uniforms);
 	_addRasterInfo(_program, _uniforms);
 	_addViewportInfo(_program, _uniforms);

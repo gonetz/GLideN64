@@ -102,6 +102,8 @@ public:
 private:
 	void _addNoiseTex(GLuint _program, UniformGroups &_uniforms) const override;
 
+	void _addNoiseSeed(GLuint _program, UniformGroups &_uniforms) const override;
+
 	void _addScreenSpaceTriangleInfo(GLuint _program, UniformGroups &_uniforms) const override;
 
 	void _addRasterInfo(GLuint _program, UniformGroups &_uniforms) const override;
