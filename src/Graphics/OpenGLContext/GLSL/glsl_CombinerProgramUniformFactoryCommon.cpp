@@ -5,7 +5,6 @@
 #include <Graphics/Context.h>
 
 #include <Textures.h>
-#include <NoiseTexture.h>
 #include <FrameBuffer.h>
 #include <DisplayWindow.h>
 #include <RSP.h>
@@ -14,22 +13,6 @@
 namespace {
 using namespace glsl;
 /*---------------UniformGroup-------------*/
-
-class UNoiseTex : public UniformGroup
-{
-public:
-	UNoiseTex(GLuint _program) {
-		LocateUniform(uTexNoise);
-	}
-
-	void update(bool _force) override
-	{
-		uTexNoise.set(int(graphics::textureIndices::NoiseTex), _force);
-	}
-
-private:
-	iUniform uTexNoise;
-};
 
 class UNoiseSeed : public UniformGroup
 {
@@ -360,11 +343,6 @@ public:
 			uAlphaDitherMode.set(0, _force);
 			uColorDitherMode.set(0, _force);
 		}
-
-		bool updateNoiseTex = m_usesNoise;
-		updateNoiseTex |= (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER);
-		if (updateNoiseTex)
-			g_noiseTexture.update();
 	}
 
 private:
@@ -786,11 +764,6 @@ private:
 
 /*---------------CombinerProgramUniformFactoryCommon-------------*/
 namespace glsl {
-
-void CombinerProgramUniformFactoryCommon::_addNoiseTex(GLuint _program, UniformGroups &_uniforms) const
-{
-	_uniforms.emplace_back(new UNoiseTex(_program));
-}
 
 void CombinerProgramUniformFactoryCommon::_addNoiseSeed(GLuint _program, UniformGroups &_uniforms) const
 {

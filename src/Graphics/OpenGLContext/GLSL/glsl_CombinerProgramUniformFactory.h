@@ -15,8 +15,6 @@ public:
 			UniformGroups &_uniforms);
 
 private:
-	virtual void _addNoiseTex(GLuint _program, UniformGroups &_uniforms) const = 0;
-
 	virtual void _addNoiseSeed(GLuint _program, UniformGroups &_uniforms) const = 0;
 
 	virtual void _addScreenSpaceTriangleInfo(GLuint _program, UniformGroups &_uniforms) const = 0;
