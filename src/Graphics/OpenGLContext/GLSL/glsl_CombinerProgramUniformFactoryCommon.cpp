@@ -31,6 +31,23 @@ private:
 	iUniform uTexNoise;
 };
 
+class UNoiseSeed : public UniformGroup
+{
+public:
+	UNoiseSeed(GLuint _program) {
+		LocateUniform(uNoiseSeed);
+	}
+
+	void update(bool _force) override
+	{
+		u32 counter = dwnd().getBuffersSwapCount();
+		uNoiseSeed.set(counter & 0xff, _force);
+	}
+
+private:
+	fUniform uNoiseSeed;
+};
+
 class UDepthTex : public UniformGroup
 {
 public:
@@ -773,6 +790,11 @@ namespace glsl {
 void CombinerProgramUniformFactoryCommon::_addNoiseTex(GLuint _program, UniformGroups &_uniforms) const
 {
 	_uniforms.emplace_back(new UNoiseTex(_program));
+}
+
+void CombinerProgramUniformFactoryCommon::_addNoiseSeed(GLuint _program, UniformGroups &_uniforms) const
+{
+	_uniforms.emplace_back(new UNoiseSeed(_program));
 }
 
 void CombinerProgramUniformFactoryCommon::_addScreenSpaceTriangleInfo(GLuint _program, UniformGroups &_uniforms) const
