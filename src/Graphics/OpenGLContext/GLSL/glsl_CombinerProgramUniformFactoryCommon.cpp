@@ -323,8 +323,7 @@ private:
 class UDitherMode : public UniformGroup
 {
 public:
-	UDitherMode(GLuint _program, bool _usesNoise)
-	: m_usesNoise(_usesNoise)
+	UDitherMode(GLuint _program)
 	{
 		LocateUniform(uAlphaCompareMode);
 		LocateUniform(uAlphaDitherMode);
@@ -349,7 +348,6 @@ private:
 	iUniform uAlphaCompareMode;
 	iUniform uAlphaDitherMode;
 	iUniform uColorDitherMode;
-	bool m_usesNoise;
 };
 
 class UScreenScale : public UniformGroup
@@ -840,9 +838,9 @@ void CombinerProgramUniformFactoryCommon::_addBlendCvg(GLuint _program, UniformG
 	_uniforms.emplace_back(new UBlendCvg(_program));
 }
 
-void CombinerProgramUniformFactoryCommon::_addDitherMode(GLuint _program, UniformGroups &_uniforms, bool _usesNoise) const
+void CombinerProgramUniformFactoryCommon::_addDitherMode(GLuint _program, UniformGroups &_uniforms) const
 {
-	_uniforms.emplace_back(new UDitherMode(_program, _usesNoise));
+	_uniforms.emplace_back(new UDitherMode(_program));
 }
 
 void CombinerProgramUniformFactoryCommon::_addScreenScale(GLuint _program, UniformGroups &_uniforms) const

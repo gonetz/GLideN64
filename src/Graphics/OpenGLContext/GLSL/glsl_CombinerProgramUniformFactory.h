@@ -55,7 +55,7 @@ private:
 
 	virtual void _addBlendCvg(GLuint _program, UniformGroups &_uniforms) const = 0;
 
-	virtual void _addDitherMode(GLuint _program, UniformGroups &_uniforms, bool _usesNoise) const = 0;
+	virtual void _addDitherMode(GLuint _program, UniformGroups &_uniforms) const = 0;
 
 	virtual void _addScreenScale(GLuint _program, UniformGroups &_uniforms) const = 0;
 
