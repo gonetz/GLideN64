@@ -34,7 +34,7 @@
 enum Component { R, G, B };
 enum Axis { X ,Y, Z, W };
 
-struct __declspec(align((16))) SPVertex
+struct SPVertex
 {
 	union
 	{

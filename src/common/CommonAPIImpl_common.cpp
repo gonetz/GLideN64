@@ -53,7 +53,7 @@ void PluginAPI::RomClosed()
 	std::lock_guard<std::mutex> lck(m_initMutex);
 #if WIN32
 	bool main = GetCurrentThreadId() == hWndThread;
-	bool running = m_executor.disableTasksAndAsync([&]()
+	bool running = m_executor.stopAsync([&]()
 	{
 		TFH.dumpcache();
 		dwnd().stop();
@@ -78,7 +78,7 @@ void PluginAPI::RomClosed()
 
 	if (running)
 	{
-		m_executor.stop();
+		m_executor.stopWait();
 	}
 #else
 	bool running = m_executor.disableTasksAndAsync([&]()
@@ -104,7 +104,7 @@ void PluginAPI::RomOpen()
 	LOG(LOG_APIFUNC, "RomOpen\n");
 #ifdef RSPTHREAD
 	std::lock_guard<std::mutex> lck(m_initMutex);
-	m_executor.start();
+	m_executor.start(false /*allowSameThreadExec*/);
 	m_executor.async([]()
 	{
 		RSP_Init();
