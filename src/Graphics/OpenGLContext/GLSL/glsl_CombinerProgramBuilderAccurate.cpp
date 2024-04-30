@@ -1139,7 +1139,7 @@ public:
 			"void textureEngine1(in highp vec2 texCoord, out highp vec2 tcData[5]) \n"
 			"{  \n"
 			"  highp vec2 tileCoord = (WRAP(texCoord * uShiftScale[1] - uTexOffset[1], -1024.0, 1024.0)); \n"
-			"  tileCoord = (tileCoord + uBilinearOffset) * uHDRatio[1] - uBilinearOffset; \n"
+			"  tileCoord = (tileCoord + uBilinearOffset*0.5) * uHDRatio[1] - uBilinearOffset; \n"
 			"  mediump vec2 intPart = floor(tileCoord); \n"
 			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap[1], uTexClamp[1], uTexWrapEn[1], uTexClampEn[1], uTexMirrorEn[1]); \n"
 			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap[1], uTexClamp[1], uTexWrapEn[1], uTexClampEn[1], uTexMirrorEn[1]); \n"
