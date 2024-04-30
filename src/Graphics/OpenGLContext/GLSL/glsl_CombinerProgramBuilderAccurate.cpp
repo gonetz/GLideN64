@@ -853,19 +853,9 @@ public:
 				"uniform lowp int uTextureDetail;										\n"
 				"																		\n"
 				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-				;
-			if (config.generalEmulation.enableLOD == 0) {
-				m_part +=
-					"  mediump float lod = 1.0;											\n"
-					;
-			} else {
-				m_part +=
-					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;		\n"
-					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;		\n"
-					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));		\n"
-					;
-			}
-			m_part +=
+				"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
+				"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
+				"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));			\n"
 				"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);		\n"
 				"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;			\n"
 				"  mediump float max_lod = pow(2.0, float(max_tile)) - 1.0 / 32.0;		\n"
