@@ -81,6 +81,8 @@ QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 		return tr("Reload HD textures");
 	case Config::HotKey::hkHdTexToggle:
 		return tr("Toggle HD textures");
+	case Config::HotKey::hkMipMap:
+		return tr("Toggle mip-map emulation");
 	case Config::HotKey::hkTexCoordBounds:
 		return tr("Toggle texcoords bounds");
 	case Config::HotKey::hkNativeResTexrects:

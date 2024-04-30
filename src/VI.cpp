@@ -142,6 +142,22 @@ static void checkHotkeys()
 		}
 	}
 
+	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkMipMap], 0x0001)) {
+		config.generalEmulation.enableLOD = !config.generalEmulation.enableLOD;
+		if (config.generalEmulation.enableInaccurateTextureCoordinates == 0) {
+			textureCache().clear();
+		} else {
+			// Need to rebuild shaders
+			dwnd().stop();
+			dwnd().start();
+		}
+		if (config.generalEmulation.enableLOD == 0)
+			dwnd().getDrawer().showMessage("Mip-map emulation off\n", Milliseconds(1000));
+		else
+			dwnd().getDrawer().showMessage("Mip-map emulation on\n", Milliseconds(1000));
+	}
+
+
 	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkTexCoordBounds], 0x0001)) {
 		if (config.graphics2D.enableTexCoordBounds == 0)
 			dwnd().getDrawer().showMessage("Bound texrect texture coordinates on\n", Milliseconds(1000));
