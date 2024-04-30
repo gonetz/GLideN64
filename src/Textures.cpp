@@ -1373,6 +1373,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	}
 	if (hirestexFound && ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {
 		if (config.generalEmulation.enableInaccurateTextureCoordinates == 0 &&
+			config.generalEmulation.enableLOD != 0 &&
 			tile > 0 &&
 			currentCombiner()->usesLOD() &&
 			gSP.texture.level > 1) {
@@ -1768,7 +1769,7 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 	bool force32bitFormat = false;
 	_pTexture->max_level = 0;
 
-	const bool isMipMapTex = currentCombiner()->usesLOD() && gSP.texture.level > 1;
+	const bool isMipMapTex = config.generalEmulation.enableLOD != 0 && currentCombiner()->usesLOD() && gSP.texture.level > 1;
 	if (isMipMapTex && _tile > 0) {
 		_pTexture->max_level = gDP.otherMode.textureDetail == G_TD_DETAIL ?
 			static_cast<u8>(gSP.texture.level) :
