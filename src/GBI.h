@@ -35,7 +35,8 @@
 #define F5Indi_Naboo	26
 #define S2DEX_1_03		27
 #define S2DEX_1_05		28
-#define NONE			29
+#define F3DEX3			29
+#define NONE			30
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -401,6 +402,7 @@ extern u32 G_OBJ_LOADTXTR, G_OBJ_LDTX_SPRITE, G_OBJ_LDTX_RECT, G_OBJ_LDTX_RECT_R
 extern u32 G_RDPHALF_0;
 extern u32 G_PERSPNORM;
 extern u32 G_ZOBJ, G_ZRDPCMD, G_ZWAITSIGNAL, G_ZMTXCAT, G_ZMULT_MPMTX, G_ZLIGHTING;
+extern u32 G_TRISTRIP, G_TRIFAN, G_LIGHTTORDP, G_RELSEGMENT;
 
 #define LIGHT_1	1
 #define LIGHT_2	2
