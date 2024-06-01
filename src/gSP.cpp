@@ -1581,6 +1581,16 @@ void gSPSegment( s32 seg, s32 base )
 	DebugMsg(DEBUG_NORMAL, "gSPSegment( %s, 0x%08X );\n", SegmentText[seg], base );
 }
 
+void gSPRelSegment(s32 seg, s32 base)
+{
+	// extract rel offset like 0x0?123456
+	const s32 offset = base & 0x00FFFFFF;
+	const s32 rel = (base >> 24) & 0xf;
+	gSP.segment[seg] = offset + gSP.segment[rel];
+
+	DebugMsg(DEBUG_NORMAL, "gSPRelSegment( %s, 0x%08X ) -> rel=0x%08X;\n", SegmentText[seg], base, gSP.segment[seg]);
+}
+
 void gSPClipRatio(u32 ratio)
 {
 	gSP.clipRatio = std::abs(static_cast<s16>(ratio & 0xFFFF));
