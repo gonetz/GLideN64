@@ -92,6 +92,7 @@ struct gSPInfo
 		Vec i_xyz[12];
 		Vec pos_xyzw[12];
 		f32 ca[12], la[12], qa[12];
+		bool is_point[12];
 	} lights;
 
 	struct
