@@ -493,9 +493,10 @@ struct MicrocodeInfo
 	bool combineMatrices = false;
 	struct
 	{
-		bool legacyVertexPipeline;
-		bool noOcclusionPlane;
-		bool branchOnZ;
+		// LVP is how microcodes other than F3DEX3 function
+		bool legacyVertexPipeline = true;
+		bool noOcclusionPlane = false;
+		bool branchOnZ = false;
 	} f3dex3;
 };
 
