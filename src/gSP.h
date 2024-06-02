@@ -72,6 +72,7 @@ struct gSPInfo
 		f32 i_xyz[12][3];
 		f32 pos_xyzw[12][4];
 		f32 ca[12], la[12], qa[12];
+		bool is_point[12];
 	} lights;
 
 	struct
