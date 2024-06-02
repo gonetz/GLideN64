@@ -491,6 +491,12 @@ struct MicrocodeInfo
 	bool fast3DPersp = false;
 	bool texturePersp = true;
 	bool combineMatrices = false;
+	struct
+	{
+		bool legacyVertexPipeline;
+		bool noOcclusionPlane;
+		bool branchOnZ;
+	} f3dex3;
 };
 
 struct GBIInfo
