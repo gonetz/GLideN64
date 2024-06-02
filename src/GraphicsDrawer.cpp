@@ -1714,6 +1714,8 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 
 void GraphicsDrawer::_initStates()
 {
+	DisplayWindow& wnd = DisplayWindow::get();
+
 	gfxContext.enable(enable::CULL_FACE, false);
 	gfxContext.enable(enable::SCISSOR_TEST, true);
 	gfxContext.enableDepthWrite(false);
@@ -1725,15 +1727,17 @@ void GraphicsDrawer::_initStates()
 	}
 	else {
 		gfxContext.enable(enable::DEPTH_TEST, true);
+		const int n64modeFactor = 120;
+		float SSDB = -1.0f * wnd.getScreenHeight() / n64modeFactor;
+
 #if defined(OS_ANDROID) || defined(OS_IOS)
 		if (config.generalEmulation.forcePolygonOffset != 0)
-			gfxContext.setPolygonOffset(config.generalEmulation.polygonOffsetFactor, config.generalEmulation.polygonOffsetUnits);
+			gfxContext.setPolygonOffset(config.generalEmulation.polygonOffsetFactor / (-2.f) * SSDB, config.generalEmulation.polygonOffsetUnits);
 		else
 #endif
-			gfxContext.setPolygonOffset(-3.0f, -3.0f);
+			gfxContext.setPolygonOffset(SSDB, -2.0f);
 	}
 
-	DisplayWindow & wnd = DisplayWindow::get();
 	gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
 
 	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
