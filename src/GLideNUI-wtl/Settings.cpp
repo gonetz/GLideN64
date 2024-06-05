@@ -134,6 +134,7 @@ void _loadSettings(Config& config, GlSettings & settings)
 	settings.beginGroup("angle");
 	config.angle.renderer = settings.value("renderer", config.angle.renderer).toInt();
 	config.angle.directComposition = settings.value("directComposition", config.angle.directComposition).toInt();
+	config.angle.shadowDelimiter = settings.value("shadowDelimiter", config.angle.shadowDelimiter).toInt();
 	settings.endGroup();
 }
 
@@ -302,6 +303,7 @@ void writeSettings(Config& config, const char * _strIniFolder)
 		settings.beginGroup("angle");
 		settings.setValue("renderer", config.angle.renderer);
 		settings.setValue("directComposition", config.angle.directComposition);
+		settings.setValue("shadowDelimiter", config.angle.shadowDelimiter);
 		settings.endGroup();
 
 		settings.endGroup();
@@ -487,6 +489,7 @@ void saveCustomRomSettings(Config& config, const char * _strIniFolder, const cha
 	settings.beginGroup("angle");
 	WriteCustomSetting(angle, renderer);
 	WriteCustomSetting(angle, directComposition);
+	WriteCustomSetting(angle, shadowDelimiter);
 	settings.endGroup();
 
 	settings.endGroup();

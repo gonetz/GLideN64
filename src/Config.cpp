@@ -122,6 +122,7 @@ void Config::resetToDefaults()
 
 	angle.renderer = arDirectX11;
 	angle.directComposition = 0;
+	angle.shadowDelimiter = 120;
 }
 
 bool isHWLightingAllowed()
@@ -180,4 +181,10 @@ void Config::validate()
 		// TODO: Figure out MSAA on DX11
 		video.multisampling = 0;
 	}
+
+	if (config.angle.shadowDelimiter < 10)
+		config.angle.shadowDelimiter = 10;
+
+	if (config.angle.shadowDelimiter > 1000)
+		config.angle.shadowDelimiter = 1000;
 }

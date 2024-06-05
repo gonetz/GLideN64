@@ -197,6 +197,7 @@ struct Config
 	struct {
 		u32 renderer;
 		u32 directComposition;
+		u32 shadowDelimiter;
 	} angle;
 
 	void resetToDefaults();

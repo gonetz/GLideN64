@@ -1727,8 +1727,9 @@ void GraphicsDrawer::_initStates()
 	}
 	else {
 		gfxContext.enable(enable::DEPTH_TEST, true);
-		const int n64modeFactor = 120;
-		float SSDB = -1.0f * wnd.getScreenHeight() / n64modeFactor;
+		u32 delim = config.angle.shadowDelimiter;
+		delim = delim ? delim : 120;
+		float SSDB = -1.0f * wnd.getScreenHeight() / delim;
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 		if (config.generalEmulation.forcePolygonOffset != 0)

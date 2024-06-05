@@ -225,8 +225,10 @@
 #define IDC_TXT_AUTHOR_Z64              1189
 #define IDC_RADIO_VULKAN                1189
 #define IDC_CHECK_DIRECT_COMPOSITION    1190
-#define IDC_RADIO_VULKAN2               1191
 #define IDC_RADIO_OPENGL                1191
+#define IDC_STATIC_SHADOW_DELIM         1192
+#define IDC_EDIT1                       1193
+#define IDC_EDIT_SHADOW_DELIMITER       1193
 
 // Next default values for new objects
 // 
@@ -234,7 +236,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40002
-#define _APS_NEXT_CONTROL_VALUE         1191
+#define _APS_NEXT_CONTROL_VALUE         1194
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

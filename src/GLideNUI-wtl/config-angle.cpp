@@ -25,6 +25,7 @@ void CAngleTab::LoadSettings(bool /*blockCustomSettings*/) {
 	CButton(GetDlgItem(IDC_RADIO_OPENGL)).SetCheck(config.angle.renderer == Config::arOpenGL ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_CHECK_DIRECT_COMPOSITION)).SetCheck((config.angle.directComposition) != 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_CHECK_ENABLE_FRAGMENT_DEPTH_WRITE)).SetCheck((config.generalEmulation.enableFragmentDepthWrite) != 0 ? BST_CHECKED : BST_UNCHECKED);
+	CEdit(GetDlgItem(IDC_EDIT_SHADOW_DELIMITER)).SetWindowText(std::to_wstring(config.angle.shadowDelimiter).c_str());
 }
 
 void CAngleTab::SaveSettings() {
@@ -42,4 +43,11 @@ void CAngleTab::SaveSettings() {
 	}
 	config.angle.directComposition = CButton(GetDlgItem(IDC_CHECK_DIRECT_COMPOSITION)).GetCheck() == BST_CHECKED;
 	config.generalEmulation.enableFragmentDepthWrite = CButton(GetDlgItem(IDC_CHECK_ENABLE_FRAGMENT_DEPTH_WRITE)).GetCheck() == BST_CHECKED;
+
+	int maxLen = 5;
+	std::wstring path;
+	path.resize(maxLen + 1);
+	CEdit(GetDlgItem(IDC_EDIT_SHADOW_DELIMITER)).GetWindowText((wchar_t*)path.data(), static_cast<int>(path.size()));
+
+	config.angle.shadowDelimiter = std::stoi(path.c_str());
 }
