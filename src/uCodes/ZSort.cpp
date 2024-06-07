@@ -266,8 +266,8 @@ void ZSort_Lighting( u32 _w0, u32 _w1 )
 		TransformVectorNormalize(fLightDir, gSP.matrix.projection);
 		f32 x, y;
 		if (gSP.lookatEnable) {
-			x = DotProduct(gSP.lookat.xyz[0], fLightDir);
-			y = DotProduct(gSP.lookat.xyz[1], fLightDir);
+			x = DotProduct(gSP.lookat.xyz[0].vec(), fLightDir);
+			y = DotProduct(gSP.lookat.xyz[1].vec(), fLightDir);
 		} else {
 			x = fLightDir[0];
 			y = fLightDir[1];

@@ -24,7 +24,7 @@ void F3DFLX2_LoadAlphaLight(u32 _a)
 
 	gSP.lookatEnable = true;
 
-	Normalize(gSP.lookat.xyz[0]);
+	Normalize(gSP.lookat.xyz[0].vec());
 	gSP.changed |= CHANGED_LOOKAT;
 	DebugMsg(DEBUG_NORMAL, "F3DFLX2_LoadAlphaLight( 0x%08X );\n", _a);
 }

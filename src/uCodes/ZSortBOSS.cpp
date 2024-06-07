@@ -528,8 +528,8 @@ void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
 
 		Vec fLightDir = {vtx.nx, vtx.ny, vtx.nz};
 		f32 x, y;
-		x = DotProduct(gSP.lookat.xyz[0], fLightDir);
-		y = DotProduct(gSP.lookat.xyz[1], fLightDir);
+		x = DotProduct(gSP.lookat.xyz[0].vec(), fLightDir);
+		y = DotProduct(gSP.lookat.xyz[1].vec(), fLightDir);
 		vtx.s = (x + 0.5f) * 1024.0f;
 		vtx.t = (y + 0.5f) * 1024.0f;
 
@@ -608,7 +608,7 @@ void ZSortBOSS_TransformLights( u32 _w0, u32 _w1 )
 		gSP.lights.xyz[i][X] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+0)^3]),8);
 		gSP.lights.xyz[i][Y] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+1)^3]),8);
 		gSP.lights.xyz[i][Z] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+2)^3]),8);
-		ZSortBOSS_TransformVectorNormalize( gSP.lights.xyz[i], gSP.matrix.modelView[gSP.matrix.modelViewi] );
+		ZSortBOSS_TransformVectorNormalize( gSP.lights.xyz[i].vec(), gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		addr += 24;
 	}
 	for(int i = 0; i < 2; i++)
@@ -616,7 +616,7 @@ void ZSortBOSS_TransformLights( u32 _w0, u32 _w1 )
 		gSP.lookat.xyz[i][X] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+0)^3]),8);
 		gSP.lookat.xyz[i][Y] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+1)^3]),8);
 		gSP.lookat.xyz[i][Z] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+2)^3]),8);
-		ZSortBOSS_TransformVectorNormalize( gSP.lookat.xyz[i], gSP.matrix.modelView[gSP.matrix.modelViewi] );
+		ZSortBOSS_TransformVectorNormalize( gSP.lookat.xyz[i].vec(), gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		addr += 24;
 	}
 

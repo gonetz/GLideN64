@@ -322,7 +322,7 @@ void gSPLight( u32 l, s32 n )
 
 		gSP.lights.is_point[n] = 0 != light->type;
 
-		Normalize( gSP.lights.xyz[n] );
+		Normalize( gSP.lights.xyz[n].vec() );
 		u32 addrShort = addrByte >> 1;
 		gSP.lights.pos_xyzw[n][X] = (float)(((short*)RDRAM)[(addrShort+4)^1]);
 		gSP.lights.pos_xyzw[n][Y] = (float)(((short*)RDRAM)[(addrShort+5)^1]);
@@ -363,7 +363,7 @@ void gSPLightCBFD( u32 l, s32 n )
 		gSP.lights.xyz[n][Y] = light->y;
 		gSP.lights.xyz[n][Z] = light->z;
 
-		Normalize( gSP.lights.xyz[n] );
+		Normalize( gSP.lights.xyz[n].vec() );
 		u32 addrShort = addrByte >> 1;
 		gSP.lights.pos_xyzw[n][X] = (float)(((short*)RDRAM)[(addrShort+16)^1]);
 		gSP.lights.pos_xyzw[n][Y] = (float)(((short*)RDRAM)[(addrShort+17)^1]);
@@ -422,7 +422,7 @@ void gSPLookAt( u32 _l, u32 _n )
 
 	gSP.lookatEnable = (_n == 0) || (_n == 1 && (light->x != 0 || light->y != 0));
 
-	Normalize(gSP.lookat.xyz[_n]);
+	Normalize(gSP.lookat.xyz[_n].vec());
 	gSP.changed |= CHANGED_LOOKAT;
 	DebugMsg(DEBUG_NORMAL, "gSPLookAt( 0x%08X, LOOKAT_%i );\n", _l, _n);
 }
@@ -430,7 +430,7 @@ void gSPLookAt( u32 _l, u32 _n )
 static
 void gSPUpdateLightVectors()
 {
-	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0], &gSP.lights.i_xyz[0], 
+	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0].vec(), &gSP.lights.i_xyz[0].vec(),
 			gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.numLights);
 	gSP.changed ^= CHANGED_LIGHT;
 	gSP.changed |= CHANGED_HW_LIGHT;
@@ -440,7 +440,7 @@ static
 void gSPUpdateLookatVectors()
 {
 	if (gSP.lookatEnable) {
-		InverseTransformVectorNormalizeN(&gSP.lookat.xyz[0], &gSP.lookat.i_xyz[0],
+		InverseTransformVectorNormalizeN(&gSP.lookat.xyz[0].vec(), &gSP.lookat.i_xyz[0].vec(),
 				gSP.matrix.modelView[gSP.matrix.modelViewi], 2);
 	}
 	gSP.changed ^= CHANGED_LOOKAT;
@@ -475,7 +475,7 @@ void gSPInverseTransformVector(Vec& vec, Mtx mtx)
 
 static void processStandardLight(u32 i, SPVertex& vtx)
 {
-	const f32 intensity = DotProduct(vtx.normal, gSP.lights.i_xyz[i]);
+	const f32 intensity = DotProduct(vtx.normal, gSP.lights.i_xyz[i].vec());
 	if (intensity > 0.0f) {
 		vtx.r += gSP.lights.rgb[i][R] * intensity;
 		vtx.g += gSP.lights.rgb[i][G] * intensity;
@@ -575,7 +575,7 @@ void gSPLightVertexCBFD_advanced(u32 v, SPVertex * spVtx)
 		f32 g = gSP.lights.rgb[l][G];
 		f32 b = gSP.lights.rgb[l][B];
 		--l;
-		f32 intensity = std::min(1.0f, DotProduct(vtx.normal, gSP.lights.i_xyz[l]));
+		f32 intensity = std::min(1.0f, DotProduct(vtx.normal, gSP.lights.i_xyz[l].vec()));
 		if (intensity > 0.0f) {
 			r += gSP.lights.rgb[l][R] * intensity;
 			g += gSP.lights.rgb[l][G] * intensity;
@@ -589,7 +589,7 @@ void gSPLightVertexCBFD_advanced(u32 v, SPVertex * spVtx)
 			const f32 len = 2.0f * (vx*vx + vy*vy + vz*vz) * FIXED2FLOATRECIP16;
 			intensity = std::min(1.0f, gSP.lights.ca[l] / len);
 			if ((gSP.geometryMode & G_POINT_LIGHTING) != 0)
-				intensity *= std::min(1.0f, DotProduct(vtx.normal, gSP.lights.i_xyz[l]));;
+				intensity *= std::min(1.0f, DotProduct(vtx.normal, gSP.lights.i_xyz[l].vec()));;
 			if (intensity > 0.0f) {
 				r += gSP.lights.rgb[l][R] * intensity;
 				g += gSP.lights.rgb[l][G] * intensity;
@@ -660,7 +660,7 @@ static void processPointLight(u32 l, Vec& _vecPos, SPVertex& vtx)
 	}
 	else {
 		// Standard lighting
-		intensity = DotProduct(vtx.normal, gSP.lights.i_xyz[l]);
+		intensity = DotProduct(vtx.normal, gSP.lights.i_xyz[l].vec());
 	}
 	if (intensity > 0.0f) {
 		vtx.r += gSP.lights.rgb[l][R] * intensity;
@@ -886,8 +886,8 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 					Vec fLightDir{vtx.nx, vtx.ny, vtx.nz};
 					f32 x, y;
 					if (gSP.lookatEnable) {
-						x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
-						y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
+						x = DotProduct(gSP.lookat.i_xyz[0].vec(), fLightDir);
+						y = DotProduct(gSP.lookat.i_xyz[1].vec(), fLightDir);
 					} else {
 						fLightDir[0] *= 128.0f;
 						fLightDir[1] *= 128.0f;
@@ -911,7 +911,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 			} else {
 				for(int i = 0; i < VNUM; ++i) {
 					SPVertex & vtx = spVtx[v+i];
-					const f32 intensity = DotProduct(gSP.lookat.i_xyz[0], vtx.normal) * 128.0f;
+					const f32 intensity = DotProduct(gSP.lookat.i_xyz[0].vec(), vtx.normal) * 128.0f;
 					const s16 index = static_cast<s16>(intensity);
 					vtx.a = _FIXED2FLOATCOLOR(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
 				}

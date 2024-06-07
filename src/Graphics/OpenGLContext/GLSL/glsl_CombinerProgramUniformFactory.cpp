@@ -924,8 +924,8 @@ public:
 	void update(bool _force) override
 	{
 		for (u32 i = 0; i <= gSP.numLights; ++i) {
-			uLightDirection[i].set(gSP.lights.xyz[i], _force);
-			uLightColor[i].set(gSP.lights.rgb[i], _force);
+			uLightDirection[i].set(gSP.lights.xyz[i].vec(), _force);
+			uLightColor[i].set(gSP.lights.rgb[i].vec(), _force);
 		}
 	}
 

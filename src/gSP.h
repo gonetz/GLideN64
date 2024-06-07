@@ -34,6 +34,34 @@
 enum Component { R, G, B };
 enum Axis { X ,Y, Z, W };
 
+struct ColorVec
+{
+public:
+	f32& operator[] (Component c) { return val_[(size_t) c]; }
+	Vec& vec() { return vec_; }
+
+private:
+	union
+	{
+		Vec vec_;
+		f32 val_[4];
+	};
+};
+
+struct PosVec
+{
+public:
+	f32& operator[] (Axis c) { return val_[(size_t)c]; }
+	Vec& vec() { return vec_; }
+
+private:
+	union
+	{
+		Vec vec_;
+		f32 val_[4];
+	};
+};
+
 struct SPVertex
 {
 	union
@@ -87,20 +115,20 @@ struct gSPInfo
 
 	struct
 	{
-		Vec rgb[12];
-		Vec xyz[12];
-		Vec i_xyz[12];
-		Vec pos_xyzw[12];
+		ColorVec rgb[12];
+		PosVec xyz[12];
+		PosVec i_xyz[12];
+		PosVec pos_xyzw[12];
 		f32 ca[12], la[12], qa[12];
 		bool is_point[12];
 	} lights;
 
 	struct
 	{
-		Vec rgb[2];
-		Vec xyz[2];
-		Vec i_xyz[2];
-		Vec pos_xyzw[2];
+		ColorVec rgb[2];
+		PosVec xyz[2];
+		PosVec i_xyz[2];
+		PosVec pos_xyzw[2];
 		f32 ca[2], la[2], qa[2];
 	} lookat;
 
