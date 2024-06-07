@@ -24,7 +24,6 @@ using namespace graphics;
 
 #define INDEXMAP_SIZE 80U
 
-#undef __VEC4_OPT
 #ifdef __VEC4_OPT
 #define VEC_OPT 4U
 #else
