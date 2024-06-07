@@ -575,7 +575,7 @@ void gSPLightVertexCBFD_advanced(u32 v, SPVertex * spVtx)
 		f32 g = gSP.lights.rgb[l][G];
 		f32 b = gSP.lights.rgb[l][B];
 		--l;
-		f32 intensity = std::min(1.0f, DotProduct(vtx.pos, gSP.lights.i_xyz[l]));
+		f32 intensity = std::min(1.0f, DotProduct(vtx.normal, gSP.lights.i_xyz[l]));
 		if (intensity > 0.0f) {
 			r += gSP.lights.rgb[l][R] * intensity;
 			g += gSP.lights.rgb[l][G] * intensity;
