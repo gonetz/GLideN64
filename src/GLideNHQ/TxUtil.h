@@ -38,21 +38,21 @@
 class TxUtil
 {
 private:
-	static uint32 RiceCRC32(const uint8* src, int width, int height, int size, int rowStride);
+	static uint32 RiceCRC32(const uint8* src, int width, int height, int size, int rowStride, uint64 seed);
 	static boolean RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
-						  uint32* crc32, uint32* cimax);
+						  uint32* crc32, uint32* cimax, uint64 seed);
 	static boolean RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
-						  uint32* crc32, uint32* cimax);
-	static uint32 StrongCRC32(const uint8* src, int width, int height, int size, int rowStride);
+						  uint32* crc32, uint32* cimax, uint64 seed);
+	static uint32 StrongCRC32(const uint8* src, int width, int height, int size, int rowStride, uint64 seed);
 	static boolean StrongCRC32_CI4(const uint8* src, int width, int height, int rowStride,
-		uint32* crc32, uint32* cimax);
+		uint32* crc32, uint32* cimax, uint64 seed);
 	static boolean StrongCRC32_CI8(const uint8* src, int width, int height, int rowStride,
-		uint32* crc32, uint32* cimax);
+		uint32* crc32, uint32* cimax, uint64 seed);
 public:
 	static int sizeofTx(int width, int height, ColorFormat format);
 	static uint32 checksumTx(uint8 *data, int width, int height, ColorFormat format);
-	static uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
-	static uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
+	static uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed);
+	static uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed);
 	static uint32 getNumberofProcessors();
 };
 

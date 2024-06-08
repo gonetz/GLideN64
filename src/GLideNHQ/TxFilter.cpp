@@ -572,19 +572,101 @@ TxFilter::hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSi
 }
 
 uint64
-TxFilter::checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+TxFilter::checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	if (_options & (HIRESTEXTURES_MASK|DUMP_TEX))
-		return TxUtil::checksum64(src, width, height, size, rowStride, palette);
+		return TxUtil::checksum64(src, width, height, size, rowStride, palette, seed);
 
 	return 0;
 }
 
 uint64
-TxFilter::checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+TxFilter::checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	if (_options & (HIRESTEXTURES_MASK | DUMP_TEX))
-		return TxUtil::checksum64strong(src, width, height, size, rowStride, palette);
+		return TxUtil::checksum64strong(src, width, height, size, rowStride, palette, seed);
+
+	return 0;
+}
+
+tx_wstring
+TxFilter::getTexDumpPath(boolean isStrongCrc)
+{
+	if (_dumpPath.empty() || _ident.empty())
+		return tx_wstring();
+
+	tx_wstring path;
+	path.assign(_dumpPath);
+	path.append(wst("/"));
+	path.append(_ident);
+	isStrongCrc ? path.append(wst("/GLideNHQ_strong_crc")) : path.append(wst("/GLideNHQ"));
+	return path;
+}
+
+tx_wstring
+TxFilter::getMipMapTexDumpPath(N64FormatSize n64FmtSz, Checksum detailedTileCRC, Checksum firstTileCRC, boolean isStrongCrc)
+{
+	tx_wstring path = getTexDumpPath(isStrongCrc);
+	if (path.empty())
+		return path;
+
+	wchar_t wbuf[256];
+	if (detailedTileCRC._texture != 0u) {
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X_detail"), _ident.c_str(), detailedTileCRC._texture);
+		path.append(wbuf);
+	}
+	if (firstTileCRC._texture != 0u) {
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X_mipmap"), _ident.c_str(), firstTileCRC._texture);
+		path.append(wbuf);
+	}
+
+	return path;
+}
+
+boolean
+TxFilter::dmptxImpl(uint8 *src, int width, int height, int rowStridePixel,
+	ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, tx_wstring const& texDumpPath)
+{
+	assert(gfmt != graphics::colorFormat::RGBA);
+	if (!_initialized || !(_options & DUMP_TEX) || texDumpPath.empty())
+		return 0;
+
+	DBG_INFO(80, wst("gfmt = %02x n64fmt = %02x\n"), u32(gfmt), n64FmtSz._format);
+	DBG_INFO(80, wst("hirestex: r_crc64:%08X %08X\n"),
+		r_crc64._palette, r_crc64._texture);
+
+	if (gfmt != graphics::internalcolorFormat::RGBA8) {
+		if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, gfmt, graphics::internalcolorFormat::RGBA8))
+			return 0;
+		src = _tex1;
+	}
+
+	/* dump it to disk */
+	FILE *fp = nullptr;
+	tx_wstring tmpbuf = texDumpPath;
+
+	/* create directories */
+	if (!osal_path_existsW(tmpbuf.c_str()) && osal_mkdirp(tmpbuf.c_str()) != 0)
+		return 0;
+
+	wchar_t wbuf[256];
+	if (n64FmtSz._format == 0x2)
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X#%08X_ciByRGBA.png"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size, r_crc64._palette);
+	else
+		tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X_all.png"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size);
+	tmpbuf.append(wbuf);
+
+#ifdef OS_WINDOWS
+	if ((fp = _wfopen(tmpbuf.c_str(), wst("wb"))) != nullptr) {
+#else
+	char cbuf[MAX_PATH];
+	wcstombs(cbuf, tmpbuf.c_str(), MAX_PATH);
+	if ((fp = fopen(cbuf, "wb")) != nullptr) {
+#endif
+		_txImage->writePNG(src, fp, width, height, (rowStridePixel << 2), graphics::internalcolorFormat::RGBA8);
+		fclose(fp);
+		return 1;
+	}
 
 	return 0;
 }
@@ -593,60 +675,15 @@ boolean
 TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel,
 				ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum r_crc64, boolean isStrongCrc)
 {
-	assert(gfmt != graphics::colorFormat::RGBA);
-	if (!_initialized)
-		return 0;
+	return dmptxImpl(src, width, height, rowStridePixel, gfmt, n64FmtSz, r_crc64, getTexDumpPath(isStrongCrc));
+}
 
-	if (!(_options & DUMP_TEX))
-		return 0;
-
-	DBG_INFO(80, wst("gfmt = %02x n64fmt = %02x\n"), u32(gfmt), n64FmtSz._format);
-	DBG_INFO(80, wst("hirestex: r_crc64:%08X %08X\n"),
-			 r_crc64._palette, r_crc64._texture);
-
-	if (gfmt != graphics::internalcolorFormat::RGBA8) {
-		if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, gfmt, graphics::internalcolorFormat::RGBA8))
-			return 0;
-		src = _tex1;
-	}
-
-	if (!_dumpPath.empty() && !_ident.empty()) {
-		/* dump it to disk */
-		FILE *fp = nullptr;
-		tx_wstring tmpbuf;
-
-		/* create directories */
-		tmpbuf.assign(_dumpPath);
-		tmpbuf.append(wst("/"));
-		tmpbuf.append(_ident);
-		isStrongCrc ? tmpbuf.append(wst("/GLideNHQ_strong_crc")) : tmpbuf.append(wst("/GLideNHQ"));
-		if (!osal_path_existsW(tmpbuf.c_str()) && osal_mkdirp(tmpbuf.c_str()) != 0)
-			return 0;
-
-		if (n64FmtSz._format == 0x2) {
-			wchar_t wbuf[256];
-			tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X#%08X_ciByRGBA.png"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size, r_crc64._palette);
-			tmpbuf.append(wbuf);
-		} else {
-			wchar_t wbuf[256];
-			tx_swprintf(wbuf, 256, wst("/%ls#%08X#%01X#%01X_all.png"), _ident.c_str(), r_crc64._texture, n64FmtSz._format, n64FmtSz._size);
-			tmpbuf.append(wbuf);
-		}
-
-#ifdef OS_WINDOWS
-		if ((fp = _wfopen(tmpbuf.c_str(), wst("wb"))) != nullptr) {
-#else
-		char cbuf[MAX_PATH];
-		wcstombs(cbuf, tmpbuf.c_str(), MAX_PATH);
-		if ((fp = fopen(cbuf, "wb")) != nullptr) {
-#endif
-			_txImage->writePNG(src, fp, width, height, (rowStridePixel << 2), graphics::internalcolorFormat::RGBA8);
-			fclose(fp);
-			return 1;
-		}
-	}
-
-	return 0;
+boolean
+TxFilter::dmptxMipmap(uint8 *src, int width, int height, int rowStridePixel,
+	ColorFormat gfmt, N64FormatSize n64FmtSz, Checksum detailedTileCRC, Checksum firstTileCRC, Checksum tileCRC, boolean isStrongCrc)
+{
+	tx_wstring path = getMipMapTexDumpPath(n64FmtSz, detailedTileCRC, firstTileCRC, isStrongCrc);
+	return dmptxImpl(src, width, height, rowStridePixel, gfmt, n64FmtSz, tileCRC, path);
 }
 
 boolean

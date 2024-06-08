@@ -188,6 +188,8 @@ const char* Config::hotkeyIniName(u32 _idx)
 		return "hkHdTexReload";
 	case Config::HotKey::hkHdTexToggle:
 		return "hkHdTexToggle";
+	case Config::HotKey::hkMipMap:
+		return "hkMipMap";
 	case Config::HotKey::hkTexCoordBounds:
 		return "hkTexCoordBounds";
 	case Config::HotKey::hkNativeResTexrects:
@@ -228,6 +230,8 @@ const char* Config::enabledHotkeyIniName(u32 _idx)
 		return "hkHdTexReloadEnabled";
 	case Config::HotKey::hkHdTexToggle:
 		return "hkHdTexToggleEnabled";
+	case Config::HotKey::hkMipMap:
+		return "hkMipMapEnabled";
 	case Config::HotKey::hkTexCoordBounds:
 		return "hkTexCoordBoundsEnabled";
 	case Config::HotKey::hkNativeResTexrects:

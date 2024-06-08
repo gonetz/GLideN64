@@ -661,24 +661,19 @@ public:
 				"  lowp vec4 c11 = texture2D(tex, (tcData[3] + 0.5)/texSize);									\n"
 				;
 			static const std::string strReadTex1 =
-				"mediump float get_high4(in float byte) {														\n"
-				"  return floor(byte/16.0);																		\n"
-				"}																								\n"
-				"mediump float get_low4(in float byte) {														\n"
-				"  return byte - 16.0*floor(byte/16.0);															\n"
-				"}																								\n"
 				"lowp vec4 TextureMipMap1(in sampler2D tex, in highp vec2 tcData[5], in lowp float lod)			\n"
 				"{																								\n"
 				// Fetch from texture atlas
-				// First 8 texels contain info about tile size and offset, 1 texel per tile
-				"  mediump vec2 texSize = uTextureSize[1];															\n"
-				"  mediump vec4 texWdthAndOff0 = 255.0 * texture2D(tex, vec2(0.5, 0.5)/texSize);					\n"
-				"  mediump vec4 texWdthAndOff = 255.0 * texture2D(tex, vec2(lod + 0.5, 0.5)/texSize);				\n"
-				"  mediump float lod_scales = pow(2.0, get_high4(texWdthAndOff0.a) - get_high4(texWdthAndOff.a));	\n"
-				"  mediump float lod_scalet = pow(2.0, get_low4(texWdthAndOff0.a) - get_low4(texWdthAndOff.a));		\n"
+				// First 16 texels contain info about tile size and offset, 2 texels per tile
+				"  mediump vec2 texSize = uTextureSize[1];														\n"
+				"  mediump vec4 texWidth0 = 255.0 * texture2D(tex, vec2(1.0 + 0.5, 0.5)/texSize);				\n"
+				"  mediump vec4 texOff = 255.0 * texture2D(tex, vec2(lod * 2.0 + 0.5, 0.5)/texSize);			\n"
+				"  mediump vec4 texWidth = 255.0 * texture2D(tex, vec2(lod * 2.0 + 1.0 + 0.5, 0.5)/texSize);	\n"
+				"  mediump float lod_scales = pow(2.0, texWidth0.a - texWidth.a);								\n"
+				"  mediump float lod_scalet = pow(2.0, texWidth0.b - texWidth.b);								\n"
 				"  mediump vec2 lod_scale = vec2(lod_scales, lod_scalet);										\n"
-				"  mediump float offset = texWdthAndOff.r + texWdthAndOff.g * 256.0;							\n"
-				"  mediump float width = texWdthAndOff.b;														\n"
+				"  mediump float offset = texOff.r + texOff.g * 256.0 + texOff.b * 65536.0;						\n"
+				"  mediump float width = texWidth.r + texWidth.g * 256.0;										\n"
 				"  mediump vec2 Coords00 = floor(tcData[0] * lod_scale);										\n"
 				"  mediump float offset00 = offset + width * Coords00.t + Coords00.s;							\n"
 				"  mediump float Y00 = floor(offset00 / mipmapTileWidth);										\n"
@@ -800,14 +795,15 @@ public:
 				"#define READ_TEX1_MIPMAP(name, tex, tcData, tile)										\\\n"
 				"{																						\\\n"
 				// Fetch from texture atlas
-				// First 8 texels contain info about tile size and offset, 1 texel per tile
-				"  mediump vec4 texWdthAndOff0 = 255.0 * texelFetch(tex, ivec2(0, 0), 0);				\\\n"
-				"  mediump vec4 texWdthAndOff = 255.0 * texelFetch(tex, ivec2(int(tile), 0), 0);		\\\n"
-				"  mediump float lod_scales = pow(2.0, GET_HIGH4(texWdthAndOff0.a) - GET_HIGH4(texWdthAndOff.a)); \\\n"
-				"  mediump float lod_scalet = pow(2.0, GET_LOW4(texWdthAndOff0.a) - GET_LOW4(texWdthAndOff.a)); \\\n"
+				// First 16 texels contain info about tile size and offset, 2 texels per tile
+				"  mediump vec4 texWidth0 = 255.0 * texelFetch(tex, ivec2(1, 0), 0);					\\\n"
+				"  mediump vec4 texOff = 255.0 * texelFetch(tex, ivec2(int(tile) * 2, 0), 0);			\\\n"
+				"  mediump vec4 texWidth = 255.0 * texelFetch(tex, ivec2(int(tile) * 2 + 1, 0), 0);		\\\n"
+				"  mediump float lod_scales = pow(2.0, texWidth0.a - texWidth.a);						\\\n"
+				"  mediump float lod_scalet = pow(2.0, texWidth0.b - texWidth.b);						\\\n"
 				"  mediump vec2 lod_scale = vec2(lod_scales, lod_scalet);								\\\n"
-				"  mediump int offset = int(texWdthAndOff.r) + int(texWdthAndOff.g) * 256;				\\\n"
-				"  mediump int width = int(texWdthAndOff.b);											\\\n"
+				"  mediump int offset = int(texOff.r) + int(texOff.g) * 256 + int(texOff.b) * 65536;	\\\n"
+				"  mediump int width = int(texWidth.r) + int(texWidth.g) * 256;							\\\n"
 				"  mediump ivec2 iCoords00 = ivec2(tcData[0] * lod_scale);								\\\n"
 				"  mediump int offset00 = offset + width * iCoords00.t + iCoords00.s;					\\\n"
 				"  mediump int Y00 = offset00/mipmapTileWidth;											\\\n"
@@ -857,19 +853,9 @@ public:
 				"uniform lowp int uTextureDetail;										\n"
 				"																		\n"
 				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-				;
-			if (config.generalEmulation.enableLOD == 0) {
-				m_part +=
-					"  mediump float lod = 1.0;											\n"
-					;
-			} else {
-				m_part +=
-					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;		\n"
-					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;		\n"
-					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));		\n"
-					;
-			}
-			m_part +=
+				"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
+				"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
+				"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));			\n"
 				"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);		\n"
 				"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;			\n"
 				"  mediump float max_lod = pow(2.0, float(max_tile)) - 1.0 / 32.0;		\n"
@@ -1153,7 +1139,7 @@ public:
 			"void textureEngine1(in highp vec2 texCoord, out highp vec2 tcData[5]) \n"
 			"{  \n"
 			"  highp vec2 tileCoord = (WRAP(texCoord * uShiftScale[1] - uTexOffset[1], -1024.0, 1024.0)); \n"
-			"  tileCoord = (tileCoord + uBilinearOffset) * uHDRatio[1] - uBilinearOffset; \n"
+			"  tileCoord = (tileCoord + uBilinearOffset*0.5) * uHDRatio[1] - uBilinearOffset; \n"
 			"  mediump vec2 intPart = floor(tileCoord); \n"
 			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap[1], uTexClamp[1], uTexWrapEn[1], uTexClampEn[1], uTexMirrorEn[1]); \n"
 			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap[1], uTexClamp[1], uTexWrapEn[1], uTexClampEn[1], uTexMirrorEn[1]); \n"

@@ -111,7 +111,8 @@ public:
 			maxTile = std::min(gSP.texture.level, 1u); // Hack for HD textures
 		uMaxTile.set(maxTile, _force);
 
-		bool bNoAtlasTex = (_pTexture != nullptr && _pTexture->bHDTexture) ||
+		bool bNoAtlasTex = config.generalEmulation.enableLOD == 0 ||
+							(_pTexture != nullptr && _pTexture->bHDTexture && _pTexture->max_level == 0) ||
 							maxTile == 0 ||
 							gDP.otherMode.textureLOD != G_TL_LOD ||
 							(gDP.otherMode.textureDetail != G_TD_DETAIL && maxTile == 1);

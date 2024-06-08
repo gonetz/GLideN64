@@ -29,6 +29,8 @@ const char* _hotkeyDescription(u32 _idx)
 		return "Hotkey: reload HD textures";
 	case Config::HotKey::hkHdTexToggle:
 		return "Hotkey: toggle HD textures";
+	case Config::HotKey::hkMipMap:
+		return "Hotkey: toggle mip-map emulation";
 	case Config::HotKey::hkTexCoordBounds:
 		return "Hotkey: toggle texcoords bounds";
 	case Config::HotKey::hkNativeResTexrects:

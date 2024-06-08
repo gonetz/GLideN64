@@ -228,6 +228,7 @@ struct Config
 		hkTexDump = 0,
 		hkHdTexReload,
 		hkHdTexToggle,
+		hkMipMap,
 		hkTexCoordBounds,
 		hkNativeResTexrects,
 		hkVsync,

@@ -76,19 +76,19 @@ txfilter_hirestex(uint64 g64crc, Checksum r_crc64, uint16 *palette, N64FormatSiz
 }
 
 TAPI uint64 TAPIENTRY
-txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
   if (txFilter)
-	return txFilter->checksum64(src, width, height, size, rowStride, palette);
+	return txFilter->checksum64(src, width, height, size, rowStride, palette, seed);
 
   return 0;
 }
 
 TAPI uint64 TAPIENTRY
-txfilter_checksum_strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
+txfilter_checksum_strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette, uint64 seed)
 {
 	if (txFilter)
-		return txFilter->checksum64strong(src, width, height, size, rowStride, palette);
+		return txFilter->checksum64strong(src, width, height, size, rowStride, palette, seed);
 
 	return 0;
 }
@@ -107,6 +107,16 @@ txfilter_dmptx_strong(uint8 *src, int width, int height, int rowStridePixel, uin
 {
 	if (txFilter)
 		return txFilter->dmptx(src, width, height, rowStridePixel, ColorFormat(u32(gfmt)), n64FmtSz, r_crc64, TRUE);
+
+	return 0;
+}
+
+TAPI boolean TAPIENTRY
+txfilter_dmptx_mipmap(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, N64FormatSize n64FmtSz,
+	Checksum detailedTileCRC, Checksum firstTileCRC, Checksum tileCRC, boolean isStrongCRC)
+{
+	if (txFilter)
+		return txFilter->dmptxMipmap(src, width, height, rowStridePixel, ColorFormat(u32(gfmt)), n64FmtSz, detailedTileCRC, firstTileCRC, tileCRC, isStrongCRC);
 
 	return 0;
 }
