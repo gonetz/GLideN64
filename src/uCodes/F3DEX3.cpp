@@ -192,13 +192,13 @@ struct Vertices7
 static inline Vertices7 unpackVertices7(u32 w0, u32 w1)
 {
 	Vertices7 v;
-	v.v[0] = _SHIFTR(w0, 16, 8) / 2;
-	v.v[1] = _SHIFTR(w0, 8, 8) / 2;
-	v.v[2] = _SHIFTR(w0, 0, 8) / 2;
-	v.v[3] = _SHIFTR(w1, 24, 8) / 2;
-	v.v[4] = _SHIFTR(w1, 16, 8) / 2;
-	v.v[5] = _SHIFTR(w1, 8, 8) / 2;
-	v.v[6] = _SHIFTR(w1, 0, 8) / 2;
+	v.v[0] = _SHIFTR(w0, 17, 7);
+	v.v[1] = _SHIFTR(w0, 9, 7);
+	v.v[2] = _SHIFTR(w0, 1, 7);
+	v.v[3] = _SHIFTR(w1, 25, 7);
+	v.v[4] = _SHIFTR(w1, 17, 7);
+	v.v[5] = _SHIFTR(w1, 9, 7);
+	v.v[6] = _SHIFTR(w1, 1, 7);
 	return v;
 }
 

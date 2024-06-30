@@ -361,6 +361,18 @@ bool GBIInfo::_makeExistingMicrocodeCurrent(u32 uc_start, u32 uc_dstart, u32 uc_
 	return true;
 }
 
+// based on musl libc
+static inline int ascii_isupper(int c)
+{
+	return (unsigned)c - 'A' < 26;
+}
+
+static inline int ascii_tolower(int c)
+{
+	if (isupper(c)) return c | 32;
+	return c;
+}
+
 void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
 	if (_makeExistingMicrocodeCurrent(uc_start, uc_dstart, uc_dsize))
@@ -398,9 +410,12 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 
 	// Check for F3DEX3 microcode
 	{
-		static const char F3DEX3_NAME[] = "F3DEX3";
+		static const char F3DEX3_NAME[] = "f3dex3";
 		const char* probe = &uc_data[0x138];
-		if (0 == memcmp(probe, F3DEX3_NAME, sizeof(F3DEX3_NAME) - 1))
+		char name_buffer[sizeof(F3DEX3_NAME) - 1];
+		memcpy(name_buffer, probe, sizeof(F3DEX3_NAME) - 1);
+		std::transform(name_buffer, name_buffer + sizeof(F3DEX3_NAME) - 1, name_buffer, ascii_tolower);
+		if (0 == memcmp(name_buffer, F3DEX3_NAME, sizeof(F3DEX3_NAME) - 1))
 		{
 			current.type = F3DEX3;
 			current.NoN = true;
@@ -413,9 +428,10 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				// 0x180 is absolutely an overkill but it is ok for now
 				const char* name_end = (const char*)memchr(probe, ' ', 0x180);
 				size_t name_len = name_end - probe;
-				// It will look like F3DEX3_LVP_BrW_NOC
+				// It will look like F3DEX3_LVP_BrZ_NOC
 				std::string feature;
 				std::string name = std::string(probe, name_len);
+				std::transform(name.begin(), name.end(), name.begin(), ascii_tolower);
 				std::stringstream name_stream(name);
 				while (std::getline(name_stream, feature, '_'))
 				{
@@ -423,9 +439,9 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				}
 			}
 
-			current.f3dex3.legacyVertexPipeline = features.find("LVP") != features.end();
-			current.f3dex3.noOcclusionPlane = features.find("NOC") != features.end();
-			current.f3dex3.branchOnZ = features.find("BrZ") != features.end();
+			current.f3dex3.legacyVertexPipeline = features.find("lvp") != features.end();
+			current.f3dex3.noOcclusionPlane = features.find("noc") != features.end();
+			current.f3dex3.branchOnZ = features.find("brz") != features.end();
 
 			LOG(LOG_VERBOSE, "Load microcode (%s) type: %d crc: 0x%08x romname: %s\n", uc_str, current.type, uc_crc, RSP.romname);
 			_makeCurrent(&current);

@@ -485,7 +485,7 @@ void gSPInverseTransformVector_default(float vec[3], float mtx[4][4])
 	vec[2] = mtx[2][0] * x + mtx[2][1] * y + mtx[2][2] * z;
 }
 
-static void processStandardLight(const bool useFirstColor, u32 i, SPVertex& vtx)
+static void processDirectionalLight(const bool useFirstColor, u32 i, SPVertex& vtx)
 {
 	const f32 intensity = DotProduct( &vtx.nx, gSP.lights.i_xyz[i] );
 	if (intensity > 0.0f) {
@@ -511,7 +511,7 @@ void gSPLightVertexStandard(u32 v, SPVertex * spVtx)
 			vtx.HWLight = 0;
 
 			for (u32 i = 0; i < gSP.numLights; ++i) {
-				processStandardLight(useFirstColor, i, vtx);
+				processDirectionalLight(useFirstColor, i, vtx);
 			}
 			vtx.r = min(1.0f, vtx.r);
 			vtx.g = min(1.0f, vtx.g);
@@ -761,7 +761,7 @@ void gSPLightVertexF3DEX3(u32 v, float _vecPos[VNUM][4], SPVertex* spVtx)
 			if (gSP.lights.is_point[l])
 				processPointLight(l, _vecPos[j], vtx);
 			else
-				processStandardLight(useFirstColor, l, vtx);
+				processDirectionalLight(useFirstColor, l, vtx);
 		}
 		if (vtx.r > 1.0f) vtx.r = 1.0f;
 		if (vtx.g > 1.0f) vtx.g = 1.0f;
