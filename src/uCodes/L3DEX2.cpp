@@ -13,12 +13,8 @@
 
 void L3DEX2_Line3D( u32 w0, u32 w1 )
 {
-	u32 wd = _SHIFTR( (w0 + 1), 0, 8 );
-
-	if (wd == 0)
-		gSPLine3D( _SHIFTR( w0, 17, 7 ), _SHIFTR( w0, 9, 7 ), 0 );
-	else
-		gSPLineW3D( _SHIFTR( w0, 17, 7 ), _SHIFTR( w0, 9, 7 ), wd, 0 );
+	s32 wd = static_cast<s8>(_SHIFTR( w0, 0, 8 ));
+	gSPLine3D( _SHIFTR( w0, 17, 7 ), _SHIFTR( w0, 9, 7 ), wd, 0 );
 }
 
 void L3DEX2_Init()

@@ -11,12 +11,8 @@
 
 void L3D_Line3D( u32 w0, u32 w1 )
 {
-	u32 wd = _SHIFTR( w1, 0, 8 );
-
-	if (wd == 0)
-		gSPLine3D( _SHIFTR( w1, 16, 8 ) / 10, _SHIFTR( w1, 8, 8 ) / 10, _SHIFTR( w1, 24, 8 ) );
-	else
-		gSPLineW3D( _SHIFTR( w1, 16, 8 ) / 10, _SHIFTR( w1, 8, 8 ) / 10, wd, _SHIFTR( w1, 24, 8 ) );
+	s32 wd = static_cast<s8>(_SHIFTR( w1, 0, 8 ));
+	gSPLine3D( _SHIFTR( w1, 16, 8 ) / 10, _SHIFTR( w1, 8, 8 ) / 10, wd, _SHIFTR( w1, 24, 8 ) );
 }
 
 void L3D_Init()
