@@ -1974,7 +1974,7 @@ void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 
 void gSPLine3D(u32 v0, u32 v1, s32 wd, u32 flag )
 {
-	dwnd().getDrawer().drawLine(v0, v1, 1.5f + wd * 0.5f);
+	dwnd().getDrawer().drawLine(v0, v1, 1.5f + wd * 0.5f, flag);
 
 	DebugMsg(DEBUG_NORMAL, "gSPLine3D( %i, %i, %i, %i )\n", v0, v1, wd, flag);
 }
