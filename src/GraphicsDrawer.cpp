@@ -1077,7 +1077,7 @@ void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width, u32 _flag)
 	m_texrectDrawer.draw();
 	m_statistics.lines++;
 
-	if (!_canDraw())
+	if (!_canDraw() || _width <= 0.0f)
 		return;
 
 	f32 lineWidth = _width;
