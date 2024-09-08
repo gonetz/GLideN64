@@ -238,8 +238,8 @@ void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scal
 		scaleX = scaleY = scale;
 	}
 	if (pCurrentBuffer != nullptr) {
-		X = roundup(pCurrentBuffer->m_originX, scaleX);
-		Y = roundup(pCurrentBuffer->m_originY, scaleY);
+		X = roundup(static_cast<f32>(pCurrentBuffer->m_originX), scaleX);
+		Y = roundup(static_cast<f32>(pCurrentBuffer->m_originY), scaleY);
 	}
 	WIDTH = roundup(SCREEN_SIZE_DIM, scaleX);
 	HEIGHT = roundup(SCREEN_SIZE_DIM, scaleY);
