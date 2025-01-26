@@ -851,54 +851,85 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 		return;
 	}
 
-	// Either RGBA16 or RGBA32. This heavily assume "niceness" of developers to bind color buffer before memset...
-	const u32 colorSize = gDP.colorImage.size < 3 ? 2 : 4;
-	const u32 colorImageStart = gDP.colorImage.address;
-	const u32 colorImageEnd = gDP.colorImage.address + ((screenWidth * screenHeight) << (gDP.colorImage.size >> 1));
-	if (colorImageStart <= addr && addr < colorImageEnd) {
-		// FB clear
-		f32 fillColor32[4];
-		getFillColor(fillColor, fillColor32);
-		gDP.rectColor.r = fillColor32[0];
-		gDP.rectColor.g = fillColor32[1];
-		gDP.rectColor.b = fillColor32[2];
-		gDP.rectColor.a = fillColor32[3];
+	// FB clear
+	bool doMemset = true;
+	if (0 == config.frameBufferEmulation.enable)
+	{
+		// Either RGBA16 or RGBA32. This heavily assume "niceness" of developers to bind color buffer before memset...
+		const u32 colorSize = gDP.colorImage.size < 3 ? 2 : 4;
+		const u32 colorImageStart = gDP.colorImage.address;
+		const u32 colorImageEnd = gDP.colorImage.address + ((screenWidth * screenHeight) << (gDP.colorImage.size >> 1));
+		if (colorImageStart <= addr && addr < colorImageEnd) {
+			f32 fillColor32[4];
+			getFillColor(fillColor, fillColor32);
+			gDP.rectColor.r = fillColor32[0];
+			gDP.rectColor.g = fillColor32[1];
+			gDP.rectColor.b = fillColor32[2];
+			gDP.rectColor.a = fillColor32[3];
 
-		const u32 lineSize = colorSize * screenWidth;
-		const u32 ulx = 0;
-		const u32 uly = (addr - colorImageStart) / lineSize;
-		const u32 lrx = screenWidth;
-		const u32 lry = uly + length / lineSize;
+			const u32 lineSize = colorSize * screenWidth;
+			const u32 ulx = 0;
+			const u32 uly = (addr - colorImageStart) / lineSize;
+			const u32 lrx = screenWidth;
+			const u32 lry = uly + length / lineSize;
 
-		{
-			ValueKeeper<u32> backupFillColor(gDP.fillColor.color, fillColor);
-			const unsigned int backupDepthSource = gDP.otherMode.depthSource;
-			const unsigned int backupCycleType = gDP.otherMode.cycleType;
+			{
+				ValueKeeper<u32> backupFillColor(gDP.fillColor.color, fillColor);
+				const unsigned int backupDepthSource = gDP.otherMode.depthSource;
+				const unsigned int backupCycleType = gDP.otherMode.cycleType;
 
-			gDP.fillColor.color = fillColor;
-			gDP.otherMode.cycleType = G_CYC_FILL;
+				gDP.fillColor.color = fillColor;
+				gDP.otherMode.cycleType = G_CYC_FILL;
 
-			drawer.drawRect(ulx, uly, lrx, lry);
-			if (auto cur = frameBufferList().getCurrent())
-				cur->setBufferClearParams(gDP.fillColor.color, ulx, uly, lrx, lry);
+				drawer.drawRect(ulx, uly, lrx, lry);
 
-			frameBufferList().setBufferChanged(f32(lry));
-
-			gDP.otherMode.depthSource = backupDepthSource;
-			gDP.otherMode.cycleType = backupCycleType;
-		}
-
-		if (config.frameBufferEmulation.copyFromRDRAM != 0) {
-			u32* pDest = reinterpret_cast<u32*>(RDRAM + addr);
-			length /= 4;
-			for (int i = 0; i < length; i++) {
-				pDest[i] = fillColor;
+				gDP.otherMode.depthSource = backupDepthSource;
+				gDP.otherMode.cycleType = backupCycleType;
 			}
+
+			doMemset = config.frameBufferEmulation.copyFromRDRAM != 0;
 		}
 	}
 	else
 	{
-		// TODO: It is something we do not know about... I hope it is not a big deal to just memset it?
+		if (const auto pBuffer = frameBufferList().findBuffer(addr)) {
+			f32 fillColor32[4];
+			getFillColor(fillColor, fillColor32);
+			gDP.rectColor.r = fillColor32[0];
+			gDP.rectColor.g = fillColor32[1];
+			gDP.rectColor.b = fillColor32[2];
+			gDP.rectColor.a = fillColor32[3];
+
+			const u32 lineSize = pBuffer->m_width >> (pBuffer->m_size >> 1);
+			const u32 ulx = 0;
+			const u32 uly = (addr - pBuffer->m_startAddress) / lineSize;
+			const u32 lrx = pBuffer->m_width;
+			const u32 lry = uly + length / lineSize;
+
+			{
+				ValueKeeper<u32> backupFillColor(gDP.fillColor.color, fillColor);
+				const unsigned int backupDepthSource = gDP.otherMode.depthSource;
+				const unsigned int backupCycleType = gDP.otherMode.cycleType;
+				const auto backupCurr = frameBufferList().getCurrent();
+
+				gDP.fillColor.color = fillColor;
+				gDP.otherMode.cycleType = G_CYC_FILL;
+
+				frameBufferList().setCurrent(pBuffer);
+				drawer.drawRect(ulx, uly, lrx, lry);
+				pBuffer->setBufferClearParams(gDP.fillColor.color, ulx, uly, lrx, lry);
+				frameBufferList().setBufferChanged(f32(lry));
+
+				frameBufferList().setCurrent(backupCurr);
+				gDP.otherMode.depthSource = backupDepthSource;
+				gDP.otherMode.cycleType = backupCycleType;
+			}
+
+			doMemset = config.frameBufferEmulation.copyFromRDRAM != 0;
+		}
+	}
+
+	if (doMemset) {
 		u32* pDest = reinterpret_cast<u32*>(RDRAM + addr);
 		length /= 4;
 		for (int i = 0; i < length; i++) {
