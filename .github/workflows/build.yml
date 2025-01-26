@@ -13,7 +13,7 @@ jobs:
       - name: Install Packages
         run: |
           # fix for "error processing package grub-efi-amd64-signed"
-          sudo apt-mark hold grub-common
+          sudo apt-mark hold grub-common grub-efi-amd64-bin shim-signed
           sudo apt-get -qq update
           sudo apt-get -y upgrade
           sudo apt-get -y install build-essential libfreetype6-dev libgl1-mesa-dev libpng-dev qt5-qmake qtbase5-dev qtbase5-dev-tools qtchooser zlib1g-dev
