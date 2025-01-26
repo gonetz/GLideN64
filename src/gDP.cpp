@@ -797,18 +797,6 @@ void gDPSetScissor(u32 mode, s16 xh, s16 yh, s16 xl, s16 yl)
 #endif
 }
 
-template<typename T>
-class BackupRestore
-{
-public:
-	BackupRestore(T& _value) : value(_value), backup(_value) {}
-	~BackupRestore() { value = backup; };
-
-private:
-	T& value;
-	T backup;
-};
-
 // This performs the same thing action as gDPFillRectangle but explicitly specifying what to overwrite
 void gDPMemset(u32 value, u32 addr, u32 length)
 {
@@ -819,7 +807,7 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 	GraphicsDrawer& drawer = dwnd().getDrawer();
 	u32 fillColor = value | (value << 16);
 	const u32 depthImageStart = gDP.depthImageAddress;
-	const u32 depthImageEnd = gDP.depthImageAddress + 320 * 240 * 2;
+	const u32 depthImageEnd = gDP.depthImageAddress + screenWidth * screenHeight * 2;
 	if (depthImageStart <= addr && addr < depthImageEnd) {
 		// ZB clear
 		gDP.rectColor.r = _FIXED2FLOATCOLOR(_SHIFTR(fillColor, 11, 5), 5);
@@ -845,13 +833,11 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 
 		if (config.generalEmulation.enableFragmentDepthWrite != 0) {
 			// Pretend that we are drawing the rectangle over ZB with fill mode
-			BackupRestore backupColorImageAddress(gDP.colorImage.address);
-			BackupRestore backupWidth(gDP.colorImage.width);
+			ValueKeeper<u32> backupColorImageAddress(gDP.colorImage.address, gDP.depthImageAddress);
+			ValueKeeper<u32> backupWidth(gDP.colorImage.width, screenWidth);
 			const unsigned int backupDepthSource = gDP.otherMode.depthSource;
 			const unsigned int backupCycleType = gDP.otherMode.cycleType;
 
-			gDP.colorImage.address = gDP.depthImageAddress;
-			gDP.colorImage.width = screenWidth;
 			gDP.otherMode.cycleType = G_CYC_FILL;
 
 			drawer.drawRect(ulx, uly, lrx, lry);
@@ -868,7 +854,7 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 	// Either RGBA16 or RGBA32. This heavily assume "niceness" of developers to bind color buffer before memset...
 	const u32 colorSize = gDP.colorImage.size < 3 ? 2 : 4;
 	const u32 colorImageStart = gDP.colorImage.address;
-	const u32 colorImageEnd = gDP.colorImage.address + screenWidth * screenHeight * colorSize;
+	const u32 colorImageEnd = gDP.colorImage.address + ((screenWidth * screenHeight) << (gDP.colorImage.size >> 1));
 	if (colorImageStart <= addr && addr < colorImageEnd) {
 		// FB clear
 		f32 fillColor32[4];
@@ -885,7 +871,7 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 		const u32 lry = uly + length / lineSize;
 
 		{
-			BackupRestore backupFillColor(gDP.fillColor.color);
+			ValueKeeper<u32> backupFillColor(gDP.fillColor.color, fillColor);
 			const unsigned int backupDepthSource = gDP.otherMode.depthSource;
 			const unsigned int backupCycleType = gDP.otherMode.cycleType;
 
@@ -903,16 +889,20 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 		}
 
 		if (config.frameBufferEmulation.copyFromRDRAM != 0) {
-			for (int i = 0; i < length / 4; i++) {
-				*(u32*)(RDRAM + addr + i * 4) = fillColor;
+			u32* pDest = reinterpret_cast<u32*>(RDRAM + addr);
+			length /= 4;
+			for (int i = 0; i < length; i++) {
+				pDest[i] = fillColor;
 			}
 		}
 	}
 	else
 	{
 		// TODO: It is something we do not know about... I hope it is not a big deal to just memset it?
-		for (int i = 0; i < length / 4; i++) {
-			*(u32*)(RDRAM + addr + i * 4) = fillColor;
+		u32* pDest = reinterpret_cast<u32*>(RDRAM + addr);
+		length /= 4;
+		for (int i = 0; i < length; i++) {
+			pDest[i] = fillColor;
 		}
 	}
 }
