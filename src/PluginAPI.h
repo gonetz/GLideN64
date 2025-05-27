@@ -8,7 +8,7 @@
 #include "m64p_plugin.h"
 #else
 #include "windows/GLideN64_windows.h"
-#include "ZilmarGFX_1_3.h"
+#include "windows/Project64-plugin-spec/Video.h"
 #include "FrameBufferInfoAPI.h"
 //#define RSPTHREAD
 #endif
@@ -55,17 +55,18 @@ public:
 
 #ifndef MUPENPLUSAPI
 	// Zilmar
-	void DllTest(HWND /*_hParent*/) {}
+	void DllTest(void* _hParent) {}
 	void DrawScreen() {}
 	void CloseDLL(void) {}
 
 	void CaptureScreen(char * _Directory);
-	void DllConfig(HWND _hParent);
+	void DllConfig(void* _hParent);
 	void GetDllInfo (PLUGIN_INFO * PluginInfo);
 	void ReadScreen(void **_dest, long *_width, long *_height);
 	void GetVideoSize(int32_t* width, int32_t* height);
 
-	void DllAbout(/*HWND _hParent*/);
+	void DllAbout(void* _hParent);
+	void DrawStatus(const char * lpString, int32_t RightAlign);
 
 	// FrameBufferInfo extension
 	void FBWrite(unsigned int addr, unsigned int size);

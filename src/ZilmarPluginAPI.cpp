@@ -15,9 +15,9 @@ EXPORT void CALL RomOpen (void)
 	api().RomOpen();
 }
 
-EXPORT void CALL CaptureScreen ( char * Directory )
+EXPORT void CALL CaptureScreen(const char * Directory)
 {
-	api().CaptureScreen(Directory);
+    api().CaptureScreen(const_cast<char *>(Directory));
 }
 
 EXPORT void CALL CloseDLL (void)
@@ -25,19 +25,19 @@ EXPORT void CALL CloseDLL (void)
 	api().CloseDLL();
 }
 
-EXPORT void CALL DllAbout ( HWND hParent )
+EXPORT void CALL DllAbout(void * hParent)
 {
-	api().DllAbout(/*hParent*/);
+    api().DllAbout(hParent);
 }
 
-EXPORT void CALL DllConfig ( HWND hParent )
+EXPORT void CALL DllConfig(void * hParent)
 {
-	api().DllConfig(hParent);
+    api().DllConfig(hParent);
 }
 
-EXPORT void CALL DllTest ( HWND hParent )
+EXPORT void CALL DllTest(void * hParent)
 {
-	api().DllTest(hParent);
+    api().DllTest(hParent);
 }
 
 EXPORT void CALL DrawScreen (void)
@@ -63,6 +63,16 @@ EXPORT void CALL DllCrtFree(void* addr)
 void CALL mge_get_video_size(int32_t* width, int32_t* height)
 {
 	api().GetVideoSize(width, height);
+}
+
+EXPORT void CALL PluginLoaded(void)
+{
+    // No-op or initialization if needed
+}
+
+EXPORT void CALL DrawStatus(const char * lpString, int32_t RightAlign)
+{
+    api().DrawStatus(lpString, RightAlign);
 }
 
 }
