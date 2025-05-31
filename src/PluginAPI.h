@@ -59,7 +59,7 @@ public:
 	void DrawScreen() {}
 	void CloseDLL(void) {}
 
-	void CaptureScreen(char * _Directory);
+	void CaptureScreen(const char * const _Directory);
 	void DllConfig(void* _hParent);
 	void GetDllInfo (PLUGIN_INFO * PluginInfo);
 	void ReadScreen(void **_dest, long *_width, long *_height);

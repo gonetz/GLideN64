@@ -17,7 +17,7 @@ EXPORT void CALL RomOpen (void)
 
 EXPORT void CALL CaptureScreen(const char * Directory)
 {
-    api().CaptureScreen(const_cast<char *>(Directory));
+    api().CaptureScreen(Directory);
 }
 
 EXPORT void CALL CloseDLL (void)

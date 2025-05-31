@@ -15,7 +15,7 @@ void PluginAPI::DllAbout(void* _hParent)
 	RunAbout(strIniFolderPath);
 }
 
-void PluginAPI::CaptureScreen(char * _Directory)
+void PluginAPI::CaptureScreen(const char * const _Directory)
 {
 	dwnd().setCaptureScreen(_Directory);
 }
