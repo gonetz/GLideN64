@@ -15,7 +15,11 @@ EXPORT void CALL RomOpen (void)
 	api().RomOpen();
 }
 
+#ifdef LEGACY_ZILMAR_SPEC
+EXPORT void CALL CaptureScreen(char * Directory)
+#else
 EXPORT void CALL CaptureScreen(const char * Directory)
+#endif
 {
     api().CaptureScreen(Directory);
 }
@@ -25,17 +29,29 @@ EXPORT void CALL CloseDLL (void)
 	api().CloseDLL();
 }
 
+#ifdef LEGACY_ZILMAR_SPEC
+EXPORT void CALL DllAbout(HWND hParent)
+#else
 EXPORT void CALL DllAbout(void * hParent)
+#endif
 {
     api().DllAbout(hParent);
 }
 
+#ifdef LEGACY_ZILMAR_SPEC
+EXPORT void CALL DllConfig(HWND hParent)
+#else
 EXPORT void CALL DllConfig(void * hParent)
+#endif
 {
     api().DllConfig(hParent);
 }
 
+#ifdef LEGACY_ZILMAR_SPEC
+EXPORT void CALL DllTest(HWND hParent)
+#else
 EXPORT void CALL DllTest(void * hParent)
+#endif
 {
     api().DllTest(hParent);
 }

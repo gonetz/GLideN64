@@ -28,9 +28,17 @@ void PluginAPI::DllConfig(void* _hParent)
 
 void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)
 {
+#ifdef LEGACY_ZILMAR_SPEC
+	PluginInfo->Version = 0x103;
+	PluginInfo->Type = PLUGIN_TYPE_GFX;
+	sprintf(PluginInfo->Name, "%s", pluginNameWithRevision);
+	PluginInfo->NormalMemory = FALSE;
+	PluginInfo->MemoryBswaped = TRUE;
+#else
 	PluginInfo->Version = 0x105;
 	PluginInfo->Type = PLUGIN_TYPE_VIDEO;
 	sprintf(PluginInfo->Name, "%s", pluginNameWithRevision);
+#endif
 }
 
 void PluginAPI::DrawStatus(const char * lpString, int32_t RightAlign)
