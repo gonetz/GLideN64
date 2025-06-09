@@ -3,6 +3,8 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
+#include <set>
 
 #include "GLideN64.h"
 #include "GraphicsDrawer.h"
@@ -128,6 +130,8 @@ public:
 	void setCombine(u64 _mux);
 	void updateParameters();
 
+	void compileUnknownShaders();
+
 	void setDepthFogCombiner();
 	graphics::ShaderProgram * getTexrectUpscaleCopyProgram();
 	graphics::ShaderProgram * getTexrectColorAndDepthUpscaleCopyProgram();
@@ -162,6 +166,11 @@ private:
 
 	graphics::CombinerProgram * m_pCurrent;
 	graphics::Combiners m_combiners;
+
+	std::mutex m_compileCombinersMutex;
+	std::set<CombinerKey> m_unknownCombiners;
+	std::vector<CombinerKey> m_combinersToCompile;
+	std::array<CombinerKey, 2> m_defaultKeys;
 
 	std::unique_ptr<graphics::ShaderProgram> m_shadowmapProgram;
 	std::unique_ptr<graphics::ShaderProgram> m_texrectUpscaleCopyProgram;
