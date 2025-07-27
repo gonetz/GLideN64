@@ -39,6 +39,9 @@ GraphicsDrawer::~GraphicsDrawer()
 
 void GraphicsDrawer::addTriangle(u32 _v0, u32 _v1, u32 _v2)
 {
+	if (triangles.num > VERTBUFF_SIZE - 16, false)
+		drawTriangles();
+
 	m_statistics.drawnTris++;
 	const u32 firstIndex = triangles.num;
 	triangles.elements[triangles.num++] = static_cast<u16>(_v0);
