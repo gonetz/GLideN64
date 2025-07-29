@@ -309,6 +309,11 @@ static void F3DEX3_Memset(u32 w0, u32 w1)
 	gDPMemset(value, addr, length);
 }
 
+static void F3DEX3_Mtx(u32 w0, u32 w1)
+{
+	gSPMatrix(w1, _SHIFTR(w0, 0, 8) ^ G_MTX_PUSH ^ G_MTX_LOAD);
+}
+
 void F3DEX3_Init()
 {
 	gSPSetupFunctions();
@@ -328,7 +333,14 @@ void F3DEX3_Init()
 	GBI_SetGBI(G_LOAD_UCODE, F3DEX2_LOAD_UCODE, F3DEX_Load_uCode);
 	GBI_SetGBI(G_MOVEMEM, F3DEX2_MOVEMEM, F3DEX3_MoveMem);
 	GBI_SetGBI(G_MOVEWORD, F3DEX2_MOVEWORD, F3DEX3_MoveWord);
-	GBI_SetGBI(G_MTX, F3DEX2_MTX, F3DEX2_Mtx);
+	if (GBI.f3dex3Version() > 0)
+	{
+		GBI_SetGBI(G_MTX, F3DEX2_MTX, F3DEX3_Mtx);
+	}
+	else
+	{
+		GBI_SetGBI(G_MTX, F3DEX2_MTX, F3DEX2_Mtx);
+	}
 	GBI_SetGBI(G_GEOMETRYMODE, F3DEX2_GEOMETRYMODE, F3DEX2_GeometryMode);
 	GBI_SetGBI(G_POPMTX, F3DEX2_POPMTX, F3DEX2_PopMtx);
 	GBI_SetGBI(G_TEXTURE, F3DEX2_TEXTURE, F3DEX2_Texture);
