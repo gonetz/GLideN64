@@ -253,7 +253,10 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 		return;
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
+	GLint oldFbo;
 	GLint oldMode;
+	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldFbo);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(graphics::ObjectHandle::defaultFramebuffer));
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	if (_front != 0)
 		glReadBuffer(GL_FRONT);
@@ -261,6 +264,7 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 		glReadBuffer(GL_BACK);
 	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
 	glReadBuffer(oldMode);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, oldFbo);
 #else
 	u8 *pBufferData = (u8*)malloc((*_width)*(*_height) * 4);
 	if (pBufferData == nullptr)
