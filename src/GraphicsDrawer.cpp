@@ -887,7 +887,10 @@ void GraphicsDrawer::drawTriangles()
 				pCurrentDepthBuffer->setDirty();
 		}
 	} else {
-		gfxContext.drawTriangles(triParams);
+		if (config.generalEmulation.enableClipping != 0)
+			renderAndDrawTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num, m_bFlatColors, m_statistics);
+		else
+			gfxContext.drawTriangles(triParams);
 	}
 
 	triangles.num = 0;
@@ -982,7 +985,10 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 				pCurrentDepthBuffer->setDirty();
 		}
 	} else {
-		gfxContext.drawTriangles(triParams);
+		if (config.generalEmulation.enableClipping != 0)
+			renderAndDrawTriangles(m_dmaVertices.data(), nullptr, _numVtx, m_bFlatColors, m_statistics);
+		else
+			gfxContext.drawTriangles(triParams);
 	}
 	dropRenderState();
 }
