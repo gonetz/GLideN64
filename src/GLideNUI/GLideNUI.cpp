@@ -1,3 +1,8 @@
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <shellscalingapi.h>
+#endif
+
 #include <thread>
 #include <QApplication>
 #include <QTranslator>
@@ -38,6 +43,7 @@ int openConfigDialog(void* parent, const wchar_t * _strFileName, const wchar_t *
 	QCoreApplication* pApp = QCoreApplication::instance();
 
 	#ifdef Q_OS_WIN
+	<windows.h>
 	    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 	#endif
 	
