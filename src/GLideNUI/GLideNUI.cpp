@@ -42,10 +42,9 @@ int openConfigDialog(void* parent, const wchar_t * _strFileName, const wchar_t *
 	std::unique_ptr<QApplication> pQApp;
 	QCoreApplication* pApp = QCoreApplication::instance();
 
-	#ifdef Q_OS_WIN
-	<windows.h>
-	    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-	#endif
+#ifdef Q_OS_WIN
+	HRESULT hr = SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+#endif
 	
 	if (pApp == nullptr) {
 		pQApp.reset(new QApplication(argc, argv));
@@ -87,9 +86,9 @@ int openAboutDialog(const wchar_t * _strFileName)
 	char * argv[] = { argv0 };
 	QApplication a(argc, argv);
 
-	#ifdef Q_OS_WIN
-	    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-	#endif
+#ifdef Q_OS_WIN
+	HRESULT hr = SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+#endif
 
 	QTranslator translator;
 	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))
