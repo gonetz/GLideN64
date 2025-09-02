@@ -37,6 +37,11 @@ int openConfigDialog(void* parent, const wchar_t * _strFileName, const wchar_t *
 	std::unique_ptr<QApplication> pQApp;
 	QCoreApplication* pApp = QCoreApplication::instance();
 
+	#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+		QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+	#endif
+	
 	if (pApp == nullptr) {
 		pQApp.reset(new QApplication(argc, argv));
 		pApp = pQApp.get();
@@ -76,6 +81,11 @@ int openAboutDialog(const wchar_t * _strFileName)
 	char argv0[] = "GLideN64";
 	char * argv[] = { argv0 };
 	QApplication a(argc, argv);
+
+	#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+		QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+		QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+	#endif
 
 	QTranslator translator;
 	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))
