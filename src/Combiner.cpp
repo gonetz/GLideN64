@@ -2,6 +2,7 @@
 #include <functional>
 #include <cstring>
 #include <stdio.h>
+#include <thread>
 #include <osal_files.h>
 
 #include "Combiner.h"
@@ -108,6 +109,13 @@ void CombinerInfo::init()
 		setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 		gDP.otherMode.cycleType = G_CYC_FILL;
 		setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
+
+		gDP.otherMode.cycleType = G_CYC_1CYCLE;
+		setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+		m_defaultKeys[0] = m_pCurrent->getKey();
+		gDP.otherMode.cycleType = G_CYC_2CYCLE;
+		setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL1, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL1));
+		m_defaultKeys[1] = m_pCurrent->getKey();
 	}
 
 	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
@@ -299,11 +307,56 @@ void CombinerInfo::setCombine(u64 _mux )
 	if (iter != m_combiners.end()) {
 		m_pCurrent = iter->second;
 	} else {
+		if (gDP.otherMode.cycleType <= G_CYC_2CYCLE &&
+			config.generalEmulation.enableAsyncShadersCompilation != 0 &&
+			config.video.threadedVideo != 0)
+		{
+			iter = m_combiners.find(m_defaultKeys[gDP.otherMode.cycleType]);
+			if (iter != m_combiners.end()) {
+				m_pCurrent = iter->second;
+				if (m_unknownCombiners.insert(key).second)
+					m_combinersToCompile.push_back(key);
+				m_bChanged = true;
+				return;
+			}
+		}
+
 		m_pCurrent = Combiner_Compile(key);
 		m_pCurrent->update(true);
 		m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 	}
 	m_bChanged = true;
+}
+
+void CombinerInfo::compileUnknownShaders()
+{
+#if 1
+	if (m_combinersToCompile.empty())
+		return;
+
+	std::thread task([this] {
+		std::unique_lock<std::mutex> lock(m_compileCombinersMutex);
+
+		for (auto& key : m_combinersToCompile)
+		{
+			m_pCurrent = Combiner_Compile(key);
+			m_pCurrent->update(true);
+			m_combiners[m_pCurrent->getKey()] = m_pCurrent;
+		}
+		m_combinersToCompile.clear();
+	});
+	task.detach();
+#else
+	if (m_combinersToCompile.empty())
+		return;
+	for (auto& key : m_combinersToCompile)
+	{
+		m_pCurrent = Combiner_Compile(key);
+		m_pCurrent->update(true);
+		m_combiners[m_pCurrent->getKey()] = m_pCurrent;
+	}
+	m_combinersToCompile.clear();
+#endif
 }
 
 void CombinerInfo::updateParameters()
