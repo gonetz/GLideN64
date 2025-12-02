@@ -59,6 +59,16 @@ static void* IOSGLGetProcAddress (const char *name)
 #define glGetProcAddress IOSGLGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type)glGetProcAddress("gl"#proc_name)
 
+#elif defined(OS_FREEBSD)
+  #include <GL/glx.h>
+
+  #ifndef glGetProcAddress
+    #define glGetProcAddress glXGetProcAddress
+  #endif
+
+  #undef GL_GET_PROC_ADR
+  #define GL_GET_PROC_ADR(proc_type, proc_name) \
+      ptr##proc_name = (proc_type) glGetProcAddress((const GLubyte*)"gl" #proc_name)
 #endif
 
 //GL Functions
