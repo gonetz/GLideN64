@@ -1097,6 +1097,7 @@ void gDPFullSync()
 	*REG.DPC_STATUS &= ~(DPC_STATUS_PIPE_BUSY | DPC_STATUS_CMD_BUSY | DPC_STATUS_START_GCLK);
 	CheckInterrupts();
 
+	CombinerInfo::get().compileUnknownShaders();
 	DebugMsg( DEBUG_NORMAL, "gDPFullSync();\n" );
 }
 
