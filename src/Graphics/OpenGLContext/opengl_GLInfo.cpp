@@ -188,7 +188,7 @@ void GLInfo::init() {
 	texture_barrier = !isGLESX && (numericVersion >= 45 || Utils::isExtensionSupported(*this, "GL_ARB_texture_barrier"));
 	texture_barrierNV = Utils::isExtensionSupported(*this, "GL_NV_texture_barrier");
 
-	ext_fetch = Utils::isExtensionSupported(*this, "GL_EXT_shader_framebuffer_fetch") && (!isGLESX || ext_draw_buffers_indexed);
+	ext_fetch = Utils::isExtensionSupported(*this, "GL_EXT_shader_framebuffer_fetch") && (!isGLESX || ext_draw_buffers_indexed) && !isGLES2;
 	n64DepthWithFbFetch = ext_fetch && !imageTexturesInterlock;
 	eglImage = (Utils::isEGLExtensionSupported("EGL_KHR_image_base") || Utils::isEGLExtensionSupported("EGL_KHR_image"));
 	ext_fetch_arm =  Utils::isExtensionSupported(*this, "GL_ARM_shader_framebuffer_fetch") && !ext_fetch;
