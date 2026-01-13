@@ -499,6 +499,15 @@ void ConfigDialog::setIniPath(const QString & _strIniPath, const QString & _strS
 	QStringList translationFiles;
 	_getTranslations(translationFiles);
 
+#ifdef M64P_GLIDENUI
+	if (translationFiles.empty())
+	{
+		ui->userInterfaceGroupBox->hide();
+		QSpacerItem* verticalSpacer = new QSpacerItem(20, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+		ui->verticalLayout_4->addItem(verticalSpacer);
+	}
+#endif
+
 	const QString currentTranslation = getTranslationFile();
 	int listIndex = 0;
 	QStringList translationLanguages("English");
