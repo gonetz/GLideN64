@@ -16,7 +16,7 @@ jobs:
           sudo apt-mark hold grub-common grub-efi-amd64-bin shim-signed
           sudo apt-get -qq update
           sudo apt-get -y upgrade
-          sudo apt-get -y install build-essential libfreetype6-dev libgl1-mesa-dev libpng-dev qt5-qmake qtbase5-dev qtbase5-dev-tools qtchooser zlib1g-dev
+          sudo apt-get -y install build-essential libfreetype6-dev libgl1-mesa-dev libpng-dev libzstd-dev qt5-qmake qtbase5-dev qtbase5-dev-tools qtchooser zlib1g-dev
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -84,6 +84,7 @@ jobs:
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-qt5
             mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-zstd
       - name: Prepare Environment
         run: |
           $env:revision = git rev-parse --short HEAD

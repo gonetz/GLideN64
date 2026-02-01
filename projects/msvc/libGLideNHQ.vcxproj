@@ -142,6 +142,11 @@
     <ClCompile Include="..\..\src\GLideNHQ\TxReSample.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxTexCache.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxUtil.cpp" />
+    <ClCompile Include="..\..\src\GLideNHQ\zlibWrapper\gzclose.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zlibWrapper\gzlib.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zlibWrapper\gzread.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zlibWrapper\gzwrite.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zlibWrapper\zstd_zlibwrapper.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
