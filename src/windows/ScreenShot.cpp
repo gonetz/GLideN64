@@ -1,7 +1,7 @@
 #include "Platform.h"
 
 #include "Config.h"
-#include "../GLideNHQ/inc/png.h"
+#include <png.h>
 
 void write_png_file(const wchar_t * file_name, int width, int height, const uint8_t *buffer)
 {
