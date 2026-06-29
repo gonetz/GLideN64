@@ -67,8 +67,8 @@ jobs:
       QTDIR_x86: C:\Static_Qt_x86
       QTDIR_x64: C:\Static_Qt_x64
       QT_BUILD_BASE_URL: https://github.com/gonetz/GLideN64/releases/download/qt_build/
-      QT_BUILD_x86: qt-5_15-x86-msvc2017-static
-      QT_BUILD_x64: qt-5_15-x64-msvc2017-static
+      QT_BUILD_x86: qt-5_15-x86-msvc2026-static
+      QT_BUILD_x64: qt-5_15-x64-msvc2026-static
     steps:
       - uses: actions/checkout@v4
       - uses: microsoft/setup-msbuild@v2

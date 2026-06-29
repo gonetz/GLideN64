@@ -77,7 +77,7 @@ goto VSBEG
 
 :VSBEG
 call :VSENV
-call :VSENV "\2017"
+call :VSENV "\2026"
 set MOD=\
 call :VSENV " 14.0"
 call :VSENV " 12.0"
@@ -99,7 +99,7 @@ if "%ARCH%" == "x86" set TARCH=Win32
 
 if %DQT% == 2 goto NOQT
 if defined QTDIR_%ARCH% goto NODL
-set "QTVER=qt-5_15-%ARCH%-msvc2017-static"
+set "QTVER=qt-5_15-%ARCH%-msvc2026-static"
 if exist "..\Qt\%QTVER%\include\QtCore" goto NODL
 
 set MSG=Path to Qt %ARCH% was not specified or detected
