@@ -64,8 +64,8 @@ public:
 
 	virtual bool isObsolete() const = 0;
 
-	static u32 s_cycleType;
-	static TextureConvert s_textureConvert;
+	static thread_local u32 s_cycleType;
+	static thread_local TextureConvert s_textureConvert;
 
 protected:
 	virtual const ShaderPart * getVertexShaderTexturedRect() const = 0;

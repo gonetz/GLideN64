@@ -4,6 +4,7 @@
 #include "readerwriterqueue.h"
 #include "opengl_WrappedFunctions.h"
 #include "opengl_Command.h"
+#include <atomic>
 #include <thread>
 #include <map>
 
@@ -29,7 +30,7 @@ namespace opengl {
 
 		static bool m_threaded_wrapper;
 		static bool m_shutdown;
-		static int m_swapBuffersQueued;
+		static std::atomic<int> m_swapBuffersQueued;
 		static bool m_fastVertexAttributes;
 		static std::thread m_commandExecutionThread;
 		static std::mutex m_condvarMutex;

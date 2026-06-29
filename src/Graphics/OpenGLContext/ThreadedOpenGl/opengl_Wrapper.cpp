@@ -8,7 +8,7 @@ namespace opengl {
 
 	bool FunctionWrapper::m_threaded_wrapper = false;
 	bool FunctionWrapper::m_shutdown = false;
-	int FunctionWrapper::m_swapBuffersQueued = 0;
+	std::atomic<int> FunctionWrapper::m_swapBuffersQueued{0};
 	bool FunctionWrapper::m_fastVertexAttributes = false;
 	std::thread FunctionWrapper::m_commandExecutionThread;
 	std::mutex FunctionWrapper::m_condvarMutex;

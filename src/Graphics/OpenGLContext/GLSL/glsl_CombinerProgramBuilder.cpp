@@ -11,8 +11,8 @@
 
 namespace glsl {
 
-u32 CombinerProgramBuilder::s_cycleType = G_CYC_1CYCLE;
-TextureConvert CombinerProgramBuilder::s_textureConvert;
+thread_local u32 CombinerProgramBuilder::s_cycleType = G_CYC_1CYCLE;
+thread_local TextureConvert CombinerProgramBuilder::s_textureConvert;
 
 /*---------------_compileCombiner-------------*/
 
