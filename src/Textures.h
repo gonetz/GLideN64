@@ -130,26 +130,4 @@ inline TextureCache & textureCache()
 	return TextureCache::get();
 }
 
-inline u32 pow2( u32 dim )
-{
-	u32 i = 1;
-
-	while (i < dim) i <<= 1;
-
-	return i;
-}
-
-inline u32 powof( u32 dim )
-{
-	u32 num = 1;
-	u32 i = 0;
-
-	while (num < dim)
-	{
-		num <<= 1;
-		i++;
-	}
-
-	return i;
-}
 #endif

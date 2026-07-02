@@ -6,7 +6,7 @@
 #include <osal_files.h>
 #include <algorithm>
 
-#include "../Textures.h"
+#include "../Pow.h"
 #include "../Config.h"
 #include "../GLideN64.h"
 #include "../GBI.h"

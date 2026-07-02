@@ -581,6 +581,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Platform.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
+    <ClInclude Include="..\..\src\Pow.h" />
     <ClInclude Include="..\..\src\RDP.h" />
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\resource.h" />

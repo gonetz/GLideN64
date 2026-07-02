@@ -14,6 +14,7 @@
 
 #include "../Config.h"
 #include "../DebugDump.h"
+#include "../Pow.h"
 #include "ui_configDialog.h"
 #include "Settings.h"
 #include "ConfigDialog.h"
@@ -44,32 +45,6 @@ struct
 };
 static
 const unsigned int numWindowedModes = sizeof(WindowedModes) / sizeof(WindowedModes[0]);
-
-static
-u32 pow2(u32 dim)
-{
-	if (dim == 0)
-		return 0;
-
-	return (1<<dim);
-}
-
-static
-u32 powof(u32 dim)
-{
-	if (dim == 0)
-		return 0;
-
-	u32 num = 2;
-	u32 i = 1;
-
-	while (num < dim) {
-		num <<= 1;
-		i++;
-	}
-
-	return i;
-}
 
 QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 {
@@ -594,7 +569,7 @@ void ConfigDialog::accept(bool justSave) {
 			|| ui->n64DepthCompareComboBox->currentIndex() != 0
 			|| ui->noaaRadioButton->isChecked()
 		) ? 0
-		: pow2(ui->aliasingSlider->value());
+		: twopow(ui->aliasingSlider->value());
 	config.texture.anisotropy = ui->anisotropicSlider->value();
 
 	if (ui->blnrStandardRadioButton->isChecked())
@@ -844,7 +819,7 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 
 void ConfigDialog::on_aliasingSlider_valueChanged(int value)
 {
-	ui->aliasingLabelVal->setText(QString::number(pow2(value)));
+	ui->aliasingLabelVal->setText(QString::number(twopow(value)));
 	if (value != 0) {
 		ui->msaaRadioButton->setChecked(true);
 	} else {

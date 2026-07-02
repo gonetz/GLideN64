@@ -1,10 +1,10 @@
 #include "glsl_CombinerProgramUniformFactoryFast.h"
 
 #include <Config.h>
-#include <Textures.h>
 #include <DisplayWindow.h>
 #include <Debugger.h>
 #include <FrameBuffer.h>
+#include <Pow.h>
 
 #include <cmath>
 
