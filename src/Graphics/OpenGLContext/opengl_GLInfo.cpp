@@ -138,6 +138,9 @@ void GLInfo::init() {
 		}
 	}
 
+	parallelShaderCompile = Utils::isExtensionSupported(*this, "GL_ARB_parallel_shader_compile") ||
+		Utils::isExtensionSupported(*this, "GL_KHR_parallel_shader_compile");
+
 	bool ext_draw_buffers_indexed = isGLESX && (Utils::isExtensionSupported(*this, "GL_EXT_draw_buffers_indexed") || numericVersion >= 32);
 #ifdef EGL
 	if (isGLESX && bufferStorage)
