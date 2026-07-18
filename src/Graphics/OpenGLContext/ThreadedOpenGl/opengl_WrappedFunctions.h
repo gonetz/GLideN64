@@ -1661,6 +1661,39 @@ private:
 	GLuint m_program;
 };
 
+class GlMaxShaderCompilerThreadsCommand : public OpenGlCommand
+{
+public:
+	GlMaxShaderCompilerThreadsCommand() :
+		OpenGlCommand(false, false, "glMaxShaderCompilerThreads")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLuint count)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlMaxShaderCompilerThreadsCommand>(poolId);
+		ptr->set(count);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		if (ptrMaxShaderCompilerThreadsARB != nullptr)
+			ptrMaxShaderCompilerThreadsARB(m_count);
+		else if (ptrMaxShaderCompilerThreadsKHR != nullptr)
+			ptrMaxShaderCompilerThreadsKHR(m_count);
+	}
+
+private:
+	void set(GLuint count)
+	{
+		m_count = count;
+	}
+
+	GLuint m_count;
+};
+
 class GlUseProgramCommand : public OpenGlCommand
 {
 public:

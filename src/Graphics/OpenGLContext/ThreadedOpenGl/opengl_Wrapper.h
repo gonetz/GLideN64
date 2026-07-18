@@ -102,6 +102,7 @@ namespace opengl {
 		static GLuint wrCreateProgram();
 		static void wrAttachShader(GLuint program, GLuint shader);
 		static void wrLinkProgram(GLuint program);
+		static void wrMaxShaderCompilerThreads(GLuint count);
 		static void wrUseProgram(GLuint program);
 		static GLint wrGetUniformLocation(GLuint program, const GLchar *name);
 		static void wrUniform1i(GLint location, GLint v0);

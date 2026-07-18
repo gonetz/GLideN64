@@ -589,6 +589,16 @@ namespace opengl {
 			ptrLinkProgram(program);
 	}
 
+	void FunctionWrapper::wrMaxShaderCompilerThreads(GLuint count)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlMaxShaderCompilerThreadsCommand::get(count));
+		else if (ptrMaxShaderCompilerThreadsARB != nullptr)
+			ptrMaxShaderCompilerThreadsARB(count);
+		else if (ptrMaxShaderCompilerThreadsKHR != nullptr)
+			ptrMaxShaderCompilerThreadsKHR(count);
+	}
+
 	void FunctionWrapper::wrUseProgram(GLuint program)
 	{
 		if (m_threaded_wrapper)
