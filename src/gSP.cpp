@@ -166,7 +166,7 @@ void gSPMatrix( u32 matrix, u8 param )
 	f32 mtx[4][4];
 	u32 address = RSP_SegmentToPhysical( matrix );
 
-	if (address + 64 > RDRAMSize) {
+	if (!RSP_LoadMatrix( mtx, address )) {
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Attempting to load matrix from invalid address\n");
 		DebugMsg(DEBUG_NORMAL, "gSPMatrix( 0x%08X, %s | %s | %s );\n",
 			matrix,
@@ -175,8 +175,6 @@ void gSPMatrix( u32 matrix, u8 param )
 			(param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH" );
 		return;
 	}
-
-	RSP_LoadMatrix( mtx, address );
 
 	if (param & G_MTX_PROJECTION) {
 		if (param & G_MTX_LOAD)
@@ -221,14 +219,12 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 	f32 mtx[4][4];
 	u32 address = gSP.DMAOffsets.mtx + RSP_SegmentToPhysical( matrix );
 
-	if (address + 64 > RDRAMSize) {
+	if (!RSP_LoadMatrix(mtx, address)) {
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Attempting to load matrix from invalid address\n");
 		DebugMsg(DEBUG_NORMAL, "gSPDMAMatrix( 0x%08X, %i, %s );\n",
 			matrix, index, multiply ? "TRUE" : "FALSE");
 		return;
 	}
-
-	RSP_LoadMatrix(mtx, address);
 
 	gSP.matrix.modelViewi = index;
 
@@ -303,13 +299,11 @@ void gSPForceMatrix( u32 mptr )
 {
 	u32 address = RSP_SegmentToPhysical( mptr );
 
-	if (address + 64 > RDRAMSize) {
+	if (!RSP_LoadMatrix(gSP.matrix.combined, address)) {
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Attempting to load from invalid address");
 		DebugMsg(DEBUG_NORMAL, "gSPForceMatrix( 0x%08X );\n", mptr);
 		return;
 	}
-
-	RSP_LoadMatrix(gSP.matrix.combined, address);
 
 	gSP.changed &= ~CHANGED_MATRIX;
 

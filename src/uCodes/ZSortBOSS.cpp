@@ -150,24 +150,30 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 	// model matrix
 	if((_w0 & 0xfff) == 0x830) {
 		assert(flag == 0);
-		RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSortBOSS MoveMem: invalid model matrix address 0x%08x", addr);
 		return;
 	}
 
 	// projection matrix
 	if((_w0 & 0xfff) == 0x870) {
 		assert(flag == 0);
-		RSP_LoadMatrix(gSP.matrix.projection, addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.projection, addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSortBOSS MoveMem: invalid projection matrix address 0x%08x", addr);
 		return;
 	}
 
 	// combined matrix
 	if((_w0 & 0xfff) == 0x8b0) {
 		if(flag == 0) {
-			RSP_LoadMatrix(gSP.matrix.combined, addr);
-			gSP.changed &= ~CHANGED_MATRIX;
+			if (RSP_LoadMatrix(gSP.matrix.combined, addr))
+				gSP.changed &= ~CHANGED_MATRIX;
+			else
+				LOG(LOG_ERROR, "ZSortBOSS MoveMem: invalid combined matrix address 0x%08x", addr);
 		} else {
 			StoreMatrix(gSP.matrix.combined, addr);
 		}

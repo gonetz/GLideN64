@@ -442,18 +442,24 @@ void ZSort_MoveMem( u32 _w0, u32 _w1 )
 	break;
 
 	case GZM_MMTX:  // model matrix
-		RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSort MoveMem: invalid model matrix address 0x%08x", addr);
 	break;
 
 	case GZM_PMTX:  // projection matrix
-		RSP_LoadMatrix(gSP.matrix.projection, addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.projection, addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSort MoveMem: invalid projection matrix address 0x%08x", addr);
 	break;
 
 	case GZM_MPMTX:  // combined matrix
-		RSP_LoadMatrix(gSP.matrix.combined, addr);
-		gSP.changed &= ~CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.combined, addr))
+			gSP.changed &= ~CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSort MoveMem: invalid combined matrix address 0x%08x", addr);
 	break;
 
 	case GZM_OTHERMODE:
