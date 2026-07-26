@@ -29,7 +29,9 @@ namespace opengl {
 		static BlockingReaderWriterQueue<std::shared_ptr<OpenGlCommand>> m_commandQueueHighPriority;
 
 		static bool m_threaded_wrapper;
-		static bool m_shutdown;
+		// Read inside the WaitForSwapBuffersQueued predicate, which may run on
+		// a different thread from the one that shuts the wrapper down.
+		static std::atomic<bool> m_shutdown;
 		static std::atomic<int> m_swapBuffersQueued;
 		static bool m_fastVertexAttributes;
 		static std::thread m_commandExecutionThread;
