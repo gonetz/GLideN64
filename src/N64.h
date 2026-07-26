@@ -45,5 +45,14 @@ extern u64 TMEM[512];
 extern u32 RDRAMSize;
 extern bool ConfigOpen;
 
+// RDRAMSize is the index of the last valid byte, so RDRAM holds RDRAMSize + 1
+// bytes. Returns true when the whole range [_address, _address + _size) fits
+// inside it. Written so that neither the addition nor the subtraction can
+// wrap, because _address usually comes from an untrusted display list.
+inline bool isRDRAMRangeValid(u32 _address, u32 _size)
+{
+	return _address <= RDRAMSize && (RDRAMSize + 1 - _address) >= _size;
+}
+
 #endif
 
