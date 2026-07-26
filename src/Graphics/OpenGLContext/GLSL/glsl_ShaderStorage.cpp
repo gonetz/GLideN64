@@ -1,6 +1,7 @@
 #include <fstream>
 #include <assert.h>
 #include <cstdlib>
+#include <cstring>
 #include <algorithm>
 #include <iomanip>
 
@@ -349,17 +350,26 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 			return _loadFromCombinerKeys(_combiners);
 		}
 
+		// The stored strings have no terminator and strncmp stops after len
+		// characters, so a stored string that is a prefix of the current one
+		// compared equal: a cache written for "ABC" was accepted on a renderer
+		// reporting "ABCDEF". Compare the lengths as well, and do it before
+		// allocating, so a corrupt len cannot request an absurd buffer either.
 		u32 len;
 		fin.read((char*)&len, sizeof(len));
+		if (len != strlen(strRenderer))
+			return _loadFromCombinerKeys(_combiners);
 		std::vector<char> strBuf(len);
 		fin.read(strBuf.data(), len);
-		if (strncmp(strRenderer, strBuf.data(), len) != 0)
+		if (memcmp(strRenderer, strBuf.data(), len) != 0)
 			return _loadFromCombinerKeys(_combiners);
 
 		fin.read((char*)&len, sizeof(len));
+		if (len != strlen(strGLVersion))
+			return _loadFromCombinerKeys(_combiners);
 		strBuf.resize(len);
 		fin.read(strBuf.data(), len);
-		if (strncmp(strGLVersion, strBuf.data(), len) != 0)
+		if (memcmp(strGLVersion, strBuf.data(), len) != 0)
 			return _loadFromCombinerKeys(_combiners);
 
 		displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
