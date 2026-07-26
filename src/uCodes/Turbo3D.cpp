@@ -217,6 +217,18 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 				T3DTriN tri;
 				memcpy(&tri, RDRAM + addr, sizeof(tri));
 				addr += 4;
+
+				// Only vertices [0, vtxCount) were written by the loop above.
+				// getVertex masks its argument into the shared 256 entry
+				// buffer, so a larger index is not an out of bounds access,
+				// but it returns whatever a previous object left in that slot.
+				// T3DUX_LoadObject skips such triangles; do the same here.
+				// All three vertices are skipped together, which keeps the
+				// vertex count a multiple of three for the TRIANGLES draw.
+				if (tri.v0 >= ostate->vtxCount || tri.v1 >= ostate->vtxCount ||
+					tri.v2 >= ostate->vtxCount)
+					continue;
+
 				u32 vtxIdx[3] = { tri.v0, tri.v1, tri.v2 };
 				for (u32 i = 0; i < 3; ++i) {
 					SPVertex & vtx = drawer.getCurrentDMAVertex();
