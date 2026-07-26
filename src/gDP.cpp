@@ -1093,6 +1093,11 @@ void gDPFullSync()
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
 
+	// Display list is finished. Check for combiner programs scheduled
+	// for asynchronous compilation and add ready ones to the combiners map,
+	// so they can be used in next display lists.
+	CombinerInfo::get().processPendingCombiners();
+
 	*REG.MI_INTR |= MI_INTR_DP;
 	*REG.DPC_STATUS &= ~(DPC_STATUS_PIPE_BUSY | DPC_STATUS_CMD_BUSY | DPC_STATUS_START_GCLK);
 	CheckInterrupts();
