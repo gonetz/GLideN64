@@ -15,8 +15,8 @@ namespace graphics {
 		m_tempPixelData.resize(m_pTexture->textureBytes);
 	}
 
-	const u8* ColorBufferReader::_convertFloatTextureBuffer(const u8* _gpuData, u32 _width, u32 _height,
-		u32 _heightOffset, u32 _stride)
+	const u8* ColorBufferReader::_convertFloatTextureBuffer(const u8* _gpuData, size_t _gpuDataSize, u32 _width,
+		u32 _height, u32 _heightOffset, u32 _stride)
 	{
 		const u32 colorsPerPixel = 4;
 		const u32 widthPixels = _width * colorsPerPixel;
@@ -26,9 +26,11 @@ namespace graphics {
 		// while m_tempPixelData is sized for the texture. An oversized _height
 		// therefore made this copy run past the end of the staging buffer.
 		// Computed in size_t: the old int could overflow before being used.
+		// Also bounded by what is actually readable through _gpuData.
 		const size_t bytesRequested =
 			static_cast<size_t>(m_pTexture->width) * _height * colorsPerPixel * sizeof(float);
-		const size_t bytesToCopy = std::min(bytesRequested, m_tempPixelData.size());
+		const size_t bytesToCopy =
+			std::min(std::min(bytesRequested, m_tempPixelData.size()), _gpuDataSize);
 		std::copy_n(_gpuData, bytesToCopy, m_tempPixelData.data());
 
 		u8* pixelDataAlloc = m_pixelData.data();
@@ -64,16 +66,31 @@ namespace graphics {
 		return pixelDataAlloc;
 	}
 
-	const u8* ColorBufferReader::_convertIntegerTextureBuffer(const u8* _gpuData, u32 _width, u32 _height,
-		u32 _heightOffset, u32 _stride, u32 _colorsPerPixel)
+	const u8* ColorBufferReader::_convertIntegerTextureBuffer(const u8* _gpuData, size_t _gpuDataSize, u32 _width,
+		u32 _height, u32 _heightOffset, u32 _stride, u32 _colorsPerPixel)
 	{
 		const u32 widthBytes = _width * _colorsPerPixel;
 		const u32 strideBytes = _stride * _colorsPerPixel;
 
 		u8* pixelDataAlloc = m_pixelData.data();
 
-		if (_height * widthBytes  > m_pixelData.size())
+		// Rows must fit the destination...
+		if (widthBytes != 0 && _height * widthBytes > m_pixelData.size())
 			_height = static_cast<u32>(m_pixelData.size()) / widthBytes;
+
+		// ...and must stay inside the source. Unlike the float path there is
+		// no staging copy here, so the memcpy below reads straight out of the
+		// GPU buffer: the last byte touched is
+		// (_height - 1 + _heightOffset) * strideBytes + widthBytes - 1.
+		size_t rowsReadable = 0;
+		if (_gpuDataSize >= widthBytes) {
+			const size_t rowsSpanned = strideBytes != 0 ?
+				(_gpuDataSize - widthBytes) / strideBytes + 1 : 1;
+			if (rowsSpanned > _heightOffset)
+				rowsReadable = rowsSpanned - _heightOffset;
+		}
+		if (_height > rowsReadable)
+			_height = static_cast<u32>(rowsReadable);
 
 		for (u32 index = 0; index < _height; ++index) {
 			memcpy(pixelDataAlloc + index * widthBytes, _gpuData + ((index + _heightOffset) * strideBytes), widthBytes);
@@ -106,16 +123,18 @@ namespace graphics {
 
 		u32 heightOffset = 0;
 		u32 stride = 0;
-		const u8* pixelData = _readPixels(params, heightOffset, stride);
+		size_t gpuDataSize = 0;
+		const u8* pixelData = _readPixels(params, heightOffset, stride, gpuDataSize);
 
 		if (pixelData == nullptr)
 			return nullptr;
 
 		if (params.colorType == datatype::FLOAT && _size > G_IM_SIZ_8b) {
-			return _convertFloatTextureBuffer(pixelData, params.width, params.height, heightOffset, stride);
+			return _convertFloatTextureBuffer(pixelData, gpuDataSize, params.width, params.height, heightOffset,
+											  stride);
 		} else {
-			return _convertIntegerTextureBuffer(pixelData, params.width, params.height, heightOffset, stride,
-												params.colorFormatBytes);
+			return _convertIntegerTextureBuffer(pixelData, gpuDataSize, params.width, params.height, heightOffset,
+												stride, params.colorFormatBytes);
 		}
 	}
 }
