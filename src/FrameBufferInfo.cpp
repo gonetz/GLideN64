@@ -87,9 +87,13 @@ namespace FBInfo {
 
 	void FBInfo::GetInfo(void *pinfo)
 	{
-		//	debugPrint("FBGetInfo\n");
-		FrameBufferInfo * pFBInfo = (FrameBufferInfo*)pinfo;
-		memset(pFBInfo, 0, sizeof(FrameBufferInfo)* 6);
+		if (pinfo == nullptr) {
+			LOG(LOG_ERROR, "FBGetInfo called with a null buffer");
+			return;
+		}
+
+		FrameBufferInfo * pFBInfo = static_cast<FrameBufferInfo*>(pinfo);
+		memset(pFBInfo, 0, sizeof(FrameBufferInfo) * numFrameBufferInfos);
 
 		if (config.frameBufferEmulation.fbInfoDisabled != 0)
 			return;
@@ -102,7 +106,7 @@ namespace FBInfo {
 			pFBInfo[idx].height = VI.real_height;
 			pFBInfo[idx++].size = 2;
 		}
-		frameBufferList().fillBufferInfo(&pFBInfo[idx], 6 - idx);
+		frameBufferList().fillBufferInfo(&pFBInfo[idx], numFrameBufferInfos - idx);
 
 		m_writeBuffers.fill(nullptr);
 		m_readBuffers.fill(nullptr);
