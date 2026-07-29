@@ -54,5 +54,15 @@ inline bool isRDRAMRangeValid(u32 _address, u32 _size)
 	return _address <= RDRAMSize && (RDRAMSize + 1 - _address) >= _size;
 }
 
+// SP DMEM is 4 KB. Unlike RDRAMSize this is a true size, not a last-valid
+// index. Several microcodes derive DMEM offsets from display list bit fields,
+// so the same care applies: written to avoid wrapping either operation.
+static const u32 DMEMSize = 0x1000;
+
+inline bool isDMEMRangeValid(u32 _address, u32 _size)
+{
+	return _address <= DMEMSize && (DMEMSize - _address) >= _size;
+}
+
 #endif
 
