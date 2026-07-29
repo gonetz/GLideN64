@@ -2363,7 +2363,10 @@ void gSPLine3D(u32 v0, u32 v1, s32 wd, u32 flag )
 
 void gSPSetStatus(u32 sid, u32 val)
 {
-	assert(sid <= 12);
+	if (sid > 12) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// gSPSetStatus: invalid sid %u\n", sid);
+		return;
+	}
 	gSP.status[sid>>2] = val;
 
 	DebugMsg(DEBUG_NORMAL, "gSPSetStatus sid=%u val=%u\n", sid, val);

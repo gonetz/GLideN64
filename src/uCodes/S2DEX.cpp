@@ -669,6 +669,15 @@ void gSPObjLoadTxtr(u32 tx)
 	const u32 address = RSP_SegmentToPhysical(tx);
 	uObjTxtr *objTxtr = (uObjTxtr*)&RDRAM[address];
 
+	// sid is a byte offset into the four word gSP.status, read straight out of
+	// an RDRAM structure, so sid >> 2 reaches 16383. Both the test below and
+	// the write at the end of this function index with it.
+	if (objTxtr->block.sid > 12) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+			"// gSPObjLoadTxtr: invalid sid %u\n", objTxtr->block.sid);
+		return;
+	}
+
 	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
 		switch (objTxtr->block.type) {
 			case G_OBJLT_TXTRBLOCK:
@@ -1566,6 +1575,12 @@ void S2DEX_Select_DL(u32 w0, u32 w1)
 	const u8 sid = gSP.selectDL.sid;
 	const u32 flag = gSP.selectDL.flag;
 	const u32 mask = w1;
+
+	if (sid >= 4) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// S2DEX_Select_DL: invalid sid %u\n", sid);
+		return;
+	}
+
 	if ((gSP.status[sid] & mask) == flag)
 		// Do nothing;
 		return;
