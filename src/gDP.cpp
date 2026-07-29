@@ -699,7 +699,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadBlock32(gDP.loadTile->uls, gDP.loadTile->lrs, dxt);
 	else if (gDP.loadTile->format == G_IM_FMT_YUV)
-		memcpy(TMEM, &RDRAM[address], bytes); // HACK!
+		memcpy(TMEM, &RDRAM[address], bytes & 0xFFF); // HACK!
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
 		UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, bytes);

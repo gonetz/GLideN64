@@ -758,15 +758,17 @@ public:
 
 	void update(bool _force) override
 	{
-		for (u32 i = 0; i <= gSP.numLights; ++i) {
+		const u32 numLights = std::min(gSP.numLights, _numLights);
+		for (u32 i = 0; i <= numLights; ++i) {
 			uLightDirection[i].set(gSP.lights.xyz[i], _force);
 			uLightColor[i].set(gSP.lights.rgb[i], _force);
 		}
 	}
 
 private:
-	fv3Uniform uLightDirection[8];
-	fv3Uniform uLightColor[8];
+	static constexpr u32 _numLights = 8;
+	fv3Uniform uLightDirection[_numLights];
+	fv3Uniform uLightColor[_numLights];
 };
 
 } //nameless namespace

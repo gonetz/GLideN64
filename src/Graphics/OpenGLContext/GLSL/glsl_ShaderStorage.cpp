@@ -228,11 +228,12 @@ CombinerProgramImpl * _readCombinerProgramFromStream(std::istream & _is,
 	std::vector<char> binary(binaryLength);
 	_is.read(binary.data(), binaryLength);
 
-	GLuint program = glCreateProgram();
+	const GLuint program = glCreateProgram();
 	const bool isRect = _cmbKey.isRectKey();
 	glsl::Utils::locateAttributes(program, isRect, cmbInputs.usesTexture());
 	glProgramBinary(program, binaryFormat, binary.data(), binaryLength);
 	if (!glsl::Utils::checkProgramLinkStatus(program, true)) {
+		glDeleteProgram(program);
 		return nullptr;
 	}
 
