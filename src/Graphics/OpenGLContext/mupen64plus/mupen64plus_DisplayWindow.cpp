@@ -252,6 +252,12 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	if (_dest == nullptr)
 		return;
 
+	// GL_PACK_ALIGNMENT defaults to 4, so with the 3 byte format below the
+	// driver pads every row up to a 4 byte boundary and writes past the
+	// width*height*3 buffer whenever width*3 is not a multiple of 4. _dest is
+	// owned by the emulator core, so the overrun lands in its memory.
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
