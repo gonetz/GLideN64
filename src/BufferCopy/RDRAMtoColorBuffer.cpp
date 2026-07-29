@@ -147,7 +147,7 @@ bool _copyPixelsFromRdram(u32 _address, const std::vector<u32> & _vecAddress, u3
 		idx = (_vecAddress[i] - _address) / szPixel;
 		w = idx % _width;
 		h = idx / _width;
-		if (h > _height)
+		if (h >= _height)
 			return false;
 		col = src[idx];
 		summ += col;

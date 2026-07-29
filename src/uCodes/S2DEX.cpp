@@ -397,8 +397,8 @@ struct ObjCoordinates
 		const u16 objSpriteScaleW = std::max(_pObjSprite->scaleW, u16(1));
 		const u16 objSpriteScaleH = std::max(_pObjSprite->scaleH, u16(1));
 		if (_useMatrix) {
-			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * objSpriteScaleW) >> 16;
-			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * objSpriteScaleH) >> 16;
+			const u32 scaleW = std::max((u32(objMtx.BaseScaleX) * 0x40 * objSpriteScaleW) >> 16, 1u);
+			const u32 scaleH = std::max((u32(objMtx.BaseScaleY) * 0x40 * objSpriteScaleH) >> 16, 1u);
 			if (gs_s2dexversion == eVer1_3) {
 				// XH = AND ((((objX << 0x10) * 0x0800 * (0x80007FFF/BaseScaleX)) >> 0x30) + X + A2) by B0
 				// XL = XH + AND (((((imageW - A1) * 0x100) *  (0x80007FFF/scaleW)) >> 0x20) + B2) by B0

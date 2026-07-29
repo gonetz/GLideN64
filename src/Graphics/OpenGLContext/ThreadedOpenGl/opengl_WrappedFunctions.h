@@ -3382,8 +3382,10 @@ public:
 
 	void commandToExecute() override
 	{
-		const char* data = OpenGlCommand::m_ringBufferPool.getBufferFromPool(m_data);
 		void* buffer_pointer = ptrMapBufferRange(m_target, m_offset, m_length, m_access);
+		if (buffer_pointer == nullptr)
+			return;
+		const char* data = OpenGlCommand::m_ringBufferPool.getBufferFromPool(m_data);
 		std::copy_n(data, m_length, reinterpret_cast<char*>(buffer_pointer));
 		OpenGlCommand::m_ringBufferPool.removeBufferFromPool(m_data);
 	}
@@ -3474,14 +3476,14 @@ public:
 	void commandToExecute() override
 	{
 		void* buffer_pointer = ptrMapBufferRange(m_target, m_offset, m_length, m_access);
+		if (buffer_pointer == nullptr)
+			return;
 
-		if (buffer_pointer != nullptr) {
-			std::unique_lock<std::mutex> lock(m_mapMutex);
-			GLuint buffer = GlBindBufferCommand::getBoundBufferRender(m_target);
-			verifyBuffer(buffer, m_length);
-			auto data = m_data[buffer];
-			memcpy(data->data(), buffer_pointer, m_length);
-		}
+		std::unique_lock<std::mutex> lock(m_mapMutex);
+		GLuint buffer = GlBindBufferCommand::getBoundBufferRender(m_target);
+		verifyBuffer(buffer, m_length);
+		auto data = m_data[buffer];
+		memcpy(data->data(), buffer_pointer, m_length);
 	}
 
 	static std::shared_ptr<std::vector<u8>> getData(GLuint buffer, GLsizeiptr length)
