@@ -831,6 +831,7 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 		calculateParams(gDP.depthImageAddress, G_IM_SIZ_16b, imageWidth);
 
 		// HACK: this usually replaces gDPSetColorImage for zb so save zb
+		const auto backupCurr = frameBufferList().getCurrent();
 		frameBufferList().saveBuffer(gDP.depthImageAddress, (u16)G_IM_FMT_RGBA, (u16)G_IM_SIZ_16b, (u16)imageWidth, false);
 
 		if (config.generalEmulation.enableFragmentDepthWrite == 0)
@@ -847,6 +848,11 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 			ValueKeeper<gDPInfo::OtherMode> backupOtherMode(gDP.otherMode, otherMode);
 			drawer.drawRect(0, uly, imageWidth, lry);
 			frameBufferList().setBufferChanged(f32(lry));
+		}
+
+		if (backupCurr != nullptr) {
+			frameBufferList().setCurrent(backupCurr);
+			frameBufferList().attachDepthBuffer();
 		}
 	}
 	else if (0 == config.frameBufferEmulation.enable) {
