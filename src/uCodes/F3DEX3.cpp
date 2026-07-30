@@ -361,7 +361,7 @@ static void F3DEX3_RelSegment(u32 w0, u32 w1)
 static void F3DEX3_Memset(u32 w0, u32 w1)
 {
 	u32 value = (u16)gDP.half_1;
-	u32 addr = w1;
+	u32 addr = w1 & 0x007fffff;
 	u32 length = w0 & 0x00FFFFFF;
 	gDPMemset(value, addr, length);
 }
