@@ -166,6 +166,10 @@ public:
 
 	void clearStatistics() { m_statistics.clear(); }
 
+	// Must be called when a coverage texture is created or destroyed,
+	// because the image binding is cached by texture name and names get reused.
+	void resetCoverageImage() { m_boundCoverageImage = graphics::ObjectHandle::null; }
+
 	enum class BgDepthCopyMode {
 		eNone = 0,
 		eCopyDone,
@@ -201,6 +205,8 @@ private:
 	void _destroyData();
 
 	void _setSpecialTexrect() const;
+
+	void _updateCoverageImage() const;
 
 	void _legacyBlending() const;
 	void _ordinaryBlending() const;
@@ -243,4 +249,5 @@ private:
 	TexrectDrawer m_texrectDrawer;
 	OSDMessages m_osdMessages;
 	mutable Statistics m_statistics;
+	mutable graphics::ObjectHandle m_boundCoverageImage;
 };

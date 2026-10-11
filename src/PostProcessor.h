@@ -25,6 +25,11 @@ public:
 
 	static PostProcessor & get();
 
+	// Debug feature: draw content of the coverage buffer of _pBuffer as gray scale image,
+	// like the G_RM_VISCVG render mode does on hardware. Returns the buffer with the coverage
+	// image, or _pBuffer when coverage can't be displayed. The source buffer is not modified.
+	FrameBuffer * doCoverageDisplay(FrameBuffer * _pBuffer);
+
 private:
 	PostProcessor();
 	PostProcessor(const PostProcessor & _other) = delete;
@@ -32,6 +37,7 @@ private:
 	FrameBuffer * _doGammaCorrection(FrameBuffer * _pBuffer);
 	FrameBuffer * _doFXAA(FrameBuffer * _pBuffer);
 
+	void _createBuffer(const FrameBuffer * _pMainBuffer, std::unique_ptr<FrameBuffer> & _pBuffer);
 	void _createResultBuffer(const FrameBuffer * _pMainBuffer);
 	void _preDraw(FrameBuffer * _pBuffer);
 	void _postDraw();
@@ -39,7 +45,9 @@ private:
 
 	std::unique_ptr<graphics::ShaderProgram> m_gammaCorrectionProgram;
 	std::unique_ptr<graphics::ShaderProgram> m_FXAAProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_coverageDisplayProgram;
 	std::unique_ptr<FrameBuffer> m_pResultBuffer;
+	std::unique_ptr<FrameBuffer> m_pCoverageBuffer;
 	CachedTexture * m_pTextureOriginal;
 	PostprocessingList m_postprocessingList;
 };

@@ -82,6 +82,7 @@ namespace graphics {
 		ImageUnitParam DepthDeltaZ(3U);
 		ImageUnitParam DepthZCopy(4U);
 		ImageUnitParam DepthDeltaZCopy(5U);
+		ImageUnitParam Coverage(6U);
 	}
 
 	namespace textureImageAccessMode {

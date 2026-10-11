@@ -42,6 +42,8 @@ namespace glsl {
 
 		graphics::TextDrawerShaderProgram * createTextDrawerShader() const;
 
+		graphics::ShaderProgram * createCoverageDisplayShader() const;
+
 	private:
 		const opengl::GLInfo & m_glinfo;
 		const ShaderPart * m_vertexHeader;

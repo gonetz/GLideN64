@@ -35,6 +35,9 @@ private:
 	void _writeBlender1(std::stringstream& ssShader) const override;
 	void _writeBlender2(std::stringstream& ssShader) const override;
 	void _writeBlenderAlpha(std::stringstream& ssShader) const override;
+	void _writeBlender1MemCvg(std::stringstream& ssShader) const override;
+	void _writeBlender2MemCvg(std::stringstream& ssShader) const override;
+	void _writeBlenderAlphaMemCvg(std::stringstream& ssShader) const override;
 	void _writeLegacyBlender(std::stringstream& ssShader) const override;
 	void _writeFragmentHeader(std::stringstream& ssShader) const override;
 	void _writeFragmentHeaderDither(std::stringstream& ssShader) const override;
@@ -48,6 +51,10 @@ private:
 	void _writeFragmentMain(std::stringstream& ssShader) const override;
 	void _writeFragmentBlendMux(std::stringstream& ssShader) const override;
 	void _writeShaderCoverage(std::stringstream& ssShader) const override;
+	void _writeFragmentHeaderCoverageMemory(std::stringstream& ssShader) const override;
+	void _writeShaderCoverageMemoryBegin(std::stringstream& ssShader) const override;
+	void _writeShaderCoverageMemoryEnd(std::stringstream& ssShader) const override;
+	void _writeShaderCoverageMemoryFill(std::stringstream& ssShader) const override;
 	void _writeFragmentReadTexMipmap(std::stringstream& ssShader) const override;
 	void _writeFragmentCallN64Depth(std::stringstream& ssShader) const override;
 	void _writeFragmentRenderTarget(std::stringstream& ssShader) const override;
@@ -62,6 +69,9 @@ private:
 	ShaderPartPtr m_blender1;
 	ShaderPartPtr m_blender2;
 	ShaderPartPtr m_blenderAlpha;
+	ShaderPartPtr m_blender1MemCvg;
+	ShaderPartPtr m_blender2MemCvg;
+	ShaderPartPtr m_blenderAlphaMemCvg;
 	ShaderPartPtr m_legacyBlender;
 	ShaderPartPtr m_clamp;
 	ShaderPartPtr m_signExtendColorC;
@@ -99,6 +109,11 @@ private:
 	ShaderPartPtr m_shaderN64DepthCompare;
 	ShaderPartPtr m_shaderN64DepthRender;
 	ShaderPartPtr m_shaderCoverage;
+	ShaderPartPtr m_fragmentHeaderCoverageMemory;
+	ShaderPartPtr m_shaderCoverageMemoryBegin;
+	ShaderPartPtr m_shaderCoverageMemoryBegin2Cycle;
+	ShaderPartPtr m_shaderCoverageMemoryEnd;
+	ShaderPartPtr m_shaderCoverageMemoryFill;
 
 	u32 m_combinerOptionsBits;
 

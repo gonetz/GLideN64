@@ -238,6 +238,20 @@ void GLInfo::init() {
 		coverage = maxVertexAttribs >= 10;
 	}
 
+	// Memory coverage (memcvg) emulation keeps coverage of every pixel in an r8ui image and
+	// does read-modify-write of it in the fragment shader. Fragment shader interlock is needed
+	// to make that read-modify-write reliable when primitives of one draw call cover same pixel.
+	// These are the same requirements as for the fast N64 depth compare.
+	coverage_memory = coverage && imageTexturesInterlock;
+
+	if (config.generalEmulation.enableCoverage != 0 && !coverage_memory)
+		LOG(LOG_WARNING, "Your GPU does not support the extensions needed for memory coverage emulation.");
+
+	if (config.debug.displayCoverage != 0 && !coverage_memory) {
+		config.debug.displayCoverage = 0;
+		LOG(LOG_WARNING, "Coverage buffer is not available, nothing to display.");
+	}
+
 #ifdef EGL
 	if (isGLESX)
 	{

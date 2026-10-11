@@ -55,6 +55,7 @@ void _loadSettings(QSettings & settings)
 	config.generalEmulation.enableInaccurateTextureCoordinates = settings.value("enableInaccurateTextureCoordinates", config.generalEmulation.enableInaccurateTextureCoordinates).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
 	config.generalEmulation.enableCoverage = settings.value("enableCoverage", config.generalEmulation.enableCoverage).toInt();
+	config.debug.displayCoverage = settings.value("displayCoverage", config.debug.displayCoverage).toInt();			 //ini only
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
 	config.generalEmulation.enableLegacyBlending = settings.value("enableLegacyBlending", config.generalEmulation.enableLegacyBlending).toInt();			 //ini only
 	config.generalEmulation.enableHybridFilter = settings.value("enableHybridFilter", config.generalEmulation.enableHybridFilter).toInt();					 //ini only
@@ -207,6 +208,7 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("enableInaccurateTextureCoordinates", config.generalEmulation.enableInaccurateTextureCoordinates);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
 	settings.setValue("enableCoverage", config.generalEmulation.enableCoverage);
+	settings.setValue("displayCoverage", config.debug.displayCoverage);		 //ini only
 	settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
 	settings.setValue("enableLegacyBlending", config.generalEmulation.enableLegacyBlending);		 //ini only
 	settings.setValue("enableHybridFilter", config.generalEmulation.enableHybridFilter);			 //ini only

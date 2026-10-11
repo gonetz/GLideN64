@@ -645,8 +645,31 @@ void GraphicsDrawer::_updateTextures() const
 	gSP.changed &= ~(CHANGED_TEXTURE);
 }
 
+void GraphicsDrawer::_updateCoverageImage() const
+{
+	if (!Context::CoverageMemory || !isCoverageMemoryAllowed())
+		return;
+
+	const FrameBuffer * pBuffer = frameBufferList().getCurrent();
+	const CachedTexture * pTexture = pBuffer != nullptr ? pBuffer->m_pCoverageTexture : nullptr;
+	const graphics::ObjectHandle name = pTexture != nullptr ? pTexture->name : graphics::ObjectHandle::null;
+	if (name == m_boundCoverageImage)
+		return;
+
+	Context::BindImageTextureParameters bindParams;
+	bindParams.imageUnit = textureImageUnits::Coverage;
+	bindParams.texture = name;
+	bindParams.accessMode = textureImageAccessMode::READ_WRITE;
+	bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().coverageInternalFormat;
+	gfxContext.bindImageTexture(bindParams);
+
+	m_boundCoverageImage = name;
+}
+
 void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 {
+	_updateCoverageImage();
+
 	CombinerInfo & cmbInfo = CombinerInfo::get();
 	cmbInfo.setPolygonMode(_drawingState);
 	cmbInfo.update();

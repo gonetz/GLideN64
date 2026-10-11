@@ -305,19 +305,46 @@ public:
 	UBlendCvg(GLuint _program) {
 		LocateUniform(uCvgDest);
 		LocateUniform(uBlendAlphaMode);
+		LocateUniform(uUseMemCvg);
+		LocateUniform(uImageRead);
+		LocateUniform(uAAEnable);
+		LocateUniform(uColorOnCvg);
+		LocateUniform(uFillCvg);
 	}
 
 	void update(bool _force) override
 	{
 		uCvgDest.set(gDP.otherMode.cvgDest, _force);
-		if (dwnd().getDrawer().isTexrectDrawerMode())
+		const bool texrectDrawerMode = dwnd().getDrawer().isTexrectDrawerMode();
+		if (texrectDrawerMode)
 			uBlendAlphaMode.set(2, _force); // No alpha blend in texrect drawing mode
 		else
 			uBlendAlphaMode.set(gDP.otherMode.forceBlender, _force);
+
+		// Memory coverage emulation needs the coverage buffer of the current color buffer.
+		const FrameBuffer * pBuffer = frameBufferList().getCurrent();
+		const bool useMemCvg = graphics::Context::CoverageMemory && isCoverageMemoryAllowed() &&
+			pBuffer != nullptr && pBuffer->m_pCoverageTexture != nullptr &&
+			!texrectDrawerMode;
+		uUseMemCvg.set(useMemCvg ? 1 : 0, _force);
+		uImageRead.set(gDP.otherMode.imageRead, _force);
+		uAAEnable.set(gDP.otherMode.AAEnable, _force);
+		uColorOnCvg.set(gDP.otherMode.colorOnCvg, _force);
+		// Fill rectangles write coverage taken from the low bit of the fill color,
+		// see fbfill_16 in angrylion's RDP. Copy mode writes full coverage.
+		if (gDP.otherMode.cycleType == G_CYC_FILL)
+			uFillCvg.set((gDP.fillColor.color & 1) != 0 ? 7 : 0, _force);
+		else
+			uFillCvg.set(7, _force);
 	}
 private:
 	iUniform uCvgDest;
 	iUniform uBlendAlphaMode;
+	iUniform uUseMemCvg;
+	iUniform uImageRead;
+	iUniform uAAEnable;
+	iUniform uColorOnCvg;
+	iUniform uFillCvg;
 };
 
 class UDitherMode : public UniformGroup

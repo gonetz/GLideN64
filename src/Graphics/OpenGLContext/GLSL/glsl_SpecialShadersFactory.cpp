@@ -426,6 +426,30 @@ namespace glsl {
 		return strFilter;
 	}
 
+	/*---------------CoverageDisplayShaderPart-------------*/
+
+	// Displays content of the coverage buffer as gray scale intensity,
+	// like the G_RM_VISCVG render mode does on hardware.
+	class CoverageDisplay : public ShaderPart
+	{
+	public:
+		CoverageDisplay(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN mediump vec2 vTexCoord0;										\n"
+				"uniform lowp usampler2D uTex0;									\n"
+				"OUT lowp vec4 fragColor;										\n"
+				"void main()													\n"
+				"{																\n"
+				// Hardware coverage value 0 means 1/8 of the pixel is covered,
+				// 7 means fully covered pixel.
+				"  mediump uint cvg = texture(uTex0, vTexCoord0).r & 7u;		\n"
+				"  lowp float intensity = float(cvg + 1u) / 8.0;				\n"
+				"  fragColor = vec4(intensity, intensity, intensity, 1.0);		\n"
+				;
+		}
+	};
+
 	/*---------------TexrectCopyShaderPart-------------*/
 
 	class TexrectUpscaleCopy : public ShaderPart
@@ -931,6 +955,27 @@ namespace glsl {
 		int m_colorLoc;
 	};
 
+	/*---------------CoverageDisplayShader-------------*/
+
+	typedef SpecialShader<VertexShaderTexturedRect, CoverageDisplay> CoverageDisplayShaderBase;
+
+	class CoverageDisplayShader : public CoverageDisplayShaderBase
+	{
+	public:
+		CoverageDisplayShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: CoverageDisplayShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
+			glUniform1i(texLoc, 0);
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
+		}
+	};
+
 	/*---------------SpecialShadersFactory-------------*/
 
 	SpecialShadersFactory::SpecialShadersFactory(const opengl::GLInfo & _glinfo,
@@ -1003,6 +1048,14 @@ namespace glsl {
 	graphics::TextDrawerShaderProgram * SpecialShadersFactory::createTextDrawerShader() const
 	{
 		return new TextDrawerShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createCoverageDisplayShader() const
+	{
+		if (m_glinfo.isGLES2)
+			return nullptr;
+
+		return new CoverageDisplayShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
 }

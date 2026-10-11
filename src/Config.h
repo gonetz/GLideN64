@@ -252,6 +252,7 @@ struct Config
 
 	struct {
 		u32 dumpMode;
+		u32 displayCoverage;	// Debug option: display content of the coverage buffer, like G_RM_VISCVG does on hardware.
 	} debug;
 
 	void resetToDefaults();
@@ -293,5 +294,9 @@ void Config_DoConfig(void* parent);
 #endif
 
 bool isHWLightingAllowed();
+
+// Memory coverage (memcvg) emulation is done by the shader blender, so legacy blending
+// excludes it. GPU support is checked separately, see graphics::Context::CoverageMemory.
+bool isCoverageMemoryAllowed();
 
 #endif // CONFIG_H

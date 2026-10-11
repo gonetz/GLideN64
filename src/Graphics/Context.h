@@ -29,7 +29,8 @@ namespace graphics {
 		EglImage,
 		EglImageFramebuffer,
 		DualSourceBlending,
-		AsyncShaderCompilation
+		AsyncShaderCompilation,
+		CoverageMemory
 	};
 
 	enum class ClampMode {
@@ -263,6 +264,8 @@ namespace graphics {
 
 		TextDrawerShaderProgram * createTextDrawerShader();
 
+		ShaderProgram * createCoverageDisplayShader();
+
 		void resetShaderProgram();
 
 		/*---------------Draw-------------*/
@@ -317,6 +320,7 @@ namespace graphics {
 		static bool EglImageFramebuffer;
 		static bool DualSourceBlending;
 		static bool AsyncShaderCompilation;
+		static bool CoverageMemory;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

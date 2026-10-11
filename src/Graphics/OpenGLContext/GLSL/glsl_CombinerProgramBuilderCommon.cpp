@@ -253,6 +253,21 @@ public:
 					else if (_glinfo.fragment_ordering)
 						ss << "#extension GL_INTEL_fragment_shader_ordering : enable" << std::endl;
 				}
+			} else if (isCoverageMemoryUsed(_glinfo)) {
+				// Memory coverage emulation reads and writes the coverage image inside a
+				// fragment shader interlock section, same way as the fast N64 depth compare does.
+				if (_glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
+					ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
+						<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
+				}
+				if (_glinfo.fragment_interlock)
+					ss << "#extension GL_ARB_fragment_shader_interlock : enable" << std::endl
+						<< "layout(pixel_interlock_ordered) in;" << std::endl;
+				else if (_glinfo.fragment_interlockNV)
+					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
+						<< "layout(pixel_interlock_ordered) in;" << std::endl;
+				else if (_glinfo.fragment_ordering)
+					ss << "#extension GL_INTEL_fragment_shader_ordering : enable" << std::endl;
 			}
 
 			ss << "# define IN in" << std::endl
@@ -791,6 +806,9 @@ public:
 			m_part =
 				"bool depth_compare(highp float curZ);	\n"
 				"bool depth_render(highp float Z, highp float curZ);	\n"
+				// Set by depth_compare(). Hardware uses it to calculate blend enable,
+				// see memory coverage emulation.
+				"bool bFarther;							\n"
 				;
 			if (_glinfo.imageTextures & !_glinfo.n64DepthWithFbFetch) {
 				m_part +=
@@ -1255,7 +1273,7 @@ public:
 				"    dzMin = min(dz, depthDeltaZ.r);					\n"
 				"  }													\n"
 				"  bool bInfront = curZ < bufZ;							\n"
-				"  bool bFarther = (curZ + dzMin) >= bufZ;				\n"
+				"  bFarther = (curZ + dzMin) >= bufZ;					\n"
 				"  bool bNearer = (curZ - dzMin) <= bufZ;				\n"
 				"  bool bMax = bufZ == 1.0;								\n"
 				"  bool bRes = false;									\n"
@@ -1402,6 +1420,330 @@ public:
 	}
 };
 
+
+/*---------------Memory coverage (memcvg)-------------*/
+
+// Nintendo64 keeps coverage of every pixel in the color buffer, using the extra bits of
+// 9bit RDRAM, see section 15.5.3 of Nintendo64 programming manual. The blender needs that
+// "memory coverage" to decide whether it has to blend at all, and the value written back
+// depends on it as well. The plugin keeps coverage in a separate r8ui image, which the
+// fragment shader reads and writes with imageLoad/imageStore. Fragment shader interlock
+// serializes that read-modify-write for fragments which hit the same pixel.
+// Formulas below follow angrylion's RDP: coverage.c finalize_spanalpha(),
+// zbuffer.c z_compare() and blender.c blender_1cycle().
+
+// GL_ARB_fragment_shader_interlock requires begin/end to be called from main() exactly once
+// and NOT from within any control flow, so these calls are always placed at the top level of
+// main(), even when the coverage image is not used by the current draw.
+static
+const char * getInterlockBegin(const opengl::GLInfo & _glinfo)
+{
+	if (_glinfo.fragment_interlock)
+		return "    beginInvocationInterlockARB();							\n";
+	if (_glinfo.fragment_interlockNV)
+		return "    beginInvocationInterlockNV();							\n";
+	if (_glinfo.fragment_ordering)
+		return "    beginFragmentShaderOrderingINTEL();						\n";
+	return "";
+}
+
+static
+const char * getInterlockEnd(const opengl::GLInfo & _glinfo)
+{
+	if (_glinfo.fragment_interlock)
+		return "    endInvocationInterlockARB();							\n";
+	if (_glinfo.fragment_interlockNV)
+		return "    endInvocationInterlockNV();								\n";
+	// GL_INTEL_fragment_shader_ordering has no end function.
+	return "";
+}
+
+class ShaderFragmentHeaderCoverageMemory : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderCoverageMemory(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"layout(binding = 6, r8ui) highp uniform coherent restrict uimage2D uCoverageImage;	\n"
+			"uniform lowp int uUseMemCvg;			\n"
+			"uniform lowp int uImageRead;			\n"
+			"uniform lowp int uAAEnable;			\n"
+			"uniform lowp int uColorOnCvg;			\n"
+			"uniform lowp int uFillCvg;				\n"
+			"mediump int memCvg;					\n"	// memory coverage, 0..7
+			"mediump int newCvg;					\n"	// coverage of the current pixel, 0..8
+			"mediump int finalCvg;					\n"	// coverage to store, 0..7
+			"bool cvgOverflow;						\n"	// 'prewrap' in angrylion's RDP
+			"bool blendEn;							\n"
+			"bool memCvgOn;							\n"
+			"highp ivec2 cvgCoord;					\n"
+			;
+	}
+};
+
+class ShaderCoverageMemoryBegin : public ShaderPart
+{
+public:
+	ShaderCoverageMemoryBegin(const opengl::GLInfo & _glinfo, bool _2cycle)
+	{
+		const bool depthCompare = config.frameBufferEmulation.N64DepthCompare != Config::dcDisable;
+		// In 2 cycle mode the first blender cycle always blends, force_blend controls the second one.
+		const char * forceBlend = _2cycle ? "uForceBlendCycle2" : "uForceBlendCycle1";
+
+		m_part =
+			"  memCvgOn = uUseMemCvg != 0;										\n"
+			"  cvgCoord = ivec2(gl_FragCoord.xy);								\n"
+			// Hardware coverage is the number of covered sub-samples, 1..8.
+			"  newCvg = int(cvg * 8.0 + 0.5);									\n"
+			"  memCvg = 7;														\n"
+			"  finalCvg = 7;													\n"
+			// Defaults reproduce the behaviour of the plugin without memory coverage.
+			"  cvgOverflow = true;												\n"
+			;
+		m_part += std::string("  blendEn = ") + forceBlend + " != 0;			\n";
+		if (depthCompare)
+			m_part +=
+				"  bool should_discard = false;									\n"
+				"  bFarther = true;												\n"
+				;
+
+		// Must be at the top level of main(), see the note above.
+		m_part += getInterlockBegin(_glinfo);
+
+		if (depthCompare)
+			// Hardware compares depth before the blender and takes blend enable from the
+			// result of the comparison, so the depth compare shares this interlock section.
+			// depth_render() needs the blender output, it is called at the end of the section.
+			m_part +=
+				"  if (uRenderTarget == 0 && !depth_compare(fragDepth)) should_discard = true;	\n"
+				;
+
+		m_part +=
+			"  if (memCvgOn) {													\n"
+			;
+		// IMAGE_READ off means the blender does not read the frame buffer: memcvg reads as 7.
+		m_part +=
+			"    if (uImageRead != 0)											\n"
+			"      memCvg = int(imageLoad(uCoverageImage, cvgCoord).r & 7u);	\n"
+			"    cvgOverflow = ((memCvg + newCvg) & 8) != 0;						\n"
+			;
+		// blend_en = force_blend || (!overflow && antialias_en && farther).
+		// The 'farther' term exists only when the hardware depth compare is enabled,
+		// which matches the z_compare_en == 0 branch of angrylion's z_compare().
+		m_part += std::string("    blendEn = (") + forceBlend + " != 0) || (!cvgOverflow && uAAEnable != 0";
+		if (depthCompare)
+			m_part += " && (uEnableDepthCompare == 0 || bFarther)";
+		m_part += ");	\n";
+		m_part +=
+			// memory_color.a of the hardware blender is memcvg << 5.
+			"    muxB[1] = float(memCvg * 32) / 255.0;							\n"
+			"    switch (uCvgDest) {											\n"
+			"      case 0:														\n"	// CVG_CLAMP
+			// Hardware writes cvg-1 for a pixel drawn without blending, because the neighbouring
+			// primitive is going to write the same pixel too and to top its coverage up to full:
+			// the RDP renders a pixel for every primitive which covers any of its sub-samples, and
+			// that second write does blend, because it reads cvg-1 back as memory coverage and so
+			// does not overflow. GPU rasterization gives a pixel to one triangle only, so the second
+			// write never happens here and the lowered value would stay in the coverage buffer,
+			// breaking every later read of memory coverage along internal edges of a mesh. Take the
+			// maximum to get the same result as the hardware has after both primitives are rendered.
+			// The top up needs the neighbouring primitive to read memory coverage back, that is
+			// IMAGE_READ and antialiasing both on. With IMAGE_READ off memory coverage always reads
+			// as 7, so the second write overflows as well and the hardware keeps the lowered value.
+			// Keep it too in that case: Turok 2 draws its "Pen and Ink Mode" with IMAGE_READ off and
+			// needs the lowered coverage.
+			// The price is a silhouette edge drawn over an opaque surface: hardware keeps the
+			// partial coverage of such a pixel, we store full coverage, because the fragment shader
+			// can not tell a silhouette edge from an internal one - both come here as cvg < 8 with
+			// memCvg == 7 and blend enable off. Nothing reads that partial value at the moment.
+			// It is needed to emulate the coverage based anti-aliasing filter of the VI. To keep it,
+			// a silhouette has to be detected by the depth discontinuity to the neighbouring
+			// geometry, which is possible only when the N64 depth compare is enabled.
+			"        if (blendEn) {finalCvg = memCvg + newCvg;}					\n"
+			"        else {finalCvg = (uImageRead != 0 && uAAEnable != 0) ?		\n"
+			"          max(newCvg - 1, memCvg) : (newCvg - 1);}					\n"
+			"        finalCvg = ((finalCvg & 8) == 0) ? (finalCvg & 7) : 7;		\n"
+			"        break;														\n"
+			"      case 1:														\n"	// CVG_WRAP
+			"        finalCvg = (memCvg + newCvg) & 7;							\n"
+			"        break;														\n"
+			"      case 2:														\n"	// CVG_ZAP
+			"        finalCvg = 7;												\n"
+			"        break;														\n"
+			"      default:														\n"	// CVG_SAVE
+			"        finalCvg = memCvg;											\n"
+			"        break;														\n"
+			"    }																\n"
+			"  }																\n"
+			;
+	}
+};
+
+class ShaderCoverageMemoryEnd : public ShaderPart
+{
+public:
+	ShaderCoverageMemoryEnd(const opengl::GLInfo & _glinfo)
+	{
+		const bool depthCompare = config.frameBufferEmulation.N64DepthCompare != Config::dcDisable;
+
+		if (depthCompare)
+			// Render to depth buffer mode takes the depth value from the blender result.
+			m_part +=
+				"  if (uRenderTarget != 0 && !depth_render(fragColor.r, fragDepth)) should_discard = true;	\n"
+				;
+
+		// Rejected pixels do not change coverage in the frame buffer.
+		m_part += depthCompare
+			? "  if (memCvgOn && !should_discard) {								\n"
+			: "  if (memCvgOn) {												\n";
+		m_part +=
+			"    imageStore(uCoverageImage, cvgCoord, uvec4(uint(finalCvg), 0u, 0u, 0u));	\n"
+			"  }																\n"
+			;
+
+		// Must be at the top level of main(), see the note above.
+		m_part += getInterlockEnd(_glinfo);
+
+		if (depthCompare)
+			m_part += "  if (should_discard) discard;							\n";
+	}
+};
+
+class ShaderCoverageMemoryFill : public ShaderPart
+{
+public:
+	ShaderCoverageMemoryFill(const opengl::GLInfo & _glinfo)
+	{
+		const bool depthCompare = config.frameBufferEmulation.N64DepthCompare != Config::dcDisable;
+
+		// Fill and copy modes do not use the blender. Coverage written by a fill rectangle
+		// comes from the low bit of the fill color, copy mode writes full coverage.
+		if (depthCompare)
+			m_part += "  bool should_discard = false;							\n";
+
+		// Must be at the top level of main(), see the note above.
+		m_part += getInterlockBegin(_glinfo);
+
+		if (depthCompare)
+			m_part +=
+				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r, fragDepth)) should_discard = true; }	\n"
+				"  else if (!depth_compare(fragDepth)) should_discard = true;	\n"
+				;
+
+		m_part += depthCompare
+			? "  if (uUseMemCvg != 0 && !should_discard) {						\n"
+			: "  if (uUseMemCvg != 0) {											\n";
+		m_part +=
+			"    imageStore(uCoverageImage, ivec2(gl_FragCoord.xy), uvec4(uint(uFillCvg), 0u, 0u, 0u));	\n"
+			"  }																\n"
+			;
+
+		m_part += getInterlockEnd(_glinfo);
+
+		if (depthCompare)
+			m_part += "  if (should_discard) discard;							\n";
+	}
+};
+
+class ShaderBlender1MemCvg : public ShaderPart
+{
+public:
+	ShaderBlender1MemCvg(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"  srcColor1 = vec4(0.0);									\n"
+			"  dstFactor1 = 0.0;										\n"
+			"  muxPM[0] = clampedColor;									\n"
+			"  muxA[0] = clampedColor.a;								\n"
+			"  muxa = MUXA(uBlendMux1[1]);								\n"
+			"  muxB[0] = 1.0 - muxa;									\n"
+			"  muxb = MUXB(uBlendMux1[3]);								\n"
+			"  muxp = MUXPM(uBlendMux1[0]);								\n"
+			"  muxm = MUXPM(uBlendMux1[2]);								\n"
+			"  muxaf = MUXF(uBlendMux1[0]);								\n"
+			"  muxbf = MUXF(uBlendMux1[2]);								\n"
+			// 'partialreject' of the hardware: standard 'src*a + mem*(1-a)' blend mode.
+			"  bool dontBlend1 = memCvgOn && uBlendMux1[1] == 0 && uBlendMux1[3] == 0 && clampedColor.a > 0.996;	\n"
+			"  if (uColorOnCvg != 0 && !cvgOverflow) {					\n"
+			// COLOR_ON_CVG without coverage overflow keeps the memory color, that is the M input.
+			"    srcColor1 = muxm;										\n"
+			"    dstFactor1 = muxbf;									\n"
+			"  } else if (!blendEn || dontBlend1) {						\n"
+			// Blending disabled: the P input is written as is.
+			"    srcColor1 = muxp;										\n"
+			"    dstFactor1 = muxaf;									\n"
+			"  } else {													\n"
+			"    srcColor1 = muxp * muxa + muxm * muxb;					\n"
+			"    dstFactor1 = muxaf * muxa + muxbf * muxb;				\n"
+			"    srcColor1 = clamp(srcColor1, 0.0, 1.0);				\n"
+			"  }														\n"
+			"  fragColor = srcColor1;									\n"
+			"  fragColor1 = vec4(dstFactor1);							\n"
+			;
+	}
+};
+
+class ShaderBlender2MemCvg : public ShaderPart
+{
+public:
+	ShaderBlender2MemCvg(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"  srcColor2 = vec4(0.0);									\n"
+			"  dstFactor2 = 0.0;										\n"
+			"  muxPM[0] = srcColor1;									\n"
+			"  muxa = MUXA(uBlendMux2[1]);								\n"
+			"  muxB[0] = 1.0 - muxa;									\n"
+			"  muxb = MUXB(uBlendMux2[3]);								\n"
+			"  muxp = MUXPM(uBlendMux2[0]);								\n"
+			"  muxm = MUXPM(uBlendMux2[2]);								\n"
+			"  muxF[0] = dstFactor1;									\n"
+			"  muxaf = MUXF(uBlendMux2[0]);								\n"
+			"  muxbf = MUXF(uBlendMux2[2]);								\n"
+			"  bool dontBlend2 = memCvgOn && uBlendMux2[1] == 0 && uBlendMux2[3] == 0 && clampedColor.a > 0.996;	\n"
+			"  if (uColorOnCvg != 0 && !cvgOverflow) {					\n"
+			"    srcColor2 = muxm;										\n"
+			"    dstFactor2 = muxbf;									\n"
+			"  } else if (!blendEn || dontBlend2) {						\n"
+			"    srcColor2 = muxp;										\n"
+			"    dstFactor2 = muxaf;									\n"
+			"  } else {													\n"
+			"    srcColor2 = muxp * muxa + muxm * muxb;					\n"
+			"    dstFactor2 = muxaf * muxa + muxbf * muxb;				\n"
+			"    srcColor2 = clamp(srcColor2, 0.0, 1.0);				\n"
+			"  }														\n"
+			"  fragColor = srcColor2;									\n"
+			"  fragColor1 = vec4(dstFactor2);							\n"
+			;
+	}
+};
+
+class ShaderBlenderAlphaMemCvg : public ShaderPart
+{
+public:
+	ShaderBlenderAlphaMemCvg(const opengl::GLInfo & _glinfo)
+	{
+		// Coverage is stored in the coverage image, so the alpha channel of the color buffer
+		// just gets the resulting coverage as a fraction, like the hardware keeps it in the
+		// alpha bits of the frame buffer pixel.
+		m_part =
+			"if (uBlendAlphaMode != 2) {											\n"
+			"  if (memCvgOn) {													\n"
+			"    fragColor.a = float(finalCvg + 1) / 8.0;						\n"
+			"    fragColor1.a = 0.0;											\n"
+			"  } else {															\n"
+			"    lowp vec4 srcAlpha = vec4(cvg, cvg, 1.0, 0.0);					\n"
+			"    lowp vec4 dstFactorAlpha = vec4(1.0, 1.0, 0.0, 1.0);			\n"
+			"    if (uBlendAlphaMode == 0)										\n"
+			"      dstFactorAlpha[0] = 0.0;										\n"
+			"    fragColor1.a = dstFactorAlpha[uCvgDest];						\n"
+			"    fragColor.a = srcAlpha[uCvgDest] + lastFragColor.a * fragColor1.a;\n"
+			"  }																\n"
+			"} else fragColor.a = clampedColor.a;								\n"
+			;
+	}
+};
+
 /*---------------ShaderPartsEnd-------------*/
 
 static
@@ -1466,6 +1808,14 @@ CombinerProgramBuilderCommon::CombinerProgramBuilderCommon(const opengl::GLInfo 
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
 , m_shaderCoverage(new ShaderCoverage())
+, m_blender1MemCvg(new ShaderBlender1MemCvg(_glinfo))
+, m_blender2MemCvg(new ShaderBlender2MemCvg(_glinfo))
+, m_blenderAlphaMemCvg(new ShaderBlenderAlphaMemCvg(_glinfo))
+, m_fragmentHeaderCoverageMemory(new ShaderFragmentHeaderCoverageMemory(_glinfo))
+, m_shaderCoverageMemoryBegin(new ShaderCoverageMemoryBegin(_glinfo, false))
+, m_shaderCoverageMemoryBegin2Cycle(new ShaderCoverageMemoryBegin(_glinfo, true))
+, m_shaderCoverageMemoryEnd(new ShaderCoverageMemoryEnd(_glinfo))
+, m_shaderCoverageMemoryFill(new ShaderCoverageMemoryFill(_glinfo))
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {
 }
@@ -1639,6 +1989,44 @@ void CombinerProgramBuilderCommon::_writeFragmentBlendMux(std::stringstream& ssS
 void CombinerProgramBuilderCommon::_writeShaderCoverage(std::stringstream& ssShader)const
 {
 	 m_shaderCoverage->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeBlender1MemCvg(std::stringstream& ssShader)const
+{
+	 m_blender1MemCvg->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeBlender2MemCvg(std::stringstream& ssShader)const
+{
+	 m_blender2MemCvg->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeBlenderAlphaMemCvg(std::stringstream& ssShader)const
+{
+	 m_blenderAlphaMemCvg->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeFragmentHeaderCoverageMemory(std::stringstream& ssShader)const
+{
+	 m_fragmentHeaderCoverageMemory->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeShaderCoverageMemoryBegin(std::stringstream& ssShader)const
+{
+	if (CombinerProgramBuilder::s_cycleType == G_CYC_2CYCLE)
+		m_shaderCoverageMemoryBegin2Cycle->write(ssShader);
+	else
+		m_shaderCoverageMemoryBegin->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeShaderCoverageMemoryEnd(std::stringstream& ssShader)const
+{
+	 m_shaderCoverageMemoryEnd->write(ssShader);
+}
+
+void CombinerProgramBuilderCommon::_writeShaderCoverageMemoryFill(std::stringstream& ssShader)const
+{
+	 m_shaderCoverageMemoryFill->write(ssShader);
 }
 
 void CombinerProgramBuilderCommon::_writeFragmentReadTexMipmap(std::stringstream& ssShader)const

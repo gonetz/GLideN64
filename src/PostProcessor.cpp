@@ -10,6 +10,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
+#include "GraphicsDrawer.h"
 
 using namespace graphics;
 
@@ -19,13 +20,18 @@ PostProcessor::PostProcessor()
 
 void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 {
-	m_pResultBuffer.reset(new FrameBuffer());
-	m_pResultBuffer->m_width = _pMainBuffer->m_width;
-	m_pResultBuffer->m_height = _pMainBuffer->m_height;
-	m_pResultBuffer->m_scale = _pMainBuffer->m_scale;
+	_createBuffer(_pMainBuffer, m_pResultBuffer);
+}
+
+void PostProcessor::_createBuffer(const FrameBuffer * _pMainBuffer, std::unique_ptr<FrameBuffer> & _pBuffer)
+{
+	_pBuffer.reset(new FrameBuffer());
+	_pBuffer->m_width = _pMainBuffer->m_width;
+	_pBuffer->m_height = _pMainBuffer->m_height;
+	_pBuffer->m_scale = _pMainBuffer->m_scale;
 
 	const CachedTexture * pMainTexture = _pMainBuffer->m_pTexture;
-	CachedTexture * pTexture = m_pResultBuffer->m_pTexture;
+	CachedTexture * pTexture = _pBuffer->m_pTexture;
 	pTexture->format = G_IM_FMT_RGBA;
 	pTexture->clampS = 1;
 	pTexture->clampT = 1;
@@ -55,7 +61,7 @@ void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 	gfxContext.setTextureParameters(setParams);
 
 	Context::FrameBufferRenderTarget bufTarget;
-	bufTarget.bufferHandle = m_pResultBuffer->m_FBO;
+	bufTarget.bufferHandle = _pBuffer->m_FBO;
 	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
@@ -66,6 +72,9 @@ void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 
 void PostProcessor::init()
 {
+	if (config.debug.displayCoverage != 0)
+		m_coverageDisplayProgram.reset(gfxContext.createCoverageDisplayShader());
+
 	m_gammaCorrectionProgram.reset(gfxContext.createGammaCorrectionShader());
 	m_postprocessingList.emplace_front(std::mem_fn(&PostProcessor::_doGammaCorrection)); // std::mem_fn to fix compilation with VS 2013
 	if (config.video.fxaa != 0) {
@@ -79,7 +88,9 @@ void PostProcessor::destroy()
 	m_postprocessingList.clear();
 	m_gammaCorrectionProgram.reset();
 	m_FXAAProgram.reset();
+	m_coverageDisplayProgram.reset();
 	m_pResultBuffer.reset();
+	m_pCoverageBuffer.reset();
 }
 
 const PostProcessor::PostprocessingList & PostProcessor::getPostprocessingList() const
@@ -168,4 +179,44 @@ FrameBuffer * PostProcessor::_doFXAA(FrameBuffer * _pBuffer)
 		return _pBuffer;
 
 	return _doPostProcessing(_pBuffer, m_FXAAProgram.get());
+}
+
+FrameBuffer * PostProcessor::doCoverageDisplay(FrameBuffer * _pBuffer)
+{
+	if (_pBuffer == nullptr || m_coverageDisplayProgram == nullptr ||
+		_pBuffer->m_pCoverageTexture == nullptr)
+		return _pBuffer;
+
+	if (!m_pCoverageBuffer || m_pCoverageBuffer->m_width != _pBuffer->m_width ||
+		m_pCoverageBuffer->m_height != _pBuffer->m_height ||
+		m_pCoverageBuffer->m_scale != _pBuffer->m_scale)
+		_createBuffer(_pBuffer, m_pCoverageBuffer);
+
+	CachedTexture * pSrcTex = _pBuffer->m_pCoverageTexture;
+	CachedTexture * pDstTex = m_pCoverageBuffer->m_pTexture;
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle(m_pCoverageBuffer->m_FBO));
+
+	GraphicsDrawer::CopyRectParams copyParams;
+	copyParams.srcX0 = 0;
+	copyParams.srcY0 = 0;
+	copyParams.srcX1 = pSrcTex->width;
+	copyParams.srcY1 = pSrcTex->height;
+	copyParams.srcWidth = pSrcTex->width;
+	copyParams.srcHeight = pSrcTex->height;
+	copyParams.dstX0 = 0;
+	copyParams.dstY0 = 0;
+	copyParams.dstX1 = pDstTex->width;
+	copyParams.dstY1 = pDstTex->height;
+	copyParams.dstWidth = pDstTex->width;
+	copyParams.dstHeight = pDstTex->height;
+	copyParams.tex[0] = pSrcTex;
+	copyParams.filter = textureParameters::FILTER_NEAREST;
+	copyParams.combiner = m_coverageDisplayProgram.get();
+
+	dwnd().getDrawer().copyTexturedRect(copyParams);
+
+	_postDraw();
+	return m_pCoverageBuffer.get();
 }

@@ -20,6 +20,10 @@ namespace glsl {
 
 namespace glsl {
 
+// True when calculated coverage has to be stored in the coverage image and memory
+// coverage (memcvg) has to be taken into account by the shader blender.
+bool isCoverageMemoryUsed(const opengl::GLInfo & _glinfo);
+
 class TextureConvert {
 public:
 	void setMode(u32 _mode) {
@@ -107,6 +111,9 @@ private:
 	virtual void _writeBlender1(std::stringstream& ssShader) const = 0;
 	virtual void _writeBlender2(std::stringstream& ssShader) const = 0;
 	virtual void _writeBlenderAlpha(std::stringstream& ssShader) const = 0;
+	virtual void _writeBlender1MemCvg(std::stringstream& ssShader) const = 0;
+	virtual void _writeBlender2MemCvg(std::stringstream& ssShader) const = 0;
+	virtual void _writeBlenderAlphaMemCvg(std::stringstream& ssShader) const = 0;
 	virtual void _writeLegacyBlender(std::stringstream& ssShader) const = 0;
 	virtual void _writeFragmentHeader(std::stringstream& ssShader) const = 0;
 	virtual void _writeFragmentGlobalVariablesTex(std::stringstream& ssShader) const = 0;
@@ -125,6 +132,10 @@ private:
 	virtual void _writeFragmentMain(std::stringstream& ssShader) const = 0;
 	virtual void _writeFragmentBlendMux(std::stringstream& ssShader) const = 0;
 	virtual void _writeShaderCoverage(std::stringstream& ssShader) const = 0;
+	virtual void _writeFragmentHeaderCoverageMemory(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderCoverageMemoryBegin(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderCoverageMemoryEnd(std::stringstream& ssShader) const = 0;
+	virtual void _writeShaderCoverageMemoryFill(std::stringstream& ssShader) const = 0;
 	virtual void _writeFragmentCorrectTexCoords(std::stringstream& ssShader) const = 0;
 	virtual void _writeFragmentClampWrapMirrorEngineTex0(std::stringstream& ssShader) const = 0;
 	virtual void _writeFragmentClampWrapMirrorEngineTex1(std::stringstream& ssShader) const = 0;
@@ -155,6 +166,7 @@ private:
 	opengl::CachedUseProgram * m_useProgram;
 	std::vector<PendingCombinerProgram> m_pendingPrograms;
 	bool m_useCoverage = false;
+	bool m_useCoverageMemory = false;
 	bool m_parallelShaderCompile = false;
 };
 

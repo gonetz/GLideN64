@@ -420,6 +420,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->dumpLowCheckBox->setChecked((config.debug.dumpMode & DEBUG_LOW) != 0);
 	ui->dumpNormalCheckBox->setChecked((config.debug.dumpMode & DEBUG_NORMAL) != 0);
 	ui->dumpDetailCheckBox->setChecked((config.debug.dumpMode & DEBUG_DETAIL) != 0);
+	ui->displayCoverage->setChecked(config.debug.displayCoverage != 0);
 
 	{
 		ui->hotkeyListWidget->clear();
@@ -792,6 +793,7 @@ void ConfigDialog::accept(bool justSave) {
 		config.debug.dumpMode |= DEBUG_NORMAL;
 	if (ui->dumpDetailCheckBox->isChecked())
 		config.debug.dumpMode |= DEBUG_DETAIL;
+	config.debug.displayCoverage = ui->displayCoverage->isChecked() ? 1 : 0;
 
 	if (config.generalEmulation.enableCustomSettings && ui->settingsDestGameRadioButton->isChecked() && m_romName != nullptr)
 		saveCustomRomSettings(m_strIniPath, m_strSharedIniPath, m_romName);

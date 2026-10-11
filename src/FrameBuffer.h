@@ -90,6 +90,13 @@ struct FrameBuffer
 	graphics::ObjectHandle m_copyFBO;
 	CachedTexture * m_pFrameBufferCopyTexture = nullptr;
 
+	// Pixel coverage. Nintendo64 keeps coverage of every pixel in the color buffer, using
+	// extra bits of 9bit RDRAM, see section 15.5.3 of Nintendo64 programming manual.
+	// The plugin keeps it in a separate r8ui texture, which the fragment shader reads and
+	// writes as an image. It holds the raw 3 bit hardware value, that is 0 for 1/8 coverage
+	// and 7 for fully covered pixel.
+	CachedTexture * m_pCoverageTexture = nullptr;
+
 	std::vector<u8> m_RdramCopy;
 
 private:
@@ -101,6 +108,7 @@ private:
 		s32 lry = 0;
 	} m_clearParams;
 
+	void _initCoverageTexture();
 	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
 	void _setAndAttachTexture(graphics::ObjectHandle _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling);
 	bool _initSubTexture(u32 _t);

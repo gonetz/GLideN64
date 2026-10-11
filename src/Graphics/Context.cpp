@@ -19,6 +19,7 @@ bool Context::EglImage = false;
 bool Context::EglImageFramebuffer = false;
 bool Context::DualSourceBlending = false;
 bool Context::AsyncShaderCompilation = false;
+bool Context::CoverageMemory = false;
 
 Context::Context() {}
 
@@ -46,6 +47,7 @@ void Context::init()
 	EglImageFramebuffer = m_impl->isSupported(SpecialFeatures::EglImageFramebuffer);
 	DualSourceBlending = m_impl->isSupported(SpecialFeatures::DualSourceBlending);
 	AsyncShaderCompilation = m_impl->isSupported(SpecialFeatures::AsyncShaderCompilation);
+	CoverageMemory = m_impl->isSupported(SpecialFeatures::CoverageMemory);
 }
 
 void Context::destroy()
@@ -342,6 +344,11 @@ ShaderProgram * Context::createFXAAShader()
 TextDrawerShaderProgram * Context::createTextDrawerShader()
 {
 	return m_impl->createTextDrawerShader();
+}
+
+ShaderProgram * Context::createCoverageDisplayShader()
+{
+	return m_impl->createCoverageDisplayShader();
 }
 
 void Context::resetShaderProgram()

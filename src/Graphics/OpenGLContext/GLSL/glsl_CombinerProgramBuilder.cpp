@@ -15,6 +15,11 @@
 
 namespace glsl {
 
+bool isCoverageMemoryUsed(const opengl::GLInfo & _glinfo)
+{
+	return _glinfo.coverage_memory && isCoverageMemoryAllowed();
+}
+
 thread_local u32 CombinerProgramBuilder::s_cycleType = G_CYC_1CYCLE;
 thread_local TextureConvert CombinerProgramBuilder::s_textureConvert;
 
@@ -325,12 +330,36 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 
 	if (config.generalEmulation.enableLegacyBlending == 0) {
 		if (CombinerProgramBuilder::s_cycleType <= G_CYC_2CYCLE) {
-			_writeBlender1(ssShader);
-			if (CombinerProgramBuilder::s_cycleType == G_CYC_2CYCLE)
-				_writeBlender2(ssShader);
-			_writeBlenderAlpha(ssShader);
-		} else
+			// Read memory coverage and calculate blend enable before the blender runs,
+			// the way the hardware does it. Opens the fragment shader interlock section.
+			if (m_useCoverageMemory)
+				_writeShaderCoverageMemoryBegin(ssShader);
+
+			if (m_useCoverageMemory && CombinerProgramBuilder::s_cycleType != G_CYC_2CYCLE)
+				_writeBlender1MemCvg(ssShader);
+			else
+				// In 2 cycle mode the first blender cycle always blends,
+				// so it needs no memory coverage.
+				_writeBlender1(ssShader);
+
+			if (CombinerProgramBuilder::s_cycleType == G_CYC_2CYCLE) {
+				if (m_useCoverageMemory)
+					_writeBlender2MemCvg(ssShader);
+				else
+					_writeBlender2(ssShader);
+			}
+
+			if (m_useCoverageMemory) {
+				_writeBlenderAlphaMemCvg(ssShader);
+				// Store the new coverage and close the interlock section.
+				_writeShaderCoverageMemoryEnd(ssShader);
+			} else
+				_writeBlenderAlpha(ssShader);
+		} else {
 			ssShader << "  fragColor = clampedColor;" << std::endl;
+			if (m_useCoverageMemory)
+				_writeShaderCoverageMemoryFill(ssShader);
+		}
 
 	}
 	else {
@@ -407,6 +436,9 @@ GLuint CombinerProgramBuilder::_createProgram(Combiner & _color,
 	if (bUseHWLight)
 		_writeFragmentHeaderCalcLight(ssShader);
 
+	if (m_useCoverageMemory)
+		_writeFragmentHeaderCoverageMemory(ssShader);
+
 	/* Write body */
 	if (CombinerProgramBuilder::s_cycleType == G_CYC_2CYCLE)
 		_writeFragmentMain2Cycle(ssShader);
@@ -458,9 +490,13 @@ GLuint CombinerProgramBuilder::_createProgram(Combiner & _color,
 	ssShader << "  vec_color = vec4(input_color, shadeColor.a);" << std::endl;
 	ssShader << strCombiner << std::endl;
 
-	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)
-		_writeFragmentCallN64Depth(ssShader);
-	else
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
+		// With memory coverage emulation depth_compare() is called from the coverage section,
+		// which shares the fragment shader interlock section with it. Only one such section
+		// per shader invocation is allowed, and the hardware order is depth compare first.
+		if (!m_useCoverageMemory)
+			_writeFragmentCallN64Depth(ssShader);
+	} else
 		_writeFragmentRenderTarget(ssShader);
 
 	// End of Main() function
@@ -580,6 +616,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 : m_uniformFactory(std::move(_uniformFactory))
 , m_useProgram(_useProgram)
 , m_useCoverage(_glinfo.coverage && config.generalEmulation.enableCoverage != 0)
+, m_useCoverageMemory(isCoverageMemoryUsed(_glinfo))
 , m_parallelShaderCompile(_glinfo.parallelShaderCompile)
 {
 }

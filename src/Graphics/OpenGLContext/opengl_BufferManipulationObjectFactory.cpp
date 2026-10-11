@@ -334,6 +334,11 @@ struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureForma
 		depthImageType = GL_FLOAT;
 		depthImageFormatBytes = 4;
 
+		coverageInternalFormat = GL_R8UI;
+		coverageFormat = GL_RED_INTEGER;
+		coverageType = GL_UNSIGNED_BYTE;
+		coverageFormatBytes = 1;
+
 		lutInternalFormat = GL_R32UI;
 		lutFormat = GL_RED_INTEGER;
 		lutType = GL_UNSIGNED_INT;
@@ -373,6 +378,11 @@ struct FramebufferTextureFormatsOpenGL : public graphics::FramebufferTextureForm
 		depthImageFormat = GL_RED;
 		depthImageType = GL_FLOAT;
 		depthImageFormatBytes = 4;
+
+		coverageInternalFormat = GL_R8UI;
+		coverageFormat = GL_RED_INTEGER;
+		coverageType = GL_UNSIGNED_BYTE;
+		coverageFormatBytes = 1;
 
 		lutInternalFormat = GL_R32UI;
 		lutFormat = GL_RED_INTEGER;

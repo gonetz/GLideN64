@@ -158,6 +158,7 @@ void Config::resetToDefaults()
 	}
 
 	debug.dumpMode = 0;
+	debug.displayCoverage = 0;
 }
 
 bool isHWLightingAllowed()
@@ -167,10 +168,19 @@ bool isHWLightingAllowed()
 	return GBI.isHWLSupported();
 }
 
+bool isCoverageMemoryAllowed()
+{
+	return config.generalEmulation.enableCoverage != 0 &&
+		config.generalEmulation.enableLegacyBlending == 0;
+}
+
 void Config::validate()
 {
 	if (frameBufferEmulation.enable != 0 && frameBufferEmulation.N64DepthCompare != dcDisable)
 		video.multisampling = 0;
+	// The coverage buffer exists only when coverage is calculated.
+	if (generalEmulation.enableCoverage == 0)
+		debug.displayCoverage = 0;
 	if (frameBufferEmulation.nativeResFactor == 1) {
 		graphics2D.enableNativeResTexrects = 0;
 		graphics2D.correctTexrectCoords = tcDisable;

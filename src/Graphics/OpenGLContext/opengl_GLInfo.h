@@ -42,6 +42,7 @@ struct GLInfo {
 	bool dual_source_blending = false;
 	bool anisotropic_filtering = false;
 	bool coverage = false;
+	bool coverage_memory = false;	// memory coverage (memcvg) can be read and written by the fragment shader
 	bool parallelShaderCompile = false;
 	Renderer renderer = Renderer::Other;
 

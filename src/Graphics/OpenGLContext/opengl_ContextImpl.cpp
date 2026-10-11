@@ -497,6 +497,11 @@ graphics::TextDrawerShaderProgram * ContextImpl::createTextDrawerShader()
 	return m_specialShadersFactory->createTextDrawerShader();
 }
 
+graphics::ShaderProgram * ContextImpl::createCoverageDisplayShader()
+{
+	return m_specialShadersFactory->createCoverageDisplayShader();
+}
+
 void ContextImpl::resetShaderProgram()
 {
 	m_cachedFunctions->getCachedUseProgram()->useProgram(graphics::ObjectHandle::null);
@@ -555,6 +560,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.dual_source_blending;
 	case graphics::SpecialFeatures::AsyncShaderCompilation:
 		return m_glInfo.parallelShaderCompile;
+	case graphics::SpecialFeatures::CoverageMemory:
+		return m_glInfo.coverage_memory;
 	}
 	return false;
 }

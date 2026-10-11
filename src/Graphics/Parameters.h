@@ -82,6 +82,7 @@ namespace graphics {
 		extern ImageUnitParam DepthDeltaZ;
 		extern ImageUnitParam DepthZCopy;
 		extern ImageUnitParam DepthDeltaZCopy;
+		extern ImageUnitParam Coverage;
 	}
 
 	namespace textureImageAccessMode {

@@ -146,6 +146,8 @@ namespace opengl {
 
 		graphics::TextDrawerShaderProgram * createTextDrawerShader() override;
 
+		graphics::ShaderProgram * createCoverageDisplayShader() override;
+
 		void resetShaderProgram() override;
 
 		void drawTriangles(const graphics::Context::DrawTriangleParameters & _params) override;

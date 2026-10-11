@@ -58,6 +58,10 @@ FrameBuffer::~FrameBuffer()
 	textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	textureCache().removeFrameBufferTexture(m_pSubTexture);
 	textureCache().removeFrameBufferTexture(m_pFrameBufferCopyTexture);
+	if (m_pCoverageTexture != nullptr) {
+		textureCache().removeFrameBufferTexture(m_pCoverageTexture);
+		dwnd().getDrawer().resetCoverageImage();
+	}
 
 	_destroyColorFBTexure();
 }
@@ -184,7 +188,67 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	} else
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
 
+	_initCoverageTexture();
+
 //	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+void FrameBuffer::_initCoverageTexture()
+{
+	if (!Context::CoverageMemory || !isCoverageMemoryAllowed())
+		return;
+
+	const u16 width = m_pTexture->width;
+	const u16 height = m_pTexture->height;
+
+	if (m_pCoverageTexture != nullptr &&
+		m_pCoverageTexture->width == width && m_pCoverageTexture->height == height)
+		return;
+
+	if (m_pCoverageTexture == nullptr)
+		m_pCoverageTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
+
+	dwnd().getDrawer().resetCoverageImage();
+
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+
+	m_pCoverageTexture->width = width;
+	m_pCoverageTexture->height = height;
+	m_pCoverageTexture->format = 0;
+	m_pCoverageTexture->size = 1;
+	m_pCoverageTexture->clampS = 1;
+	m_pCoverageTexture->clampT = 1;
+	m_pCoverageTexture->address = m_startAddress;
+	m_pCoverageTexture->clampWidth = static_cast<u16>(m_width);
+	m_pCoverageTexture->clampHeight = height;
+	m_pCoverageTexture->frameBufferTexture = CachedTexture::fbOneSample;
+	m_pCoverageTexture->maskS = 0;
+	m_pCoverageTexture->maskT = 0;
+	m_pCoverageTexture->mirrorS = 0;
+	m_pCoverageTexture->mirrorT = 0;
+	m_pCoverageTexture->textureBytes = width * height * fbTexFormat.coverageFormatBytes;
+
+	// Initialize coverage with zeroes. Games, which read coverage, clear the color buffer
+	// with fill rectangles, and fill rectangles write coverage too.
+	std::vector<u8> zeroes(m_pCoverageTexture->textureBytes, 0);
+
+	Context::InitTextureParams initParams;
+	initParams.handle = m_pCoverageTexture->name;
+	initParams.width = width;
+	initParams.height = height;
+	initParams.internalFormat = fbTexFormat.coverageInternalFormat;
+	initParams.format = fbTexFormat.coverageFormat;
+	initParams.dataType = fbTexFormat.coverageType;
+	initParams.data = zeroes.data();
+	gfxContext.init2DTexture(initParams);
+
+	Context::TexParameters texParams;
+	texParams.handle = m_pCoverageTexture->name;
+	texParams.target = textureTarget::TEXTURE_2D;
+	texParams.textureUnitIndex = textureIndices::Tex[0];
+	texParams.minFilter = textureParameters::FILTER_NEAREST;
+	texParams.magFilter = textureParameters::FILTER_NEAREST;
+	gfxContext.setTextureParameters(texParams);
 }
 
 void FrameBuffer::updateEndAddress()
@@ -1078,6 +1142,8 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	FrameBuffer *pBuffer = &m_list.back();
 	PostProcessor & postProcessor = PostProcessor::get();
 	FrameBuffer * pFilteredBuffer = pBuffer;
+	if (config.debug.displayCoverage != 0)
+		pFilteredBuffer = postProcessor.doCoverageDisplay(pFilteredBuffer);
 	for (const auto & f : postProcessor.getPostprocessingList())
 		pFilteredBuffer = f(postProcessor, pFilteredBuffer);
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
@@ -1550,6 +1616,8 @@ void FrameBufferList::renderBuffer()
 	}
 	PostProcessor & postProcessor = PostProcessor::get();
 	FrameBuffer * pFilteredBuffer = pBuffer;
+	if (config.debug.displayCoverage != 0)
+		pFilteredBuffer = postProcessor.doCoverageDisplay(pFilteredBuffer);
 	for (const auto & f : postProcessor.getPostprocessingList())
 		pFilteredBuffer = f(postProcessor, pFilteredBuffer);
 

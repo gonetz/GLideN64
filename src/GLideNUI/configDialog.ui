@@ -3794,6 +3794,13 @@ The font's full name can be found in Settings&gt;Personalization&gt;Fonts</strin
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="displayCoverage">
+         <property name="text">
+          <string>Display image coverage</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_10">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
