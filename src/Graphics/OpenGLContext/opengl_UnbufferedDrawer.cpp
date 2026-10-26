@@ -132,7 +132,7 @@ void UnbufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _
 			glVertexAttribPointer(rectAttrib::position, 4, GL_FLOAT, GL_FALSE, sizeof(RectVertex), ptr);
 	}
 
-	if (_params.texrect && _params.combiner->usesTile(0)) {
+	if (_params.texrect && _params.combiner->usesTexture()) {
 		m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, true);
 		const void * ptr = &_params.vertices->s0;
 		if (_updateAttribPointer(rectAttrib::texcoord0, ptr))
