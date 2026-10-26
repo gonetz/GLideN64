@@ -19,6 +19,16 @@
 #include "Graphics/Context.h"
 #include <DisplayWindow.h>
 #include <osal_keys.h>
+#ifdef OS_WINDOWS
+#include <Graphics/OpenGLContext/windows/WindowsWGL.h>
+#endif
+
+void PluginAPI::MoveScreen(int /*xpos*/, int /*ypos*/)
+{
+#ifdef OS_WINDOWS
+	WindowsWGL::resizeRenderWindow();
+#endif
+}
 
 PluginAPI & PluginAPI::get()
 {

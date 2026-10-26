@@ -11,6 +11,9 @@ public:
 	static bool start();
 	static void stop();
 	static void swapBuffers();
+	static void resizeRenderWindow();
+	static void refreshFrame();
+	static bool hasRenderWindow();
 
 private:
 	static HGLRC hRC;

@@ -36,7 +36,7 @@ public:
 #endif
 
 	// Common
-	void MoveScreen(int /*_xpos*/, int /*_ypos*/) {}
+	void MoveScreen(int xpos, int ypos);
 	void ViStatusChanged() {}
 	void ViWidthChanged() {}
 

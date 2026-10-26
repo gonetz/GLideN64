@@ -10,6 +10,7 @@
 #include <DisplayWindow.h>
 #include <windows/ScreenShot.h>
 #include <Graphics/OpenGLContext/ThreadedOpenGl/opengl_Wrapper.h>
+#include <Graphics/OpenGLContext/windows/WindowsWGL.h>
 
 using namespace opengl;
 
@@ -207,7 +208,9 @@ bool DisplayWindowWindows::_borderlessDevice()
 			m_screenHeight = static_cast<u32>(deviceMode.dmPelsHeight);
 			m_heightOffset = 0;
 			_setBufferSize();
-			return (SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth + 1, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
+			const bool resized = SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth + 1, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE;
+			WindowsWGL::resizeRenderWindow();
+			return resized;
 		}
 	}
 
@@ -222,7 +225,9 @@ bool DisplayWindowWindows::_borderlessDevice()
 			m_screenHeight = std::abs(monitors.rcMonitors[i].top - monitors.rcMonitors[i].bottom);
 			m_heightOffset = 0;
 			_setBufferSize();
-			return (SetWindowPos(hWnd, NULL, X, Y, m_screenWidth + 1, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
+			const bool resized = SetWindowPos(hWnd, NULL, X, Y, m_screenWidth + 1, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE;
+			WindowsWGL::resizeRenderWindow();
+			return resized;
 		}
 	}
 	return false;
@@ -243,7 +248,10 @@ bool DisplayWindowWindows::_resizeWindow()
 		m_heightOffset = 0;
 		_setBufferSize();
 
-		return (SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
+		const bool resized = SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE;
+		WindowsWGL::resizeRenderWindow();
+		WindowsWGL::refreshFrame();
+		return resized;
 	} else {
 		m_screenWidth = m_width = config.video.windowedWidth;
 		m_screenHeight = config.video.windowedHeight;
@@ -263,8 +271,15 @@ bool DisplayWindowWindows::_resizeWindow()
 
 		AdjustWindowRect( &windowRect, GetWindowLong( hWnd, GWL_STYLE ), GetMenu( hWnd ) != NULL );
 
-		return (SetWindowPos( hWnd, NULL, 0, 0, windowRect.right - windowRect.left + 1,
-			windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE ) == TRUE);
+		const bool resized = SetWindowPos( hWnd, NULL, 0, 0, windowRect.right - windowRect.left + 1,
+			windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE ) == TRUE;
+		// The render child does not include the status bar, so the framebuffer
+		// origin is the bottom of that child rather than the bar.
+		if (WindowsWGL::hasRenderWindow())
+			m_heightOffset = 0;
+		WindowsWGL::resizeRenderWindow();
+		WindowsWGL::refreshFrame();
+		return resized;
 	}
 }
 
