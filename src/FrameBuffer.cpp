@@ -669,6 +669,7 @@ void FrameBufferList::setBufferChanged(f32 _maxY)
 		m_pCurrent->m_cfb = false;
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_copiedToRdram = false;
+		m_pCurrent->m_depthClearOnly = false;
 	}
 }
 
@@ -932,8 +933,12 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 void FrameBufferList::copyAux()
 {
 	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		if (iter->isAuxiliary())
-			FrameBuffer_CopyToRDRAM(iter->m_startAddress, true);
+		if (!iter->isAuxiliary())
+			continue;
+		// Don't overwrite software-rendered depth in RDRAM with a buffer that only cleared it.
+		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender && iter->m_depthClearOnly)
+			continue;
+		FrameBuffer_CopyToRDRAM(iter->m_startAddress, true);
 	}
 }
 
