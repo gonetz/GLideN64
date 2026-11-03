@@ -849,6 +849,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		return false;
 	};
 
+	bool sizeChanged = false;
 	if (m_pCurrent != nullptr) {
 		m_pCurrent->m_originX = m_pCurrent->m_originY = 0;
 		if ((m_pCurrent->m_startAddress != _address)) {
@@ -868,27 +869,15 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 				m_pCurrent = nullptr;
 			}
 		} else if ((m_pCurrent->m_width != _width) ||
-					(m_pCurrent->m_size < _size) ||
+					(m_pCurrent->m_size != _size) ||
 					(m_pCurrent->m_scale != scaleX)) {
+			// An 8-bit buffer needs a single channel texture: don't relabel a 16-bit one in place.
+			sizeChanged = m_pCurrent->m_width == _width && m_pCurrent->m_size != _size;
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = nullptr;
 		} else {
 			m_pCurrent->m_resolved = false;
 			gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, m_pCurrent->m_FBO);
-			if (m_pCurrent->m_size != _size) {
-				f32 fillColor[4];
-				gDPGetFillColor(fillColor);
-				wnd.getDrawer().clearColorBuffer(fillColor);
-				m_pCurrent->m_size = _size;
-				m_pCurrent->m_pTexture->format = _format;
-				m_pCurrent->m_pTexture->size = _size;
-				if (m_pCurrent->m_pResolveTexture != nullptr) {
-					m_pCurrent->m_pResolveTexture->format = _format;
-					m_pCurrent->m_pResolveTexture->size = _size;
-				}
-				if (m_pCurrent->m_copiedToRdram)
-					m_pCurrent->copyRdram();
-			}
 		}
 	}
 	const bool bNew = m_pCurrent == nullptr;
@@ -901,6 +890,13 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		RDRAMtoColorBuffer::get().copyFromRDRAM(m_pCurrent);
 		if (_cfb)
 			m_pCurrent->copyRdram();
+		if (sizeChanged) {
+			// Same memory viewed with another pixel size: keep the fill the game cleared it with.
+			f32 fillColor[4];
+			gDPGetFillColor(fillColor);
+			gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, m_pCurrent->m_FBO);
+			wnd.getDrawer().clearColorBuffer(fillColor);
+		}
 	}
 
 	if (_address == gDP.depthImageAddress)
