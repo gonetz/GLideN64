@@ -53,6 +53,8 @@ struct FrameBuffer
 	bool m_changed = false;
 	bool m_cfb = false;
 	bool m_isDepthBuffer = false;
+	// Only ever filled with the depth clear color: the game clears a depth buffer through it.
+	bool m_depthClearOnly = false;
 	bool m_isPauseScreen = false;
 	bool m_isOBScreen = false;
 	bool m_isMainBuffer = false;
